@@ -1,0 +1,18 @@
+{
+  "name": "tarnhelm",
+  "license": "MIT",
+  "author": "bkiac <benceknab.iac@gmail.com>",
+  "repository": "git@github.com:bkiac/tarnhelm.git",
+  "version": "0.0.1",
+  "scripts": {
+    "prettier": "prettier-package-json --write && lerna run prettier",
+    "lint": "lerna run lint",
+    "install": "yarn lerna bootstrap"
+  },
+  "devDependencies": {
+    "husky": "^4.2.3",
+    "lerna": "^3.20.2",
+    "prettier": "^2.0.2",
+    "prettier-package-json": "^2.1.3"
+  }
+}

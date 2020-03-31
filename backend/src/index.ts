@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import AWS from 'aws-sdk';
 import express from 'express';
 import multer from 'multer';
@@ -19,7 +20,7 @@ const upload = multer({
   storage: multerS3({
     s3,
     bucket: FILES_BUCKET || '',
-    key: function(request, file, cb) {
+    key(request, file, cb) {
       console.log(file);
       cb(null, file.originalname);
     },
@@ -28,29 +29,29 @@ const upload = multer({
 
 server.use(express.static('public'));
 
-server.get('/', function(request, response) {
-  response.sendFile(__dirname + '/public/index.html');
+server.get('/', (request, response) => {
+  response.sendFile(`${__dirname}/public/index.html`);
 });
 
-server.get('/success', function(request, response) {
-  response.sendFile(__dirname + '/public/success.html');
+server.get('/success', (request, response) => {
+  response.sendFile(`${__dirname}/public/success.html`);
 });
 
-server.get('/error', function(request, response) {
-  response.sendFile(__dirname + '/public/error.html');
+server.get('/error', (request, response) => {
+  response.sendFile(`${__dirname}/public/error.html`);
 });
 
-server.post('/upload', function(request, response, next) {
-  upload(request, response, function(error) {
+server.post('/upload', (request, response) => {
+  upload(request, response, (error) => {
     if (error) {
       console.log(error);
       return response.redirect('/error');
     }
     console.log('File uploaded successfully.');
-    response.redirect('/success');
+    return response.redirect('/success');
   });
 });
 
-server.listen(3001, function() {
+server.listen(3001, () => {
   console.log('Server listening on port 3001.');
 });

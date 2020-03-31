@@ -1,9 +1,21 @@
 {
+  "private": true,
   "name": "frontend",
-  "version": "0.0.1",
   "license": "MIT",
   "author": "bkiac <benceknab.iac@gmail.com>",
-  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "pre-commit": "lint-staged",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "eslint": "eslint src/ --ext .js,.ts,.tsx --cache --fix",
+    "lint": "yarn prettier && yarn eslint",
+    "test": "react-scripts test --watchAll=false",
+    "test:watch": "react-scripts watch",
+    "prettier": "prettier --write \"src/**/*\" && prettier-package-json --write",
+    "type": "tsc --noEmit",
+    "watch": "react-scripts start"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -17,26 +29,16 @@
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },
-  "scripts": {
-    "watch": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false",
-    "test:watch": "react-scripts watch",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^7.2.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
+    "lint-staged": "^10.1.1",
+    "prettier": "^2.0.2"
   }
 }
