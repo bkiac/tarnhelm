@@ -1,0 +1,30 @@
+{
+  "name": "tarnhelm-backend",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "bkiac <benceknab.iac@gmail.com>",
+  "private": true,
+  "scripts": {
+    "type": "tsc --noEmit",
+    "watch": "ts-node-dev -r dotenv/config --respawn --transpileOnly src/index.ts",
+    "start": "ts-node -r dotenv/config dist/index.js",
+    "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.3",
+    "@types/multer": "^1.4.2",
+    "@types/multer-s3": "^2.7.7",
+    "ts-node": "^8.8.1",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.649.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0"
+  }
+}

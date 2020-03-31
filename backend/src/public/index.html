@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>DigitalOcean Spaces Tutorial</title>
+
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <p>Please select a file and submit the form to upload an asset.</p>
+
+    <form method="post" enctype="multipart/form-data" action="/upload">
+      <label for="file">Upload a file</label>
+      <input type="file" name="upload" />
+      <input type="submit" class="button" />
+    </form>
+  </body>
+</html>

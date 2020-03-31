@@ -1,0 +1,16 @@
+html {
+  font-family: sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 500px;
+}
+
+label,
+input {
+  display: block;
+  margin: 5px 0;
+}
