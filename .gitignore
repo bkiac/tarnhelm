@@ -1,9 +1,18 @@
-build
-dist
+# Dependencies
 node_modules
 
-*.env
+# Production
+build
+dist
+
+# Misc
+*.env*
+
+.DS_Store
+
+yarn-debug.log*
+yarn-error.log*
 
 .eslintcache
 
-yarn-error.log
+*.code-workspace
