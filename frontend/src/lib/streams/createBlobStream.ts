@@ -29,10 +29,10 @@ class BlobSource implements UnderlyingSource {
         reader.readAsArrayBuffer(slice);
 
         this.index += chunkSize;
+      } else {
+        controller.close();
+        resolve();
       }
-
-      controller.close();
-      resolve();
     });
   }
 }
