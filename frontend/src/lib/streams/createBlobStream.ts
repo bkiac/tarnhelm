@@ -1,4 +1,4 @@
-class BlobSource implements UnderlyingSource {
+class BlobSource implements UnderlyingSource<ArrayBuffer> {
   private blob: Blob;
   private index: number;
   private chunkSize: number;
@@ -9,7 +9,7 @@ class BlobSource implements UnderlyingSource {
     this.index = 0;
   }
 
-  public pull(controller: ReadableStreamDefaultController): Promise<void> {
+  public pull(controller: ReadableStreamDefaultController<ArrayBuffer>): Promise<void> {
     return new Promise((resolve, reject) => {
       const bytesLeft = this.blob.size - this.index;
 
@@ -19,9 +19,7 @@ class BlobSource implements UnderlyingSource {
 
         const reader = new FileReader();
         reader.onload = () => {
-          /**
-           * https://github.com/microsoft/TypeScript/issues/4163#issuecomment-331678032
-           */
+          // https://github.com/microsoft/TypeScript/issues/4163#issuecomment-331678032
           controller.enqueue(new Uint8Array(reader.result as ArrayBuffer));
           resolve();
         };
@@ -37,6 +35,9 @@ class BlobSource implements UnderlyingSource {
   }
 }
 
-export default function createBlobStream(blob: Blob, chunkSize?: number): ReadableStream {
+export default function createBlobStream(
+  blob: Blob,
+  chunkSize?: number,
+): ReadableStream<ArrayBuffer> {
   return new ReadableStream(new BlobSource(blob, chunkSize));
 }

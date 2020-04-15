@@ -1,7 +1,7 @@
-class StreamsSource implements UnderlyingSource {
-  private streams: ReadableStream[];
+class StreamsSource<T> implements UnderlyingSource<T> {
+  private streams: ReadableStream<T>[];
   private index: number;
-  private reader?: ReadableStreamReader;
+  private reader?: ReadableStreamReader<T>;
 
   constructor(streams: ReadableStream[]) {
     this.streams = streams;
@@ -10,13 +10,13 @@ class StreamsSource implements UnderlyingSource {
   }
 
   private nextReader(): void {
-    /** Type is asserted here because `next` can be `undefined` if `index` is too big, but TypeScript doesn't warn about this. */
-    const next = this.streams[this.index] as ReadableStream | undefined;
+    // Type is asserted here because `next` can be `undefined` if `index` is too big, but TypeScript doesn't warn about this.
+    const next = this.streams[this.index] as ReadableStream<T> | undefined;
     this.reader = next && next.getReader();
     this.index += 1;
   }
 
-  public async pull(controller: ReadableStreamDefaultController): Promise<void> {
+  public async pull(controller: ReadableStreamDefaultController<T>): Promise<void> {
     if (this.reader) {
       const data = await this.reader.read();
       if (data.done) {
@@ -29,6 +29,6 @@ class StreamsSource implements UnderlyingSource {
   }
 }
 
-export default function concatStreams(streams: ReadableStream[]): ReadableStream {
-  return new ReadableStream(new StreamsSource(streams));
+export default function concatStreams<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
+  return new ReadableStream<T>(new StreamsSource(streams));
 }
