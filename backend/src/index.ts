@@ -3,6 +3,7 @@ import AWS from 'aws-sdk';
 import express from 'express';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
+import cors from 'cors';
 
 const server = express();
 
@@ -26,6 +27,8 @@ const upload = multer({
     },
   }),
 }).array('upload', 1);
+
+server.use(cors());
 
 server.post('/upload', (request, response) => {
   upload(request, response, (error) => {

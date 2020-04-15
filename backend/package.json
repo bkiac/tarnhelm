@@ -17,12 +17,14 @@
   },
   "dependencies": {
     "aws-sdk": "^2.649.0",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.6",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.3",
     "@types/multer": "^1.4.2",
