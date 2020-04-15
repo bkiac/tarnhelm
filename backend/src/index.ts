@@ -27,20 +27,6 @@ const upload = multer({
   }),
 }).array('upload', 1);
 
-server.use(express.static('public'));
-
-server.get('/', (request, response) => {
-  response.sendFile(`${__dirname}/public/index.html`);
-});
-
-server.get('/success', (request, response) => {
-  response.sendFile(`${__dirname}/public/success.html`);
-});
-
-server.get('/error', (request, response) => {
-  response.sendFile(`${__dirname}/public/error.html`);
-});
-
 server.post('/upload', (request, response) => {
   upload(request, response, (error) => {
     if (error) {
