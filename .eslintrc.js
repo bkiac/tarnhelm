@@ -11,6 +11,8 @@ module.exports = {
   // ],
   plugins: ['@typescript-eslint', 'import', 'prettier'],
   rules: {
+    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
+
     '@typescript-eslint/explicit-function-return-type': [
       'error',
       {
@@ -19,8 +21,11 @@ module.exports = {
         allowHigherOrderFunctions: true,
       },
     ],
+
     'import/prefer-default-export': 'off',
+
     'prettier/prettier': 'error',
+
     'no-console': 'error',
     'no-underscore-dangle': 'off',
   },
