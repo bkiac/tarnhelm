@@ -1,22 +1,16 @@
 /* eslint-disable no-console */
 import express from 'express';
+import http from 'http';
 import cors from 'cors';
 
-import upload from './lib/upload';
+import bindSocket from './socket';
 
-const server = express();
+const app = express(); // Create Express app
 
-server.use(cors());
+app.use(cors());
 
-server.post('/upload', (request, response) => {
-  upload(request, response, (error) => {
-    if (error) {
-      console.log(error);
-    }
-    console.log('File uploaded successfully.');
-  });
-});
-
+const server = new http.Server(app); // Create HTTP server from Express app
+bindSocket(server);
 server.listen(3001, () => {
   console.log('Server listening on port 3001.');
 });
