@@ -2,32 +2,56 @@
 import io from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import { Dictionary } from 'lodash';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const clients: Partial<Dictionary<io.Socket>> = {};
-let maxClients = 0;
+let clientStats = {
+  current: 0,
+  max: 0,
+};
 
-type SocketEvent = 'message' | 'disconnect';
+type SocketEvent = 'message' | 'disconnect' | 'upload';
 type SocketEventHandler = (...args: any[]) => void;
-type SocketEventValami = (id: string, client: io.Socket) => SocketEventHandler;
+type SocketEventHandlerCreator = (id: string) => SocketEventHandler;
+
+function updateStats(): void {
+  const current = Object.values(clients).reduce((sum, client) => (client ? sum + 1 : sum), 0);
+  let { max } = clientStats;
+  max = current > max ? current : max;
+  clientStats = {
+    current,
+    max,
+  };
+}
 
 function log(message: string, meta?: any): void {
   console.log(new Date(), message, meta);
 }
 
-function handleMessage(id: string): SocketEventHandler {
+function createUploadHandler(): SocketEventHandler {
+  return function handle(file: any): void {
+    const buffer = Buffer.from(file);
+    log('File received');
+    fs.createWriteStream(path.join(__dirname, 'file'), { flags: 'a' }).write(buffer);
+  };
+}
+
+function createMessageHandler(id: string): SocketEventHandler {
   return function handle(message: string): void {
     log('Message received', { clientId: id, message });
   };
 }
 
-function handleDisconnect(id: string): SocketEventHandler {
+function createDisconnectionHandler(id: string): SocketEventHandler {
   return function handle(): void {
-    log('Client disconnected', { id });
+    clients[id] = undefined;
+    updateStats();
+    log('Client disconnected', { id, clientStats });
   };
 }
 
 function attachHandler(
-  id: string,
   client: io.Socket,
   event: SocketEvent,
   handler: SocketEventHandler,
@@ -39,10 +63,10 @@ function attachHandler(
 function attachHandlers(
   id: string,
   client: io.Socket,
-  specs: [SocketEvent, SocketEventValami][],
+  specs: [SocketEvent, SocketEventHandlerCreator][],
 ): io.Socket {
   specs.forEach(([event, handler]) => {
-    attachHandler(id, client, event, handler(id, client));
+    attachHandler(client, event, handler(id));
   });
   return client;
 }
@@ -50,18 +74,15 @@ function attachHandlers(
 export function handleConnection(client: io.Socket): io.Socket {
   const id = uuid();
   clients[id] = client;
-
-  const currentClients = Object.keys(clients).length;
-  maxClients = currentClients > maxClients ? currentClients : maxClients;
-
+  updateStats();
   log('Client connected', {
     id,
-    clientStats: { max: maxClients, current: currentClients },
+    clientStats,
   });
-
   return attachHandlers(id, client, [
-    ['disconnect', handleDisconnect],
-    ['message', handleMessage],
+    ['disconnect', createDisconnectionHandler],
+    ['message', createMessageHandler],
+    ['upload', createUploadHandler],
   ]);
 }
 

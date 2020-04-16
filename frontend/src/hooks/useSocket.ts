@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
-let socket: SocketIOClient.Socket | undefined;
+let socket: typeof Socket | undefined;
 
 const SERVER_URI = process.env.REACT_APP_SERVER_URI;
 
-export default function useSocket(): [SocketIOClient.Socket, true] | [undefined, false] {
+export default function useSocket(): [typeof Socket, true] | [undefined, false] {
   return useMemo(() => {
     if (socket) {
       return [socket, true];
