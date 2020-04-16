@@ -8,8 +8,8 @@
   "scripts": {
     "pre-commit": "lint-staged",
     "build": "tsc -p .",
-    "eslint": "eslint src/ --ext .ts --cache --fix",
-    "lint": "yarn prettier && yarn eslint",
+    "format": "yarn prettier && yarn eslint",
+    "lint": "eslint src/ --ext .ts --cache --fix",
     "start": "ts-node -r dotenv/config dist/index.js",
     "prettier": "prettier --write \"src/**/*\" && prettier-package-json --write",
     "type": "tsc --noEmit",

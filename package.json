@@ -5,9 +5,11 @@
   "repository": "git@github.com:bkiac/tarnhelm.git",
   "version": "0.0.1",
   "scripts": {
-    "prettier": "prettier-package-json --write && lerna run prettier",
+    "postinstall": "lerna bootstrap",
+    "format": "yarn prettier && yarn lint",
     "lint": "lerna run lint",
-    "install": "yarn lerna bootstrap"
+    "test": "lerna run test",
+    "prettier": "prettier-package-json --write && lerna run prettier"
   },
   "devDependencies": {
     "husky": "^4.2.3",
