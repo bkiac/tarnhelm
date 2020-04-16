@@ -3,7 +3,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 
-import bindSocket from './socket';
+import bindSocket from './lib/socket';
 
 const app = express(); // Create Express app
 
