@@ -1,5 +1,15 @@
 /* eslint-disable no-console */
 import convict from 'convict';
+import { isString } from 'lodash';
+
+convict.addFormat({
+  name: 'string',
+  validate: (value) => {
+    if (!isString(value) || value === '') {
+      throw new Error(`must be a non-empty string, got ${value}`);
+    }
+  },
+});
 
 const config = convict({
   env: {
@@ -20,27 +30,27 @@ const config = convict({
     endpoint: {
       doc: 'The S3 endpoint.',
       format: 'url',
-      default: null,
+      default: '',
       env: 'STORAGE_ENDPOINT',
     },
     bucket: {
       doc: 'The S3 bucket.',
-      format: '*',
-      default: null,
+      format: 'string',
+      default: '',
       env: 'STORAGE_BUCKET',
     },
     accessKey: {
       id: {
         doc: 'The S3 access key ID.',
-        format: '*',
-        default: null,
+        format: 'string',
+        default: '',
         sensitive: true,
         env: 'STORAGE_ACCESS_KEY_ID',
       },
       secret: {
         doc: 'The S3 access key secret.',
-        format: '*',
-        default: null,
+        format: 'string',
+        default: '',
         sensitive: true,
         env: 'STORAGE_ACCESS_KEY_SECRET',
       },
@@ -51,7 +61,4 @@ const config = convict({
 console.log('⚙️ Config has been loaded:', config.toString());
 config.validate({ allowed: 'strict' });
 
-const properties = config.getProperties();
-
-export { properties };
 export default config;
