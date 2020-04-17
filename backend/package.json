@@ -8,8 +8,8 @@
   "scripts": {
     "pre-commit": "lint-staged",
     "build": "tsc -p .",
-    "eslint": "eslint src/ --ext .ts --cache --fix",
-    "lint": "yarn prettier && yarn eslint",
+    "format": "yarn prettier && yarn eslint",
+    "lint": "eslint src/ --ext .ts --cache --fix",
     "start": "ts-node -r dotenv/config dist/index.js",
     "prettier": "prettier --write \"src/**/*\" && prettier-package-json --write",
     "type": "tsc --noEmit",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.649.0",
+    "convict": "^5.2.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -27,8 +28,8 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
+    "@types/convict": "^4.2.1",
     "@types/cors": "^2.8.6",
-    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.3",
     "@types/lodash": "^4.14.149",
     "@types/multer": "^1.4.2",
