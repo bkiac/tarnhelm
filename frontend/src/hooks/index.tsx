@@ -1,2 +1,2 @@
-export { default as useSocket } from './useSocket';
+export { default as useConnection } from './useConnection';
 export { default as useUpload } from './useUpload';

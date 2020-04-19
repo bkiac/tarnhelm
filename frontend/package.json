@@ -27,11 +27,9 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "socket.io-client": "^2.3.0",
     "typescript": "~3.7.2"
   },
   "devDependencies": {
-    "@types/socket.io-client": "^1.4.32",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
     "eslint": "^6.8.0",
