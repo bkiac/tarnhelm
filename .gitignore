@@ -1,3 +1,7 @@
+# Temporary uploads
+backend/uploads/*
+!backend/uploads/.gitkeep 
+
 # Dependencies
 node_modules
 
