@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import cors from 'cors';
 
 /**
@@ -9,17 +8,22 @@ import express from './wexpress';
 
 import routes from './routes';
 import config from './config';
+import { log, createStatsLogger } from './lib/utils';
 
 const { app, wss } = express;
 
 app.use(cors());
-
-wss.on('connection', () => {
-  console.log('client connected');
-});
 app.use(routes);
+
+const logStats = createStatsLogger();
+wss.on('connection', (client) => {
+  logStats(wss, 'A client has connected!');
+  client.on('close', () => {
+    logStats(wss, 'A client has disconnected!');
+  });
+});
 
 const port = config.get('port');
 app.listen(port, () => {
-  console.log(`📡 Server is listening on port ${port}.`);
+  log(`📡 Server is listening on port ${port}.`);
 });
