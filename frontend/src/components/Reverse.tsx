@@ -1,9 +1,11 @@
 import React, { useState, useEffect, ReactElement } from 'react';
 
-import { useConnection } from '../hooks';
+import { useWebSocket } from '../hooks';
 
 function Reverse(): ReactElement {
-  const [{ ws, loading, error }] = useConnection('/reverse');
+  const [connection, reconnect, disconnect] = useWebSocket('/reverse');
+  console.log(connection);
+  const { ws, loading, error } = connection;
 
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
@@ -20,9 +22,24 @@ function Reverse(): ReactElement {
 
   if (loading) return <div>Connecting WebSocket...</div>;
   if (error) return <div>{error.toString()}</div>;
+  if (!ws)
+    return (
+      <div>
+        WebSocket disconnected.
+        <button type="button" onClick={() => reconnect()}>
+          Reconnect
+        </button>
+      </div>
+    );
   return (
     <div>
       <input type="text" onChange={(event) => setInput(event.target.value)} value={input} />
+      <button type="button" onClick={() => reconnect()}>
+        Reconnect
+      </button>
+      <button type="button" onClick={() => disconnect()}>
+        Disconnect
+      </button>
       <p>{output}</p>
     </div>
   );

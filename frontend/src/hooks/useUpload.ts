@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { createStream } from '../lib/files';
-import useConnection from './useConnection';
+import useWebSocket from './useWebSocket';
 
 export default (): [(fl: FileList) => void, number] => {
-  const [{ ws }] = useConnection();
+  const [{ ws }] = useWebSocket();
   const [files, setFiles] = useState<FileList>();
   const [progress, setProgress] = useState(0);
 
