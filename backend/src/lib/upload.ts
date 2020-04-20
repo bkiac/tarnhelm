@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
-import multer from 'multer';
-import multerS3 from 'multer-s3';
+import * as stream from 'stream';
+import { v4 as uuid } from 'uuid';
 
 import config from '../config';
 
@@ -12,12 +12,16 @@ const s3 = new AWS.S3({
   endpoint,
 });
 
-export default multer({
-  storage: multerS3({
-    s3,
-    bucket,
-    key(request, file, cb) {
-      cb(null, file.originalname);
-    },
-  }),
-}).array('upload', 1);
+interface FileUploadArgs {
+  name: string;
+  stream: stream.Readable;
+}
+export default (file: FileUploadArgs): Promise<AWS.S3.ManagedUpload.SendData> => {
+  return s3
+    .upload({
+      Bucket: bucket,
+      Key: `${uuid()}:${file.name}`,
+      Body: file.stream,
+    })
+    .promise();
+};
