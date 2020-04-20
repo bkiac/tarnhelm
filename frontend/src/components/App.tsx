@@ -8,11 +8,13 @@ function App(): ReactElement {
   return (
     <div>
       <header>Tarnhelm</header>
+
       <button type="button" onClick={() => setShow(!show)}>
         Toggle Reverse
       </button>
       {show && <Reverse />}
-      {/* <Upload /> */}
+
+      <Upload />
     </div>
   );
 }

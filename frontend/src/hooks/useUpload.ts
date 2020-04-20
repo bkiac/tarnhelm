@@ -1,37 +1,59 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { createStream } from '../lib/files';
 import useWebSocket from './useWebSocket';
 
-export default (): [(fl: FileList) => void, number] => {
-  const [{ ws }] = useWebSocket();
+interface Progress {
+  count: number;
+  percent: number;
+}
+
+const initialProgress = { count: 0, percent: 0 };
+
+export default (): [(fl: FileList) => void, Progress] => {
+  const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
   const [files, setFiles] = useState<FileList>();
-  const [progress, setProgress] = useState(0);
+
+  const [progress, setProgress] = useState(initialProgress);
+  const resetProgress = useCallback(() => setProgress(initialProgress), []);
+
+  const upload = useCallback(
+    (fileList: FileList) => {
+      setFiles(fileList);
+      connect();
+    },
+    [connect],
+  );
 
   useEffect(() => {
-    // async function upload(s: SocketIOClient.Socket, fl: FileList): Promise<void> {
-    //   // TODO: collect metadata: name, extension etc.
-    //   // TODO: handle cancellation and socket failure
-    //   // TODO: add delay to wait for socket buffer
-    //   const file = fl[0];
-    //   const stream = createStream(file);
-    //   const reader = stream.getReader();
-    //   let state = await reader.read();
-    //   while (!state.done) {
-    //     const buffer = state.value;
-    //     setProgress(
-    //       (prevProgress) => prevProgress + Math.floor((buffer.byteLength / file.size) * 100),
-    //     );
-    //     console.log('Sending chunk');
-    //     // @ts-ignore
-    //     s.binary(true).emit('upload', buffer);
-    //     state = await reader.read(); // eslint-disable-line no-await-in-loop
-    //   }
-    // }
-    // if (files && socket) {
-    //   upload(socket, files);
-    // }
-  }, [ws, files]);
+    // TODO: handle cancellation and socket failure
+    // TODO: add delay to wait for socket buffer
+    (async () => {
+      if (files && files.length && ws) {
+        resetProgress();
 
-  return [(fl) => setFiles(fl), progress];
+        const file = files[0];
+        ws.send(file.name);
+
+        const stream = createStream(file);
+        const reader = stream.getReader();
+        let state = await reader.read();
+        while (!state.done) {
+          const buffer = state.value;
+
+          setProgress(({ count, percent }) => ({
+            count: count + 1,
+            percent: percent + buffer.byteLength / file.size,
+          }));
+
+          ws.send(buffer);
+          state = await reader.read(); // eslint-disable-line no-await-in-loop
+        }
+
+        disconnect();
+      }
+    })();
+  }, [ws, files, resetProgress, disconnect]);
+
+  return [upload, progress];
 };

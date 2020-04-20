@@ -4,7 +4,6 @@ import { useWebSocket } from '../hooks';
 
 function Reverse(): ReactElement {
   const [connection, reconnect, disconnect] = useWebSocket('/reverse');
-  console.log(connection);
   const { ws, loading, error } = connection;
 
   const [input, setInput] = useState('');

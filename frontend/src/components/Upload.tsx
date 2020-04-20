@@ -26,7 +26,9 @@ function Upload(): ReactElement {
       <button type="button" onClick={handleClick}>
         Upload
       </button>
-      <p>{progress}%</p>
+      <p>
+        {Math.floor(progress.percent * 100)}%, #{progress.count}
+      </p>
     </>
   );
 }
