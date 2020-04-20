@@ -1,4 +1,5 @@
 import React, { ReactElement, useRef, useState, useEffect } from 'react';
+import { format, formatDistanceToNow } from 'date-fns';
 
 import { useUpload } from '../hooks';
 
@@ -29,6 +30,12 @@ function Upload(): ReactElement {
       <p>
         {Math.floor(progress.percent * 100)}%, #{progress.count}
       </p>
+      {progress.estimate && (
+        <p>
+          {format(progress.estimate, 'yyyy-MM-dd HH:mm:ss')}{' '}
+          {formatDistanceToNow(progress.estimate)}
+        </p>
+      )}
     </>
   );
 }

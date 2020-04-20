@@ -6,11 +6,16 @@ import uploadToStorage from '../lib/upload';
 
 const upload: WebsocketRequestHandler = (ws) => {
   ws.once('message', (fileName: string) => {
-    log('File received', fileName);
-    const inc = createWebSocketStream(ws);
-    log('Start DO upload');
-    uploadToStorage({ name: fileName, stream: inc }).then((data) => {
-      log('Finish DO upload', { data });
+    const stream = createWebSocketStream(ws);
+
+    stream.addListener('data', (chunk) => {
+      log(`Received ${chunk.length} bytes of data.`);
+      ws.send(chunk.length);
+    });
+
+    log('Start storage upload');
+    uploadToStorage({ name: fileName, stream }).then((data) => {
+      log('Finish storage upload', { data });
     });
   });
 };
