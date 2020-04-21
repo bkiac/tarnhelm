@@ -1,15 +1,9 @@
 /* eslint-disable no-console */
 import convict from 'convict';
-import { isString } from 'lodash';
 
-convict.addFormat({
-  name: 'string',
-  validate: (value) => {
-    if (!isString(value) || value === '') {
-      throw new Error(`must be a non-empty string, got ${value}`);
-    }
-  },
-});
+import applyCustomFormats from './formats';
+
+applyCustomFormats();
 
 const config = convict({
   env: {
@@ -21,7 +15,7 @@ const config = convict({
 
   port: {
     doc: 'The port to bind.',
-    format: 'port',
+    format: 'websocket-port',
     default: 7089,
     env: 'PORT',
   },

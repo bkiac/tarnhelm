@@ -1,18 +1,29 @@
-/* eslint-disable no-console */
-import express from 'express';
-import http from 'http';
 import cors from 'cors';
 
-import config from './config';
-import bindSocket from './socket';
+/**
+ * Set up Express and WebSocket server before loading and defining routes
+ * https://github.com/HenningM/express-ws#usage
+ */
+import express from './wexpress';
 
-const app = express(); // Create Express app
+import routes from './routes';
+import config from './config';
+import { log, createStatsLogger } from './lib/utils';
+
+const { app, wss } = express;
 
 app.use(cors());
+app.use(routes);
 
-const server = new http.Server(app); // Create HTTP server from Express app
-bindSocket(server);
+const logStats = createStatsLogger();
+wss.on('connection', (client) => {
+  logStats(wss, 'A client has connected!');
+  client.addEventListener('close', () => {
+    logStats(wss, 'A client has disconnected!');
+  });
+});
+
 const port = config.get('port');
-server.listen(port, () => {
-  console.log(`📡 Server is listening on port ${port}.`);
+app.listen(port, () => {
+  log(`📡 Server is listening on port ${port}.`);
 });

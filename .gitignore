@@ -1,3 +1,8 @@
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep 
+test-files/
+
 # Dependencies
 node_modules
 

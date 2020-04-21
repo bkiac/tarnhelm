@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react';
 
-import SocketTest from './SocketTest';
+import Upload from './Upload';
 
 function App(): ReactElement {
   return (
     <div>
       <header>Tarnhelm</header>
-      <SocketTest />
+      <Upload />
     </div>
   );
 }
