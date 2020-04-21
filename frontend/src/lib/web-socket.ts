@@ -19,3 +19,23 @@ export function close(ws: WebSocket): Promise<void> {
     }
   });
 }
+
+export function listen<T = any>(ws: WebSocket): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    ws.addEventListener(
+      'message',
+      (event) => {
+        try {
+          const response = JSON.parse(event.data);
+          if (response.error) {
+            throw new Error(response.error);
+          }
+          resolve(response.data);
+        } catch (error) {
+          reject(error);
+        }
+      },
+      { once: true },
+    );
+  });
+}
