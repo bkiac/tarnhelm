@@ -18,7 +18,7 @@ app.use(routes);
 const logStats = createStatsLogger();
 wss.on('connection', (client) => {
   logStats(wss, 'A client has connected!');
-  client.on('close', () => {
+  client.addEventListener('close', () => {
     logStats(wss, 'A client has disconnected!');
   });
 });

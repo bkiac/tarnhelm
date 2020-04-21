@@ -89,6 +89,9 @@ export default (): [(fl: FileList) => void, Progress] => {
           ws.send(buffer);
           state = await reader.read(); // eslint-disable-line no-await-in-loop
         }
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(new Uint8Array([0])); // EOF signal
+        }
       }
     })();
   }, [ws, file, id]);
