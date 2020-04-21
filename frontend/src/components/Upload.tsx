@@ -7,7 +7,7 @@ function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
   const [counter, setCounter] = useState(0);
 
-  const [upload, progress] = useUpload();
+  const [upload, { loading, percent, count, estimate }] = useUpload();
 
   function handleClick(event: React.MouseEvent): void {
     event.preventDefault();
@@ -27,13 +27,13 @@ function Upload(): ReactElement {
       <button type="button" onClick={handleClick}>
         Upload
       </button>
+      {loading && <p>Uploading...</p>}
       <p>
-        {Math.floor(progress.percent * 100)}%, #{progress.count}
+        {Math.floor(percent * 100)}%, #{count}
       </p>
-      {progress.estimate && (
+      {estimate && (
         <p>
-          {format(progress.estimate, 'yyyy-MM-dd HH:mm:ss')}{' '}
-          {formatDistanceToNow(progress.estimate)}
+          {format(estimate, 'yyyy-MM-dd HH:mm:ss')} {formatDistanceToNow(estimate)}
         </p>
       )}
     </>

@@ -16,12 +16,15 @@ interface FileUploadArgs {
   name: string;
   stream: stream.Readable;
 }
-export default (file: FileUploadArgs): Promise<AWS.S3.ManagedUpload.SendData> => {
-  return s3
-    .upload({
-      Bucket: bucket,
-      Key: `${uuid()}:${file.name}`,
-      Body: file.stream,
-    })
-    .promise();
+export default (
+  file: FileUploadArgs,
+  listener?: (progress: AWS.S3.ManagedUpload.Progress) => void,
+): Promise<AWS.S3.ManagedUpload.SendData> => {
+  const upload = s3.upload({
+    Bucket: bucket,
+    Key: `${uuid()}:${file.name}`,
+    Body: file.stream,
+  });
+  if (listener) upload.on('httpUploadProgress', listener);
+  return upload.promise();
 };

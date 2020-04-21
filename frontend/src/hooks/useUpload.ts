@@ -6,60 +6,75 @@ import { createStream } from '../lib/files';
 import useWebSocket from './useWebSocket';
 
 interface Progress {
+  loading: boolean;
   count: number;
+  uploaded: number;
   percent: number;
   estimate: Date | undefined;
 }
 
-const initialProgress = { count: 0, percent: 0, estimate: undefined };
+const initialProgress = { loading: false, count: 0, uploaded: 0, percent: 0, estimate: undefined };
 
 export default (): [(fl: FileList) => void, Progress] => {
   const id = useMemo(() => uuid(), []);
 
   const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
 
-  const [files, setFiles] = useState<FileList>();
+  // const [files, setFiles] = useState<FileList>();
+  const [file, setFile] = useState<File>();
 
   const [progress, setProgress] = useState<Progress>(initialProgress);
-  const resetProgress = useCallback(() => setProgress(initialProgress), []);
-
-  const upload = useCallback(
-    (fileList: FileList) => {
-      setFiles(fileList);
-      connect();
-    },
-    [connect],
+  const start = useCallback(() => setProgress({ ...initialProgress, loading: true }), []);
+  const finish = useCallback(
+    () => setProgress((prevProgress) => ({ ...prevProgress, loading: false })),
+    [],
   );
 
+  /** Handle start */
+  const upload = useCallback(
+    (fileList: FileList) => {
+      setFile(fileList[0]);
+      start();
+      connect();
+    },
+    [start, connect],
+  );
+
+  /** Handle finish */
+  useEffect(() => {
+    if (file && progress.uploaded >= file.size) {
+      finish();
+      disconnect();
+    }
+  }, [file, progress.uploaded, disconnect, finish]);
+
+  /** Handle upload */
   useEffect(() => {
     // TODO: handle cancellation and socket failure
     // TODO: add delay to wait for socket buffer
     (async () => {
-      if (files && files.length && ws) {
+      if (file && ws) {
         const startDate = new Date();
 
-        resetProgress();
-
-        const file = files[0];
-
         ws.addEventListener('message', (event) => {
-          const { data } = event;
-          const bufferLength = Number.parseInt(data, 10);
+          const { uploaded } = JSON.parse(event.data);
           setProgress((prevProgress) => {
-            const { count, percent } = prevProgress;
+            const { count: prevCount } = prevProgress;
 
-            const newCount = count + 1;
-            const newPercent = percent + bufferLength / file.size;
+            const count = prevCount + 1;
+            const percent = uploaded / file.size;
             const now = new Date();
-            const newEstimate = addMilliseconds(
+            const estimate = addMilliseconds(
               now,
-              differenceInMilliseconds(now, startDate) / newPercent,
+              differenceInMilliseconds(now, startDate) / percent,
             );
 
             return {
-              count: newCount,
-              percent: newPercent,
-              estimate: newEstimate,
+              loading: true,
+              count,
+              uploaded,
+              percent,
+              estimate,
             };
           });
         });
@@ -74,11 +89,9 @@ export default (): [(fl: FileList) => void, Progress] => {
           ws.send(buffer);
           state = await reader.read(); // eslint-disable-line no-await-in-loop
         }
-
-        disconnect();
       }
     })();
-  }, [ws, files, resetProgress, disconnect, id]);
+  }, [ws, file, id]);
 
   return [upload, progress];
 };
