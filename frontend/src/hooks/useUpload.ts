@@ -2,7 +2,7 @@ import { useMemo, useEffect, useState, useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
 import { differenceInMilliseconds, addMilliseconds } from 'date-fns';
 
-import { createStream } from '../lib/files';
+import * as stream from '../lib/stream';
 import useWebSocket from './useWebSocket';
 
 interface Progress {
@@ -81,8 +81,8 @@ export default (): [(fl: FileList) => void, Progress] => {
 
         ws.send(file.name);
 
-        const stream = createStream(file);
-        const reader = stream.getReader();
+        const fileStream = stream.createFileStream(file);
+        const reader = fileStream.getReader();
         let state = await reader.read();
         while (!state.done) {
           const buffer = state.value;
