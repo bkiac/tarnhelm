@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useReducer, Reducer, Dispatch } from 'react';
 
+import config from '../config';
 import * as webSocket from '../lib/web-socket';
 
 enum ConnectionState {
@@ -115,7 +116,7 @@ function createOpen(
   return async function open(uri: string): Promise<void> {
     try {
       if (currentWs) currentWs.close();
-      const ws = await webSocket.open(process.env.REACT_APP_WEBSOCKET_URI + uri);
+      const ws = await webSocket.open(config().uri.ws + uri);
       dispatch({ type: ActionTypes.ConnectSuccess, payload: { ws } });
     } catch (error) {
       dispatch({ type: ActionTypes.ConnectFailure, payload: { error } });
