@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { differenceInMilliseconds, addMilliseconds } from 'date-fns';
 
+import * as webSocket from '../lib/web-socket';
 import * as stream from '../lib/stream';
 import useWebSocket from './useWebSocket';
 
@@ -12,15 +13,22 @@ interface Progress {
   estimate: Date | undefined;
 }
 
+interface State {
+  id?: string;
+  loading: boolean;
+  progress: Progress;
+}
+
 const initialProgress = { loading: false, count: 0, uploaded: 0, percent: 0, estimate: undefined };
 
-export default (): [Progress, (fl: FileList) => void] => {
+export default (): [State, (fl: FileList) => void] => {
   const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
 
   // const [files, setFiles] = useState<FileList>();
   const [file, setFile] = useState<File>();
 
   const [progress, setProgress] = useState<Progress>(initialProgress);
+  const [id, setId] = useState<string>();
   const start = useCallback(() => setProgress({ ...initialProgress, loading: true }), []);
   const finish = useCallback(
     () => setProgress((prevProgress) => ({ ...prevProgress, loading: false })),
@@ -31,6 +39,7 @@ export default (): [Progress, (fl: FileList) => void] => {
   const upload = useCallback(
     (fileList: FileList) => {
       setFile(fileList[0]);
+      setId(undefined);
       start();
       connect();
     },
@@ -51,10 +60,12 @@ export default (): [Progress, (fl: FileList) => void] => {
     // TODO: add delay to wait for socket buffer
     (async () => {
       if (file && ws) {
-        const startDate = new Date();
+        ws.send(file.name);
+        const data = await webSocket.listen<{ id: string }>(ws);
+        setId(data.id);
 
-        ws.addEventListener('message', (event) => {
-          const { uploaded } = JSON.parse(event.data);
+        const startDate = new Date();
+        webSocket.addMessageListener<{ uploaded: number }>(ws, ({ uploaded }) => {
           setProgress((prevProgress) => {
             const { count: prevCount } = prevProgress;
 
@@ -76,8 +87,6 @@ export default (): [Progress, (fl: FileList) => void] => {
           });
         });
 
-        ws.send(file.name);
-
         const fileStream = stream.createFileStream(file);
         // TODO: encrypt
         await stream.read(fileStream, (chunk) => {
@@ -90,5 +99,5 @@ export default (): [Progress, (fl: FileList) => void] => {
     })();
   }, [ws, file]);
 
-  return [progress, upload];
+  return [{ id, progress, loading: progress.loading }, upload];
 };

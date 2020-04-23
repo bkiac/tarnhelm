@@ -1,13 +1,12 @@
 import AWS from 'aws-sdk';
 import * as stream from 'stream';
-import { v4 as uuid } from 'uuid';
 import * as AWSRequest from 'aws-sdk/lib/request';
 
 import config from '../config';
 
 interface FileUploadArgs {
-  name: string;
-  stream: stream.Readable;
+  key: string;
+  body: stream.Readable;
 }
 
 const { accessKey, endpoint, bucket } = config.get('storage');
@@ -22,10 +21,11 @@ export function set(
   file: FileUploadArgs,
   listener?: (progress: AWS.S3.ManagedUpload.Progress) => void,
 ): Promise<AWS.S3.ManagedUpload.SendData> {
+  const { key, body } = file;
   const managedUpload = s3.upload({
     Bucket: bucket,
-    Key: `${uuid()}:${file.name}`,
-    Body: file.stream,
+    Key: key,
+    Body: body,
   });
   if (listener) managedUpload.on('httpUploadProgress', listener);
   return managedUpload.promise();

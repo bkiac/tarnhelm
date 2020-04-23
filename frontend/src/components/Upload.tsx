@@ -7,7 +7,14 @@ function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
   const [counter, setCounter] = useState(0);
 
-  const [{ loading, percent, count, estimate }, upload] = useUpload();
+  const [
+    {
+      id,
+      loading,
+      progress: { percent, count, estimate },
+    },
+    upload,
+  ] = useUpload();
 
   function handleClick(event: React.MouseEvent): void {
     event.preventDefault();
@@ -28,6 +35,7 @@ function Upload(): ReactElement {
         Upload
       </button>
       {loading && <p>Uploading...</p>}
+      {id && !loading && <p>File ID: {id}</p>}
       <p>
         {Math.floor(percent * 100)}%, #{count}
       </p>

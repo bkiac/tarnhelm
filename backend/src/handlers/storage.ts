@@ -3,9 +3,11 @@ import * as ws from 'ws';
 import express from 'express';
 import expressWs from 'express-ws';
 import bytes from 'bytes';
+import { v4 as uuid } from 'uuid';
 
 import { log } from '../lib/utils';
 import * as storage from '../lib/storage';
+import * as webSocket from '../lib/web-socket';
 
 function eof(): stream.Transform {
   return new stream.Transform({
@@ -30,18 +32,29 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
   });
 
   client.once('message', (fileName: string) => {
+    const id = `${uuid()}:${fileName}`;
+    webSocket.send(client, { id });
+
     fileStream = ws.createWebSocketStream(client).pipe(eof());
     log('Start storage upload');
     storage
-      .set({ name: fileName, stream: fileStream }, (progress) => {
+      .set({ key: id, body: fileStream }, (progress) => {
         const { loaded: uploaded } = progress;
         log(`Uploaded ${bytes(uploaded)} of ${fileName}.`);
-        client.send(JSON.stringify({ uploaded }));
+        webSocket.send(client, { uploaded });
       })
-      .then((data) => {
-        log('Finish storage upload', data);
-        client.close();
-      });
+      .then(
+        (data) => {
+          log('Finish storage upload', data);
+          client.close();
+        },
+        (error) => {
+          log('Storage error', error);
+          client.close();
+          fileStream.destroy();
+          storage.del(id);
+        },
+      );
   });
 };
 

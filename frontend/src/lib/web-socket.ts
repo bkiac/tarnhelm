@@ -26,16 +26,24 @@ export function listen<T = any>(ws: WebSocket): Promise<T> {
       'message',
       (event) => {
         try {
-          const response = JSON.parse(event.data);
-          if (response.error) {
-            throw new Error(response.error);
-          }
-          resolve(response.data);
+          const { data, error } = JSON.parse(event.data);
+          if (error) throw new Error(error);
+          resolve(data);
         } catch (error) {
           reject(error);
         }
       },
       { once: true },
     );
+  });
+}
+
+export function addMessageListener<T = any>(
+  ws: WebSocket,
+  listener: (data: T, error?: Error) => void,
+): void {
+  ws.addEventListener('message', (event) => {
+    const { data, error } = JSON.parse(event.data);
+    listener(data, error);
   });
 }
