@@ -1,5 +1,4 @@
-import { useMemo, useEffect, useState, useCallback } from 'react';
-import { v4 as uuid } from 'uuid';
+import { useEffect, useState, useCallback } from 'react';
 import { differenceInMilliseconds, addMilliseconds } from 'date-fns';
 
 import * as stream from '../lib/stream';
@@ -15,9 +14,7 @@ interface Progress {
 
 const initialProgress = { loading: false, count: 0, uploaded: 0, percent: 0, estimate: undefined };
 
-export default (): [(fl: FileList) => void, Progress] => {
-  const id = useMemo(() => uuid(), []);
-
+export default (): [Progress, (fl: FileList) => void] => {
   const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
 
   // const [files, setFiles] = useState<FileList>();
@@ -82,19 +79,16 @@ export default (): [(fl: FileList) => void, Progress] => {
         ws.send(file.name);
 
         const fileStream = stream.createFileStream(file);
-        const reader = fileStream.getReader();
-        let state = await reader.read();
-        while (!state.done) {
-          const buffer = state.value;
-          ws.send(buffer);
-          state = await reader.read(); // eslint-disable-line no-await-in-loop
-        }
+        // TODO: encrypt
+        await stream.read(fileStream, (chunk) => {
+          ws.send(chunk);
+        });
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(new Uint8Array([0])); // EOF signal
         }
       }
     })();
-  }, [ws, file, id]);
+  }, [ws, file]);
 
-  return [upload, progress];
+  return [progress, upload];
 };

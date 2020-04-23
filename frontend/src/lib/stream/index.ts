@@ -5,12 +5,32 @@
 import BlobSource from './BlobSource';
 import StreamsSource from './StreamsSource';
 
+export async function read<T>(
+  stream: ReadableStream<T>,
+  callback: (chunk: T) => void,
+): Promise<void> {
+  const reader = stream.getReader();
+  let state = await reader.read();
+  while (!state.done) {
+    const buffer = state.value;
+    callback(buffer);
+    state = await reader.read(); // eslint-disable-line no-await-in-loop
+  }
+}
+
 export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
   return new ReadableStream<T>(new StreamsSource(streams));
 }
 
 export function createBlobStream(blob: Blob, chunkSize?: number): ReadableStream<ArrayBuffer> {
   return new ReadableStream(new BlobSource(blob, chunkSize));
+}
+
+export function createFileStream(f: File | FileList): ReadableStream<ArrayBuffer> {
+  if (f instanceof File) {
+    return createBlobStream(f);
+  }
+  return concat(Array.from(f).map(createBlobStream));
 }
 
 /**
@@ -56,7 +76,7 @@ export async function toArrayBuffer<T extends Uint8Array>(
  * compiler error suppression is allowed
  * so `ReadableStream` controller (`ReadableStreamDefaultController`) can be used
  * as a `TransformStream` controller (`TransformStreamDefaultController`)
- * to implement a manual `pipeThrough`.
+ * to implement a manual pipe.
  * See: https://caniuse.com/#search=pipethrough
  */
 export function transform<I, O = I>(
