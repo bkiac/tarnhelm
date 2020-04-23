@@ -7,7 +7,7 @@ function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
   const [counter, setCounter] = useState(0);
 
-  const [upload, { loading, percent, count, estimate }] = useUpload();
+  const [{ loading, percent, count, estimate }, upload] = useUpload();
 
   function handleClick(event: React.MouseEvent): void {
     event.preventDefault();
