@@ -1,9 +1,10 @@
 import express from 'express';
 import expressWs from 'express-ws';
 
-import { upload } from '../handlers';
+import { storage } from '../handlers';
 
 const router: expressWs.Router = express.Router();
-router.ws('/upload', upload);
+router.ws('/upload', storage.upload);
+router.get('/download/:id', storage.download);
 
 export default router;
