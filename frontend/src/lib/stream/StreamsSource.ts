@@ -1,4 +1,4 @@
-class StreamsSource<T> implements UnderlyingSource<T> {
+export default class StreamsSource<T> implements UnderlyingSource<T> {
   private streams: ReadableStream<T>[];
   private index: number;
   private reader?: ReadableStreamReader<T>;
@@ -27,8 +27,4 @@ class StreamsSource<T> implements UnderlyingSource<T> {
     }
     return controller.close();
   }
-}
-
-export default function concatStreams<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
-  return new ReadableStream<T>(new StreamsSource(streams));
 }
