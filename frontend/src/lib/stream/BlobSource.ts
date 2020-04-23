@@ -1,4 +1,4 @@
-class BlobSource implements UnderlyingSource<ArrayBuffer> {
+export default class BlobSource implements UnderlyingSource<ArrayBuffer> {
   private blob: Blob;
   private index: number;
   private chunkSize: number;
@@ -33,11 +33,4 @@ class BlobSource implements UnderlyingSource<ArrayBuffer> {
       }
     });
   }
-}
-
-export default function createBlobStream(
-  blob: Blob,
-  chunkSize?: number,
-): ReadableStream<ArrayBuffer> {
-  return new ReadableStream(new BlobSource(blob, chunkSize));
 }

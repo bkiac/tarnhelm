@@ -1,8 +1,8 @@
 import express from 'express';
 
-import websocket from './websocket';
+import storage from './storage';
 
 const router = express.Router();
-router.use('/ws', websocket);
+router.use('/', storage);
 
 export default router;

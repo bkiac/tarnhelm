@@ -1,1 +1,3 @@
-export { default as upload } from './upload';
+import * as storage from './storage';
+
+export { storage };
