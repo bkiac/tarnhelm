@@ -1,4 +1,4 @@
 interface HkdfDeriveParams {
-  salt: Uint8Array;
+  salt: ArrayBuffer;
   info: string;
 }

@@ -23,7 +23,7 @@ export async function deriveKey(
       name: 'HKDF',
       salt,
       // @ts-ignore
-      info: new TextEncoder().encode(`Content-Encoding: ${info}\0`),
+      info: new TextEncoder().encode(info),
       hash: 'SHA-256',
     },
     masterKey,
