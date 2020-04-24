@@ -12,8 +12,7 @@ export async function read<T>(
   const reader = stream.getReader();
   let state = await reader.read();
   while (!state.done) {
-    const buffer = state.value;
-    callback(buffer);
+    callback(state.value);
     state = await reader.read(); // eslint-disable-line no-await-in-loop
   }
 }
@@ -34,33 +33,28 @@ export function createFileStream(f: File | FileList): ReadableStream<ArrayBuffer
 }
 
 /**
- * Convert a plain stream (stream containing `Uint8Array` parts) to an `ArrayBuffer`.
+ * Convert a `Uint8Array` stream to an `ArrayBuffer`.
  */
-export async function toArrayBuffer<T extends Uint8Array>(
-  plainStream: ReadableStream<T>,
+export async function toArrayBuffer(
+  stream: ReadableStream<Uint8Array>,
   size?: number,
 ): Promise<ArrayBuffer> {
-  const reader = plainStream.getReader();
-  let state = await reader.read();
-
   if (size) {
     const result = new Uint8Array(size);
     let offset = 0;
-    while (!state.done) {
-      result.set(state.value, offset);
-      offset += state.value.length;
-      state = await reader.read();
-    }
+    await read(stream, (chunk) => {
+      result.set(chunk, offset);
+      offset += chunk.length;
+    });
     return result.buffer;
   }
 
-  const parts: T[] = [];
+  const parts: Uint8Array[] = [];
   let len = 0;
-  while (!state.done) {
-    parts.push(state.value);
-    len += state.value.length;
-    state = await reader.read();
-  }
+  await read(stream, (chunk) => {
+    parts.push(chunk);
+    len += chunk.length;
+  });
   let offset = 0;
   const result = new Uint8Array(len);
   parts.forEach((part) => {
@@ -82,7 +76,7 @@ export async function toArrayBuffer<T extends Uint8Array>(
 export function transform<I, O = I>(
   stream: ReadableStream<I>,
   transformer: RequiredBy<Transformer<I, O>, 'transform'>,
-  oncancel: ReadableStreamErrorCallback,
+  onCancel?: ReadableStreamErrorCallback,
 ): ReadableStream<O> {
   try {
     return stream.pipeThrough(new TransformStream(transformer));
@@ -122,8 +116,8 @@ export function transform<I, O = I>(
 
       cancel(reason) {
         stream.cancel(reason);
-        if (oncancel) {
-          oncancel(reason);
+        if (onCancel) {
+          onCancel(reason);
         }
       },
     });
