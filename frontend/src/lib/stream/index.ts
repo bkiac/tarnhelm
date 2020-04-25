@@ -1,10 +1,4 @@
-/**
- * Based on https://github.com/mozilla/send/blob/master/app/streams.js
- */
 /* eslint-disable no-await-in-loop */
-import BlobSource from './BlobSource';
-import StreamsSource from './StreamsSource';
-
 export async function read<T>(
   stream: ReadableStream<T>,
   callback: (chunk: T) => void,
@@ -18,11 +12,60 @@ export async function read<T>(
 }
 
 export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
-  return new ReadableStream<T>(new StreamsSource(streams));
+  let index = 0;
+  let reader: ReadableStreamReader<T> | undefined;
+
+  function nextReader(): void {
+    // Type is asserted here because `next` can be `undefined` if `index` is too big, but TypeScript doesn't warn about this.
+    const next = streams[index] as ReadableStream<T> | undefined;
+    reader = next && next.getReader();
+    index += 1;
+  }
+
+  const pull: ReadableStreamDefaultControllerCallback<T> = async (controller) => {
+    if (reader) {
+      const data = await reader.read();
+      if (data.done) {
+        nextReader();
+        return pull(controller);
+      }
+      controller.enqueue(data.value);
+    }
+    return controller.close();
+  };
+
+  return new ReadableStream<T>({ pull });
 }
 
-export function createBlobStream(blob: Blob, chunkSize?: number): ReadableStream<ArrayBuffer> {
-  return new ReadableStream(new BlobSource(blob, chunkSize));
+export function createBlobStream(blob: Blob, chunkSize = 1024 * 64): ReadableStream<ArrayBuffer> {
+  let index = 0;
+
+  const pull: ReadableStreamDefaultControllerCallback<ArrayBuffer> = (controller) => {
+    return new Promise((resolve, reject) => {
+      const bytesLeft = blob.size - index;
+
+      if (bytesLeft > 0) {
+        const currentChunkSize = Math.min(chunkSize, bytesLeft);
+        const slice = blob.slice(index, index + currentChunkSize);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          // https://github.com/microsoft/TypeScript/issues/4163#issuecomment-331678032
+          controller.enqueue(new Uint8Array(reader.result as ArrayBuffer));
+          resolve();
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(slice);
+
+        index += currentChunkSize;
+      } else {
+        controller.close();
+        resolve();
+      }
+    });
+  };
+
+  return new ReadableStream({ pull });
 }
 
 export function createFileStream(f: File | FileList): ReadableStream<ArrayBuffer> {
