@@ -28,5 +28,6 @@ module.exports = {
 
     'no-console': 'error',
     'no-underscore-dangle': 'off',
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
   },
 };

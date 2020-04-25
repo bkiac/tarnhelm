@@ -1,3 +1,5 @@
+import isNil from 'lodash.isnil';
+
 import * as stream from '../../stream';
 import { generateSalt } from '../utils';
 import { KEY_LENGTH, generateKey, generateNonceBase, encrypt, decrypt } from './utils';
@@ -151,12 +153,14 @@ async function createCipher(args: CipherParams): Promise<ECETransformer<Uint8Arr
     return Buffer.from(ciphertext);
   }
 
-  async function transformPrevChunk(isFinal: boolean, controller: Controller): Promise<void> {
-    /** `prevChunk` will exist after the first transform call */
-    if (prevChunk) {
-      controller.enqueue(await encryptRecord(prevChunk, isFinal));
-      i += 1;
-    }
+  async function transformPrevChunk(
+    chunk: Buffer,
+    isFinal: boolean,
+    controller: Controller,
+  ): Promise<void> {
+    const encrypted = await encryptRecord(chunk, isFinal);
+    controller.enqueue(encrypted);
+    i += 1;
   }
 
   const start: ControllerCallback = (controller) => {
@@ -164,14 +168,14 @@ async function createCipher(args: CipherParams): Promise<ECETransformer<Uint8Arr
   };
 
   const transform: ControllerTransformCallback = async (chunk, controller) => {
-    if (!isFirstChunk) await transformPrevChunk(false, controller);
+    if (!isFirstChunk && !isNil(prevChunk)) await transformPrevChunk(prevChunk, false, controller);
     isFirstChunk = false;
     prevChunk = Buffer.from(chunk.buffer);
   };
 
   const flush: ControllerCallback = async (controller) => {
     if (prevChunk) {
-      await transformPrevChunk(true, controller);
+      await transformPrevChunk(prevChunk, true, controller);
     }
   };
 
@@ -201,12 +205,13 @@ function createDecipher(args: DecipherParams): ECETransformer<Uint8Array, Buffer
    * Un-pad a padded record.
    */
   function unpad(record: Buffer, isFinal: boolean): Buffer {
-    for (let j = record.length; j > 0; j -= 1) {
-      if (record[j]) {
-        if (isFinal && record[j] !== 2) {
+    for (let j = record.length - 1; j >= 0; j--) {
+      const byte = record[j];
+      if (byte !== 0) {
+        if (isFinal && byte !== 2) {
           throw new Error('Delimiter of final record is not 2.');
         }
-        if (record[j] !== 1) {
+        if (!isFinal && byte !== 1) {
           throw new Error('Delimiter of non-final record is not 1.');
         }
         return record.slice(0, j);
@@ -231,32 +236,33 @@ function createDecipher(args: DecipherParams): ECETransformer<Uint8Array, Buffer
     return unpad(Buffer.from(plaintext), isFinal);
   }
 
-  async function transformPrevChunk(isFinal: boolean, controller: Controller): Promise<void> {
-    /** `prevChunk` will exist after the first transform call */
-    if (prevChunk) {
-      if (i === 0) {
-        // The first chunk during decryption contains only the header
-        const { salt } = readHeader(prevChunk);
-        key = await generateKey(ikm, salt);
-        ({ generateNonce } = await generateNonceBase(ikm, salt));
-      } else {
-        controller.enqueue(await decryptRecord(prevChunk, isFinal));
-      }
-      i += 1;
+  async function transformPrevChunk(
+    chunk: Buffer,
+    isFinal: boolean,
+    controller: Controller,
+  ): Promise<void> {
+    if (i === 0) {
+      // The first chunk during decryption contains only the header
+      const header = readHeader(chunk);
+      key = await generateKey(ikm, header.salt);
+      ({ generateNonce } = await generateNonceBase(ikm, header.salt));
+    } else {
+      controller.enqueue(await decryptRecord(chunk, isFinal));
     }
+    i += 1;
   }
 
   const start: ControllerCallback = () => {};
 
   const transform: ControllerTransformCallback = async (chunk, controller) => {
-    if (!isFirstChunk) await transformPrevChunk(false, controller);
+    if (!isFirstChunk && !isNil(prevChunk)) await transformPrevChunk(prevChunk, false, controller);
     isFirstChunk = false;
     prevChunk = Buffer.from(chunk.buffer);
   };
 
   const flush: ControllerCallback = async (controller) => {
     if (prevChunk) {
-      await transformPrevChunk(true, controller);
+      await transformPrevChunk(prevChunk, true, controller);
     }
   };
 
@@ -283,7 +289,7 @@ export async function encryptStream(
 
 export function decryptStream(
   cipherstream: ReadableStream<Uint8Array>,
-  params: DecipherParams & { recordSize?: number },
+  params: PartialBy<DecipherParams, 'recordSize'>,
 ): ReadableStream<Buffer> {
   const { recordSize = RECORD_SIZE, ikm } = params;
   const sliced = slice(cipherstream, { mode: Mode.Decrypt, recordSize });
