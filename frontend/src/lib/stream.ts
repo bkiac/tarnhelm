@@ -12,6 +12,8 @@ export async function read<T>(
 }
 
 export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
+  type ControllerCallback = ReadableStreamDefaultControllerCallback<T>;
+
   let index = 0;
   let reader: ReadableStreamReader<T> | undefined;
 
@@ -22,7 +24,7 @@ export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
     index += 1;
   }
 
-  const pull: ReadableStreamDefaultControllerCallback<T> = async (controller) => {
+  const pull: ControllerCallback = async (controller) => {
     if (reader) {
       const data = await reader.read();
       if (data.done) {
@@ -37,10 +39,12 @@ export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
   return new ReadableStream<T>({ pull });
 }
 
-export function createBlobStream(blob: Blob, chunkSize = 1024 * 64): ReadableStream<ArrayBuffer> {
+export function createBlobStream(blob: Blob, chunkSize = 1024 * 64): ReadableStream<Uint8Array> {
+  type ControllerCallback = ReadableStreamDefaultControllerCallback<Uint8Array>;
+
   let index = 0;
 
-  const pull: ReadableStreamDefaultControllerCallback<ArrayBuffer> = (controller) => {
+  const pull: ControllerCallback = (controller) => {
     return new Promise((resolve, reject) => {
       const bytesLeft = blob.size - index;
 
@@ -68,7 +72,7 @@ export function createBlobStream(blob: Blob, chunkSize = 1024 * 64): ReadableStr
   return new ReadableStream({ pull });
 }
 
-export function createFileStream(f: File | FileList): ReadableStream<ArrayBuffer> {
+export function createFileStream(f: File | FileList): ReadableStream<Uint8Array> {
   if (f instanceof File) {
     return createBlobStream(f);
   }
