@@ -3,7 +3,11 @@ import { differenceInMilliseconds, addMilliseconds } from 'date-fns';
 
 import * as webSocket from '../lib/web-socket';
 import * as stream from '../lib/stream';
+import * as crypto from '../lib/crypto';
 import useWebSocket from './useWebSocket';
+
+import ikm from '../ikm';
+console.log(ikm);
 
 interface Progress {
   loading: boolean;
@@ -88,8 +92,10 @@ export default (): [State, (fl: FileList) => void] => {
         });
 
         const fileStream = stream.createFileStream(file);
-        // TODO: encrypt
-        await stream.read(fileStream, (chunk) => {
+        const cipherstream = await crypto.encryptStream(fileStream, {
+          ikm,
+        });
+        await stream.read(cipherstream, (chunk) => {
           ws.send(chunk);
         });
         if (ws.readyState === WebSocket.OPEN) {

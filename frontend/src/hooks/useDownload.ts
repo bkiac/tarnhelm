@@ -1,13 +1,18 @@
 import { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
 
+import * as stream from '../lib/stream';
+import * as crypto from '../lib/crypto';
 import * as file from '../lib/file';
+
+import ikm from '../ikm';
+console.log(ikm);
 
 interface Progress {
   loading: boolean;
 }
 
-export default (defaultId?: string): [Progress, (id?: string) => void] => {
+export default (defaultId?: string, decrypt?: boolean): [Progress, (id?: string) => void] => {
   const [id, setId] = useState(defaultId);
 
   const [loading, setLoading] = useState(false);
@@ -32,13 +37,23 @@ export default (defaultId?: string): [Progress, (id?: string) => void] => {
         });
 
         const blob = new Blob([response.data]);
-        // TODO: decrypt
-        file.save(blob, { name: id });
+        if (decrypt) {
+          const decrypted = await stream.toArrayBuffer(
+            crypto.decryptStream(stream.createBlobStream(blob), {
+              ikm,
+            }),
+          );
+          console.log('DECRYPT');
+          file.save(decrypted, { name: id });
+        } else {
+          console.log('NO DECRYPT');
+          file.save(blob, { name: id });
+        }
 
         setLoading(false);
       }
     })();
-  }, [id, loading]);
+  }, [id, loading, decrypt]);
 
   return [{ loading }, download];
 };
