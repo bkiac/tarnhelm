@@ -1,5 +1,5 @@
-export { encryptStream, decryptStream } from './ece';
-export * from './utils';
+import * as ece from './ece';
 
-export const getRandomValues: typeof crypto.getRandomValues = (array) =>
-  crypto.getRandomValues(array);
+export const webapi = crypto;
+export * from './utils';
+export { ece };

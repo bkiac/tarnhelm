@@ -7,7 +7,6 @@ import * as crypto from '../lib/crypto';
 import useWebSocket from './useWebSocket';
 
 import ikm from '../ikm';
-console.log(ikm);
 
 interface Progress {
   loading: boolean;
@@ -92,7 +91,7 @@ export default (): [State, (fl: FileList) => void] => {
         });
 
         const fileStream = stream.createFileStream(file);
-        const cipherstream = await crypto.encryptStream(fileStream, {
+        const cipherstream = await crypto.ece.encryptStream(fileStream, {
           ikm,
         });
         await stream.read(cipherstream, (chunk) => {

@@ -6,7 +6,6 @@ import * as crypto from '../lib/crypto';
 import * as file from '../lib/file';
 
 import ikm from '../ikm';
-console.log(ikm);
 
 interface Progress {
   loading: boolean;
@@ -39,7 +38,7 @@ export default (defaultId?: string, decrypt?: boolean): [Progress, (id?: string)
         const blob = new Blob([response.data]);
         if (decrypt) {
           const decrypted = await stream.toArrayBuffer(
-            crypto.decryptStream(stream.createBlobStream(blob), {
+            crypto.ece.decryptStream(stream.createBlobStream(blob), {
               ikm,
             }),
           );
