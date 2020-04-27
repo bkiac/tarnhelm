@@ -62,11 +62,20 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
 export const download: express.RequestHandler<{ id: string }> = (req, res) => {
   try {
-    const fileStream = storage.get(req.params.id);
+    let cancelled = false;
+    const {
+      params: { id },
+    } = req;
+    const fileStream = storage.get(id);
+
     req.on('close', () => {
+      cancelled = true;
       fileStream.destroy();
     });
-    fileStream.pipe(res);
+
+    fileStream.pipe(res).on('finish', () => {
+      if (!cancelled) storage.del(id);
+    });
   } catch (error) {
     res.status(404);
     res.send(error);
