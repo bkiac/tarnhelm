@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 
 import Upload from './Upload';
 import Download from './Download';
-import EncryptTest from './EncryptTest';
 
 function App(): ReactElement {
   return (
@@ -10,7 +9,6 @@ function App(): ReactElement {
       <header>Tarnhelm</header>
       <Upload />
       <Download />
-      <EncryptTest />
     </div>
   );
 }

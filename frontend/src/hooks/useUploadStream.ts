@@ -3,10 +3,18 @@ import { differenceInMilliseconds, addMilliseconds } from 'date-fns';
 
 import * as webSocket from '../lib/web-socket';
 import * as stream from '../lib/stream';
-import * as crypto from '../lib/crypto';
 import useWebSocket from './useWebSocket';
 
-import ikm from '../ikm';
+type FileStream = ReadableStream<ArrayBuffer>;
+
+interface FileUpload {
+  stream: FileStream;
+  metadata: {
+    name: string;
+    size: number;
+    type: string;
+  };
+}
 
 interface Progress {
   loading: boolean;
@@ -16,7 +24,7 @@ interface Progress {
   estimate: Date | undefined;
 }
 
-interface State {
+export interface State {
   id?: string;
   loading: boolean;
   progress: Progress;
@@ -24,46 +32,44 @@ interface State {
 
 const initialProgress = { loading: false, count: 0, uploaded: 0, percent: 0, estimate: undefined };
 
-export default (): [State, (fl: FileList) => void] => {
+export default (file?: FileUpload): State => {
   const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
-
-  // const [files, setFiles] = useState<FileList>();
-  const [file, setFile] = useState<File>();
 
   const [progress, setProgress] = useState<Progress>(initialProgress);
   const [id, setId] = useState<string>();
-  const start = useCallback(() => setProgress({ ...initialProgress, loading: true }), []);
-  const finish = useCallback(
-    () => setProgress((prevProgress) => ({ ...prevProgress, loading: false })),
-    [],
-  );
 
-  /** Handle start */
-  const upload = useCallback(
-    (fileList: FileList) => {
-      setFile(fileList[0]);
-      setId(undefined);
-      start();
-      connect();
-    },
-    [start, connect],
-  );
+  const start = useCallback(() => {
+    setId(undefined);
+    setProgress({ ...initialProgress, loading: true });
+    connect();
+  }, [connect]);
+  const finish = useCallback(() => {
+    disconnect();
+    setProgress((prevProgress) => ({ ...prevProgress, loading: false }));
+  }, [disconnect]);
 
-  /** Handle finish */
+  // Handle start
   useEffect(() => {
-    if (file && progress.uploaded >= file.size) {
+    if (file) start();
+  }, [file, start]);
+
+  // Handle finish
+  useEffect(() => {
+    if (file && progress.uploaded >= file.metadata.size) {
       finish();
       disconnect();
     }
   }, [file, progress.uploaded, disconnect, finish]);
 
-  /** Handle upload */
+  // Handle upload
   useEffect(() => {
     // TODO: handle cancellation and socket failure
     // TODO: add delay to wait for socket buffer
     (async () => {
       if (file && ws) {
-        ws.send(file.name);
+        const { stream: fileStream, metadata } = file;
+
+        ws.send(JSON.stringify(metadata));
         const data = await webSocket.listen<{ id: string }>(ws);
         setId(data.id);
 
@@ -73,7 +79,7 @@ export default (): [State, (fl: FileList) => void] => {
             const { count: prevCount } = prevProgress;
 
             const count = prevCount + 1;
-            const percent = uploaded / file.size;
+            const percent = uploaded / metadata.size;
             const now = new Date();
             const estimate = addMilliseconds(
               now,
@@ -90,19 +96,16 @@ export default (): [State, (fl: FileList) => void] => {
           });
         });
 
-        const fileStream = stream.createFileStream(file);
-        const cipherstream = await crypto.ece.encryptStream(fileStream, {
-          ikm,
-        });
-        await stream.read(cipherstream, (chunk) => {
+        await stream.read(fileStream, (chunk) => {
           ws.send(chunk);
         });
+
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(new Uint8Array([0])); // EOF signal
         }
       }
     })();
-  }, [ws, file]);
+  }, [ws, file, finish]);
 
-  return [{ id, progress, loading: progress.loading }, upload];
+  return { id, progress, loading: progress.loading };
 };

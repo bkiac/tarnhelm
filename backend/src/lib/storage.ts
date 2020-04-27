@@ -7,6 +7,7 @@ import config from '../config';
 interface FileUploadArgs {
   key: string;
   body: stream.Readable;
+  length: number;
 }
 
 const { accessKey, endpoint, bucket } = config.get('storage');
@@ -21,11 +22,12 @@ export function set(
   file: FileUploadArgs,
   listener?: (progress: AWS.S3.ManagedUpload.Progress) => void,
 ): Promise<AWS.S3.ManagedUpload.SendData> {
-  const { key, body } = file;
+  const { key, body, length } = file;
   const managedUpload = s3.upload({
     Bucket: bucket,
     Key: key,
     Body: body,
+    ContentLength: length,
   });
   if (listener) managedUpload.on('httpUploadProgress', listener);
   return managedUpload.promise();

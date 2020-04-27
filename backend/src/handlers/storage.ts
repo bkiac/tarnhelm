@@ -31,16 +31,18 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
     }
   });
 
-  client.once('message', (fileName: string) => {
-    const id = `${uuid()}:${fileName}`;
+  client.once('message', (msg: string) => {
+    const { name, type, size }: { name: string; type: string; size: number } = JSON.parse(msg);
+
+    const id = `${uuid()}:${name}`;
     webSocket.send(client, { id });
 
     fileStream = ws.createWebSocketStream(client).pipe(eof());
-    log('Start storage upload');
+    log('Start storage upload', { name, type, size });
     storage
-      .set({ key: id, body: fileStream }, (progress) => {
+      .set({ key: id, body: fileStream, length: size }, (progress) => {
         const { loaded: uploaded } = progress;
-        log(`Uploaded ${bytes(uploaded)} of ${fileName}.`);
+        log(`Uploaded ${bytes(uploaded)} of ${bytes(size)}, ${name}.`);
         webSocket.send(client, { uploaded });
       })
       .then(

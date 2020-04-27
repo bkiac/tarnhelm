@@ -1,20 +1,21 @@
 import React, { ReactElement, useRef, useState, useEffect } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 
-import { useUpload } from '../hooks';
+import { useEncryptedFileUpload } from '../hooks';
 
 function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
   const [counter, setCounter] = useState(0);
 
   const [
+    { secret },
     {
       id,
       loading,
       progress: { percent, count, estimate },
     },
     upload,
-  ] = useUpload();
+  ] = useEncryptedFileUpload();
 
   function handleClick(event: React.MouseEvent): void {
     event.preventDefault();
@@ -22,8 +23,8 @@ function Upload(): ReactElement {
   }
 
   useEffect(() => {
-    if (filesRef.current?.files && counter > 0) {
-      upload(filesRef.current.files);
+    if (filesRef.current?.files && filesRef.current.files[0] && counter > 0) {
+      upload(filesRef.current.files[0]);
     }
   }, [upload, counter]);
 
@@ -35,7 +36,13 @@ function Upload(): ReactElement {
         Upload
       </button>
       {loading && <p>Uploading...</p>}
-      {id && !loading && <p>File ID: {id}</p>}
+      {id && !loading && secret && (
+        <>
+          <p>
+            File ID: {id}, Key: {secret.b64}
+          </p>
+        </>
+      )}
       <p>
         {Math.floor(percent * 100)}%, #{count}
       </p>
