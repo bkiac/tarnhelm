@@ -1,11 +1,11 @@
 import isNil from 'lodash.isnil';
 
 import * as stream from '../../stream';
-import { generateRandom } from '../utils';
 import { generateKey } from './key';
 import { KEY_LENGTH, TAG_LENGTH, RECORD_SIZE, Mode } from './constants';
 import generateNonceBase from './nonce';
 import slice from './slice';
+import { generateSalt } from './generate';
 
 /** Encrypted Content-Encoding Transformer */
 type ECETransformer<I, O> = RequiredBy<Transformer<I, O>, 'transform'>;
@@ -227,7 +227,7 @@ export async function encryptStream(
   plainstream: ReadableStream<Uint8Array>,
   params: PartialBy<CipherParams, 'recordSize' | 'salt'>,
 ): Promise<ReadableStream<Buffer>> {
-  const { recordSize = RECORD_SIZE, ikm, salt = generateRandom(KEY_LENGTH) } = params;
+  const { recordSize = RECORD_SIZE, ikm, salt = generateSalt() } = params;
   const sliced = slice(plainstream, { mode: Mode.Encrypt, recordSize });
   const cipher = await createCipher({ recordSize, ikm, salt });
   return stream.transform(sliced, cipher);
