@@ -15,20 +15,29 @@ const Download: React.FunctionComponent = () => {
 
   return (
     <>
-      <label htmlFor="fileId">
-        File ID
-        <input type="text" onChange={(event) => setFileId(event.target.value)} />
-      </label>
+      <div>
+        <label htmlFor="fileId">
+          File ID
+          <input type="text" onChange={(event) => setFileId(event.target.value)} />
+        </label>
+      </div>
 
-      <label htmlFor="secret">
-        Key
-        <input type="text" onChange={(event) => setSecret(event.target.value)} />
-      </label>
+      <div>
+        <label htmlFor="secret">
+          Secret
+          <input type="text" onChange={(event) => setSecret(event.target.value)} />
+        </label>
+      </div>
 
-      {loading && <p>Downloading...</p>}
-      <button type="button" onClick={handleClick} disabled={!(fileId && secret) || loading}>
-        Download
-      </button>
+      <div>
+        {loading ? (
+          <p>Downloading...</p>
+        ) : (
+          <button type="button" onClick={handleClick} disabled={!(fileId && secret) || loading}>
+            Download
+          </button>
+        )}
+      </div>
     </>
   );
 };

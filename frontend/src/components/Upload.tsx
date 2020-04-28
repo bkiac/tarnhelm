@@ -44,9 +44,8 @@ function Upload(): ReactElement {
       {loading && <p>Uploading...</p>}
       {id && !loading && secret && (
         <>
-          <p>
-            File ID: {id}, Key: {secret.b64}
-          </p>
+          <div>File ID: {id}</div>
+          <div>Secret: {secret.b64}</div>
         </>
       )}
       <p>
