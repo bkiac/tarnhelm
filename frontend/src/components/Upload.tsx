@@ -5,6 +5,8 @@ import { useEncryptedFileUpload } from '../hooks';
 
 function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
+  const [hasFile, setHasFile] = useState(false);
+
   const [counter, setCounter] = useState(0);
 
   const [
@@ -31,8 +33,12 @@ function Upload(): ReactElement {
   return (
     <>
       <p>Select file</p>
-      <input type="file" ref={filesRef} />
-      <button type="button" onClick={handleClick}>
+      <input
+        type="file"
+        ref={filesRef}
+        onChange={(event) => setHasFile(Boolean(event.target.value))}
+      />
+      <button type="button" onClick={handleClick} disabled={!hasFile}>
         Upload
       </button>
       {loading && <p>Uploading...</p>}

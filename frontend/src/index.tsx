@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import axios from './lib/axios';
+import './style.css';
 
 import { App } from './components';
 

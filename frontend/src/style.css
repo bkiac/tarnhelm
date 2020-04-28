@@ -1,0 +1,13 @@
+* {
+  color: #fff;
+  background-color: #000;
+  font-family: 'monospace';
+}
+
+button {
+  color: #7fff00;
+}
+
+button:disabled {
+  color: #fe3218;
+}
