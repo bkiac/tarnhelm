@@ -38,7 +38,7 @@ function Upload(): ReactElement {
         ref={filesRef}
         onChange={(event) => setHasFile(Boolean(event.target.value))}
       />
-      <button type="button" onClick={handleClick} disabled={!hasFile}>
+      <button type="button" onClick={handleClick} disabled={!hasFile || loading}>
         Upload
       </button>
       {loading && <p>Uploading...</p>}

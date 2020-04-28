@@ -1,28 +1,32 @@
 import React, { useState, useCallback } from 'react';
 
-import { useDownload } from '../hooks';
+import { useDecryptedFileDownload } from '../hooks';
 
 const Download: React.FunctionComponent = () => {
-  const [input, setInput] = useState<string>();
+  const [fileId, setFileId] = useState<string>();
+  const [secret, setSecret] = useState<string>();
 
-  const [decrypt, setDecrypt] = useState(false);
-
-  const [{ loading }, download] = useDownload(undefined, decrypt);
+  const [{ loading }, download] = useDecryptedFileDownload();
 
   const handleClick = useCallback(() => {
-    if (!input) {
-      alert('Please enter a file ID');
-      return;
-    }
-    download(input);
-  }, [input, download]);
+    if (fileId && secret) return download(fileId, secret);
+    return alert('Please enter a file ID and a secret!');
+  }, [download, fileId, secret]);
 
   return (
     <>
-      <input type="text" onChange={(event) => setInput(event.target.value)} />
-      <input type="checkbox" checked={decrypt} onClick={() => setDecrypt((d) => !d)} />
+      <label htmlFor="fileId">
+        File ID
+        <input type="text" onChange={(event) => setFileId(event.target.value)} />
+      </label>
+
+      <label htmlFor="secret">
+        Key
+        <input type="text" onChange={(event) => setSecret(event.target.value)} />
+      </label>
+
       {loading && <p>Downloading...</p>}
-      <button type="button" onClick={handleClick}>
+      <button type="button" onClick={handleClick} disabled={!(fileId && secret) || loading}>
         Download
       </button>
     </>
