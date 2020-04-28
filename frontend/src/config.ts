@@ -1,32 +1,42 @@
 import memo from 'memoize-one';
 
 interface Config {
-  domain: string;
   secure: boolean;
-  uri: {
-    http: string;
-    ws: string;
+  app: {
+    origin: string;
+  };
+  server: {
+    host: string;
+    origin: {
+      http: string;
+      ws: string;
+    };
   };
 }
 
-function uri(options: { protocol: 'http' | 'ws'; secure: boolean; domain: string }): string {
+function url(options: { protocol: 'http' | 'ws'; secure: boolean; host: string }): string {
   const protocol = options.secure ? `${options.protocol}s` : options.protocol;
-  return `${protocol}://${options.domain}`;
+  return `${protocol}://${options.host}`;
 }
 
-const domain = process.env.REACT_APP_SERVER_DOMAIN || '';
+const host = process.env.REACT_APP_SERVER_HOST || '';
 
 export default memo(
   (): Config => {
     const secure = window.location.protocol === 'https:';
-    const http = uri({ protocol: 'http', secure, domain });
-    const ws = uri({ protocol: 'ws', secure, domain });
+    const http = url({ protocol: 'http', secure, host });
+    const ws = url({ protocol: 'ws', secure, host });
     return {
-      domain: domain || '',
       secure,
-      uri: {
-        http,
-        ws,
+      app: {
+        origin: window.location.origin,
+      },
+      server: {
+        host,
+        origin: {
+          http,
+          ws,
+        },
       },
     };
   },

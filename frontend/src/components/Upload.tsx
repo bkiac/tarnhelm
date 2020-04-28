@@ -1,6 +1,8 @@
 import React, { ReactElement, useRef, useState, useEffect } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 
+import config from '../config';
 import { useEncryptedFileUpload } from '../hooks';
 
 function Upload(): ReactElement {
@@ -30,31 +32,40 @@ function Upload(): ReactElement {
     }
   }, [upload, counter]);
 
+  const to = `/download/${id}&${secret?.b64}`;
+  const href = `${config().app.origin}${to}}`;
+
   return (
     <>
-      <p>Select file</p>
       <input
+        id="file"
         type="file"
         ref={filesRef}
         onChange={(event) => setHasFile(Boolean(event.target.value))}
       />
+
       <button type="button" onClick={handleClick} disabled={!hasFile || loading}>
         Upload
       </button>
-      {loading && <p>Uploading...</p>}
-      {id && !loading && secret && (
-        <>
-          <div>File ID: {id}</div>
-          <div>Secret: {secret.b64}</div>
-        </>
+
+      {loading && (
+        <div>
+          <p>Uploading...</p>
+          <p>
+            {Math.floor(percent * 100)}%, #{count}
+          </p>
+          {estimate && (
+            <p>
+              {format(estimate, 'yyyy-MM-dd HH:mm:ss')} {formatDistanceToNow(estimate)}
+            </p>
+          )}
+        </div>
       )}
-      <p>
-        {Math.floor(percent * 100)}%, #{count}
-      </p>
-      {estimate && (
-        <p>
-          {format(estimate, 'yyyy-MM-dd HH:mm:ss')} {formatDistanceToNow(estimate)}
-        </p>
+
+      {!loading && id && secret && (
+        <div>
+          <Link to={to}>{href}</Link>
+        </div>
       )}
     </>
   );

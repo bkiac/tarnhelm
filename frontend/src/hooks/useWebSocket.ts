@@ -116,7 +116,7 @@ function createOpen(
   return async function open(uri: string): Promise<void> {
     try {
       if (currentWs) currentWs.close();
-      const ws = await webSocket.open(config().uri.ws + uri);
+      const ws = await webSocket.open(config().server.origin.ws + uri);
       dispatch({ type: ActionType.ConnectSuccess, payload: { ws } });
     } catch (error) {
       dispatch({ type: ActionType.ConnectFailure, payload: { error } });
