@@ -7,7 +7,7 @@ import config from '../config';
 interface FileUploadArgs {
   key: string;
   body: stream.Readable;
-  length: number;
+  length?: number;
 }
 
 const { accessKey, endpoint, bucket } = config.get('storage');

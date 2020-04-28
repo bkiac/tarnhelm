@@ -40,7 +40,7 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
     fileStream = ws.createWebSocketStream(client).pipe(eof());
     log('Start storage upload', { name, type, size });
     storage
-      .set({ key: id, body: fileStream, length: size }, (progress) => {
+      .set({ key: id, body: fileStream }, (progress) => {
         const { loaded: uploaded } = progress;
         log(`Uploaded ${bytes(uploaded)} of ${bytes(size)}, ${name}.`);
         webSocket.send(client, { uploaded });
@@ -62,20 +62,31 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
 export const download: express.RequestHandler<{ id: string }> = (req, res) => {
   try {
-    let cancelled = false;
     const {
       params: { id },
     } = req;
+    log('Start storage download', id);
     const fileStream = storage.get(id);
 
-    req.on('close', () => {
-      cancelled = true;
-      fileStream.destroy();
-    });
+    let cancelled = false;
+    let finished = false;
 
-    fileStream.pipe(res).on('finish', () => {
-      if (!cancelled) storage.del(id);
-    });
+    fileStream
+      .pipe(res)
+      .on('finish', () => {
+        if (!cancelled) {
+          finished = true;
+          log('Finish storage download and delete file', id);
+          storage.del(id);
+        }
+      })
+      .on('close', () => {
+        if (!finished) {
+          cancelled = true;
+          log('Storage download error', id);
+          fileStream.destroy();
+        }
+      });
   } catch (error) {
     res.status(404);
     res.send(error);
