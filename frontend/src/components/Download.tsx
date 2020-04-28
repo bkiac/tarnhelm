@@ -1,25 +1,32 @@
 import React, { useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { useDownload } from '../hooks';
+import { useDecryptedFileDownload } from '../hooks';
 
 const Download: React.FunctionComponent = () => {
-  const [input, setInput] = useState<string>();
-  const [{ loading }, download] = useDownload();
+  const { id, secret } = useParams();
+
+  const [count, setCount] = useState(0);
+  const [{ loading }, download] = useDecryptedFileDownload();
 
   const handleClick = useCallback(() => {
-    if (!input) {
-      alert('Please enter a file ID');
-      return;
+    if (id && secret) {
+      setCount((c) => c + 1);
+      return download(id, secret);
     }
-    download(input);
-  }, [input, download]);
+    return alert('Please enter a file ID and a secret!');
+  }, [download, id, secret]);
+
   return (
     <>
-      <input type="text" onChange={(event) => setInput(event.target.value)} />
-      {loading && <p>Downloading...</p>}
-      <button type="button" onClick={handleClick}>
-        Download
-      </button>
+      <div>File ID: {id}</div>
+      <div>Secret: {secret}</div>
+      {loading && <p>Downloading...</p>}{' '}
+      {!loading && count === 0 && (
+        <button type="button" onClick={handleClick} disabled={loading}>
+          Download
+        </button>
+      )}
     </>
   );
 };

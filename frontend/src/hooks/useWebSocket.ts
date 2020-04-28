@@ -3,7 +3,7 @@ import { useCallback, useEffect, useReducer, Reducer, Dispatch } from 'react';
 import config from '../config';
 import * as webSocket from '../lib/web-socket';
 
-enum ConnectionState {
+enum ConnectionStatus {
   Opening,
   Open,
   Closing,
@@ -12,12 +12,12 @@ enum ConnectionState {
 
 interface Connection {
   loading: boolean;
-  state: ConnectionState;
+  status: ConnectionStatus;
   ws?: WebSocket;
   error?: Error;
 }
 
-enum ActionTypes {
+enum ActionType {
   ConnectPending,
   ConnectSuccess,
   ConnectFailure,
@@ -26,14 +26,14 @@ enum ActionTypes {
   DisconnectFailure,
 }
 
-type ConnectPending = ReducerAction<ActionTypes.ConnectPending>;
-type ConnectSuccess = ReducerAction<ActionTypes.ConnectSuccess, { ws: WebSocket }>;
-type ConnectFailure = ReducerAction<ActionTypes.ConnectFailure, { error: Error }>;
-type DisconnectPending = ReducerAction<ActionTypes.DisconnectPending>;
-type DisconnectSuccess = ReducerAction<ActionTypes.DisconnectSuccess>;
-type DisconnectFailure = ReducerAction<ActionTypes.DisconnectFailure, { error: Error }>;
+type ConnectPending = ReducerAction<ActionType.ConnectPending>;
+type ConnectSuccess = ReducerAction<ActionType.ConnectSuccess, { ws: WebSocket }>;
+type ConnectFailure = ReducerAction<ActionType.ConnectFailure, { error: Error }>;
+type DisconnectPending = ReducerAction<ActionType.DisconnectPending>;
+type DisconnectSuccess = ReducerAction<ActionType.DisconnectSuccess>;
+type DisconnectFailure = ReducerAction<ActionType.DisconnectFailure, { error: Error }>;
 
-type ConnectionActions =
+type ConnectionAction =
   | ConnectPending
   | ConnectSuccess
   | ConnectFailure
@@ -41,50 +41,50 @@ type ConnectionActions =
   | DisconnectSuccess
   | DisconnectFailure;
 
-const reducer: Reducer<Connection, ConnectionActions> = (state, action) => {
+const reducer: Reducer<Connection, ConnectionAction> = (state, action) => {
   switch (action.type) {
-    case ActionTypes.ConnectPending: {
+    case ActionType.ConnectPending: {
       return {
         ...state,
         loading: true,
-        state: ConnectionState.Opening,
+        status: ConnectionStatus.Opening,
       };
     }
-    case ActionTypes.ConnectSuccess: {
+    case ActionType.ConnectSuccess: {
       const { ws } = action.payload;
       return {
         loading: false,
-        state: ConnectionState.Open,
+        status: ConnectionStatus.Open,
         ws,
       };
     }
-    case ActionTypes.ConnectFailure: {
+    case ActionType.ConnectFailure: {
       const { error } = action.payload;
       return {
         loading: false,
-        state: ConnectionState.Closed,
+        status: ConnectionStatus.Closed,
         error,
       };
     }
 
-    case ActionTypes.DisconnectPending: {
+    case ActionType.DisconnectPending: {
       return {
         ...state,
         loading: true,
-        state: ConnectionState.Closing,
+        status: ConnectionStatus.Closing,
       };
     }
-    case ActionTypes.DisconnectSuccess: {
+    case ActionType.DisconnectSuccess: {
       return {
         loading: false,
-        state: ConnectionState.Closed,
+        status: ConnectionStatus.Closed,
       };
     }
-    case ActionTypes.DisconnectFailure: {
+    case ActionType.DisconnectFailure: {
       const { error } = action.payload;
       return {
         loading: false,
-        state: ConnectionState.Open,
+        status: ConnectionStatus.Open,
         error,
       };
     }
@@ -98,38 +98,38 @@ interface Options {
   lazy: boolean;
 }
 
-function createClose(dispatch: Dispatch<ConnectionActions>): (ws: WebSocket) => Promise<void> {
+function createClose(dispatch: Dispatch<ConnectionAction>): (ws: WebSocket) => Promise<void> {
   return async function close(ws: WebSocket): Promise<void> {
     try {
       await webSocket.close(ws);
-      dispatch({ type: ActionTypes.DisconnectSuccess });
+      dispatch({ type: ActionType.DisconnectSuccess });
     } catch (error) {
-      dispatch({ type: ActionTypes.DisconnectFailure, payload: { error } });
+      dispatch({ type: ActionType.DisconnectFailure, payload: { error } });
     }
   };
 }
 
 function createOpen(
   currentWs: WebSocket | undefined,
-  dispatch: Dispatch<ConnectionActions>,
+  dispatch: Dispatch<ConnectionAction>,
 ): (uri: string) => Promise<void> {
   return async function open(uri: string): Promise<void> {
     try {
       if (currentWs) currentWs.close();
-      const ws = await webSocket.open(config().uri.ws + uri);
-      dispatch({ type: ActionTypes.ConnectSuccess, payload: { ws } });
+      const ws = await webSocket.open(config().server.origin.ws + uri);
+      dispatch({ type: ActionType.ConnectSuccess, payload: { ws } });
     } catch (error) {
-      dispatch({ type: ActionTypes.ConnectFailure, payload: { error } });
+      dispatch({ type: ActionType.ConnectFailure, payload: { error } });
     }
   };
 }
 
 function init(options: Options): Connection {
   if (options.lazy) {
-    return { state: ConnectionState.Closed, loading: false };
+    return { status: ConnectionStatus.Closed, loading: false };
   }
   return {
-    state: ConnectionState.Opening,
+    status: ConnectionStatus.Opening,
     loading: true,
   };
 }
@@ -140,28 +140,28 @@ export default (
 ): [Connection, () => void, () => void] => {
   const [connection, dispatch] = useReducer(reducer, init(options));
 
-  const connect = useCallback(() => dispatch({ type: ActionTypes.ConnectPending }), []);
+  const connect = useCallback(() => dispatch({ type: ActionType.ConnectPending }), []);
   const disconnect = useCallback(() => {
     if (connection.ws) {
-      dispatch({ type: ActionTypes.DisconnectPending });
+      dispatch({ type: ActionType.DisconnectPending });
     }
   }, [connection.ws]);
 
   /** Handle mount, URI change and manual reconnect */
   useEffect(() => {
     const open = createOpen(connection.ws, dispatch);
-    if (connection.state === ConnectionState.Opening) {
+    if (connection.status === ConnectionStatus.Opening) {
       open(uri);
     }
-  }, [uri, connection.ws, connection.state]);
+  }, [uri, connection.ws, connection.status]);
 
   /** Handle manual disconnect */
   useEffect(() => {
     const close = createClose(dispatch);
-    if (connection.state === ConnectionState.Closing && connection.ws) {
+    if (connection.status === ConnectionStatus.Closing && connection.ws) {
       close(connection.ws);
     }
-  }, [connection.ws, connection.state]);
+  }, [connection.ws, connection.status]);
 
   /** Handle unmount */
   useEffect(() => {

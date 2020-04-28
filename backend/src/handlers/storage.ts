@@ -31,16 +31,18 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
     }
   });
 
-  client.once('message', (fileName: string) => {
-    const id = `${uuid()}:${fileName}`;
+  client.once('message', (msg: string) => {
+    const { name, type, size }: { name: string; type: string; size: number } = JSON.parse(msg);
+
+    const id = `${uuid()}:${name}`;
     webSocket.send(client, { id });
 
     fileStream = ws.createWebSocketStream(client).pipe(eof());
-    log('Start storage upload');
+    log('Start storage upload', { name, type, size });
     storage
       .set({ key: id, body: fileStream }, (progress) => {
         const { loaded: uploaded } = progress;
-        log(`Uploaded ${bytes(uploaded)} of ${fileName}.`);
+        log(`Uploaded ${bytes(uploaded)} of ${bytes(size)}, ${name}.`);
         webSocket.send(client, { uploaded });
       })
       .then(
@@ -60,11 +62,31 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
 export const download: express.RequestHandler<{ id: string }> = (req, res) => {
   try {
-    const fileStream = storage.get(req.params.id);
-    req.on('close', () => {
-      fileStream.destroy();
-    });
-    fileStream.pipe(res);
+    const {
+      params: { id },
+    } = req;
+    log('Start storage download', id);
+    const fileStream = storage.get(id);
+
+    let cancelled = false;
+    let finished = false;
+
+    fileStream
+      .pipe(res)
+      .on('finish', () => {
+        if (!cancelled) {
+          finished = true;
+          log('Finish storage download and delete file', id);
+          storage.del(id);
+        }
+      })
+      .on('close', () => {
+        if (!finished) {
+          cancelled = true;
+          log('Storage download error', id);
+          fileStream.destroy();
+        }
+      });
   } catch (error) {
     res.status(404);
     res.send(error);

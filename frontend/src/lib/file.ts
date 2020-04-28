@@ -1,4 +1,5 @@
 /** iOS and IO not supported yet. */
+import * as stream from './stream';
 
 interface Options {
   name: string;
@@ -24,9 +25,16 @@ function saveArrayBuffer(buffer: ArrayBuffer, options: Options): void {
   saveBlob(blob, options);
 }
 
-export function save(data: Blob | ArrayBuffer, options: Options): void {
-  if (data instanceof Blob) {
-    return saveBlob(data, options);
-  }
+async function saveStream(_stream: ReadableStream<Uint8Array>, options: Options): Promise<void> {
+  const ab = await stream.toArrayBuffer(_stream);
+  return saveArrayBuffer(ab, options);
+}
+
+export async function save(
+  data: Blob | ArrayBuffer | ReadableStream<Uint8Array>,
+  options: Options,
+): Promise<void> {
+  if (data instanceof Blob) return saveBlob(data, options);
+  if (data instanceof ReadableStream) return saveStream(data, options);
   return saveArrayBuffer(data, options);
 }

@@ -1,10 +1,4 @@
-/**
- * Based on https://github.com/mozilla/send/blob/master/app/streams.js
- */
 /* eslint-disable no-await-in-loop */
-import BlobSource from './BlobSource';
-import StreamsSource from './StreamsSource';
-
 export async function read<T>(
   stream: ReadableStream<T>,
   callback: (chunk: T) => void,
@@ -12,21 +6,73 @@ export async function read<T>(
   const reader = stream.getReader();
   let state = await reader.read();
   while (!state.done) {
-    const buffer = state.value;
-    callback(buffer);
+    callback(state.value);
     state = await reader.read(); // eslint-disable-line no-await-in-loop
   }
 }
 
 export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
-  return new ReadableStream<T>(new StreamsSource(streams));
+  type ControllerCallback = ReadableStreamDefaultControllerCallback<T>;
+
+  let index = 0;
+  let reader: ReadableStreamReader<T> | undefined;
+
+  function nextReader(): void {
+    // Type is asserted here because `next` can be `undefined` if `index` is too big, but TypeScript doesn't warn about this.
+    const next = streams[index] as ReadableStream<T> | undefined;
+    reader = next && next.getReader();
+    index += 1;
+  }
+
+  const pull: ControllerCallback = async (controller) => {
+    if (reader) {
+      const data = await reader.read();
+      if (data.done) {
+        nextReader();
+        return pull(controller);
+      }
+      controller.enqueue(data.value);
+    }
+    return controller.close();
+  };
+
+  return new ReadableStream<T>({ pull });
 }
 
-export function createBlobStream(blob: Blob, chunkSize?: number): ReadableStream<ArrayBuffer> {
-  return new ReadableStream(new BlobSource(blob, chunkSize));
+export function createBlobStream(blob: Blob, chunkSize = 1024 * 64): ReadableStream<Uint8Array> {
+  type ControllerCallback = ReadableStreamDefaultControllerCallback<Uint8Array>;
+
+  let index = 0;
+
+  const pull: ControllerCallback = (controller) => {
+    return new Promise((resolve, reject) => {
+      const bytesLeft = blob.size - index;
+
+      if (bytesLeft > 0) {
+        const currentChunkSize = Math.min(chunkSize, bytesLeft);
+        const slice = blob.slice(index, index + currentChunkSize);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          // https://github.com/microsoft/TypeScript/issues/4163#issuecomment-331678032
+          controller.enqueue(new Uint8Array(reader.result as ArrayBuffer));
+          resolve();
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(slice);
+
+        index += currentChunkSize;
+      } else {
+        controller.close();
+        resolve();
+      }
+    });
+  };
+
+  return new ReadableStream({ pull });
 }
 
-export function createFileStream(f: File | FileList): ReadableStream<ArrayBuffer> {
+export function createFileStream(f: File | FileList): ReadableStream<Uint8Array> {
   if (f instanceof File) {
     return createBlobStream(f);
   }
@@ -34,33 +80,28 @@ export function createFileStream(f: File | FileList): ReadableStream<ArrayBuffer
 }
 
 /**
- * Convert a plain stream (stream containing `Uint8Array` parts) to an `ArrayBuffer`.
+ * Convert a `Uint8Array` stream to an `ArrayBuffer`.
  */
-export async function toArrayBuffer<T extends Uint8Array>(
-  plainStream: ReadableStream<T>,
+export async function toArrayBuffer(
+  stream: ReadableStream<Uint8Array>,
   size?: number,
 ): Promise<ArrayBuffer> {
-  const reader = plainStream.getReader();
-  let state = await reader.read();
-
   if (size) {
     const result = new Uint8Array(size);
     let offset = 0;
-    while (!state.done) {
-      result.set(state.value, offset);
-      offset += state.value.length;
-      state = await reader.read();
-    }
+    await read(stream, (chunk) => {
+      result.set(chunk, offset);
+      offset += chunk.length;
+    });
     return result.buffer;
   }
 
-  const parts: T[] = [];
+  const parts: Uint8Array[] = [];
   let len = 0;
-  while (!state.done) {
-    parts.push(state.value);
-    len += state.value.length;
-    state = await reader.read();
-  }
+  await read(stream, (chunk) => {
+    parts.push(chunk);
+    len += chunk.length;
+  });
   let offset = 0;
   const result = new Uint8Array(len);
   parts.forEach((part) => {
@@ -82,7 +123,7 @@ export async function toArrayBuffer<T extends Uint8Array>(
 export function transform<I, O = I>(
   stream: ReadableStream<I>,
   transformer: RequiredBy<Transformer<I, O>, 'transform'>,
-  oncancel: ReadableStreamErrorCallback,
+  onCancel?: ReadableStreamErrorCallback,
 ): ReadableStream<O> {
   try {
     return stream.pipeThrough(new TransformStream(transformer));
@@ -122,8 +163,8 @@ export function transform<I, O = I>(
 
       cancel(reason) {
         stream.cancel(reason);
-        if (oncancel) {
-          oncancel(reason);
+        if (onCancel) {
+          onCancel(reason);
         }
       },
     });
