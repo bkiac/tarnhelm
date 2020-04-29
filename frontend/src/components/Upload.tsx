@@ -3,6 +3,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 
 import config from '../config';
+import { exists } from '../utils';
 import { useEncryptedFileUpload } from '../hooks';
 
 function Upload(): ReactElement {
@@ -62,7 +63,7 @@ function Upload(): ReactElement {
         </div>
       )}
 
-      {!loading && id && secret && (
+      {!loading && exists(id) && secret && (
         <div>
           <Link to={to}>{href}</Link>
         </div>

@@ -45,7 +45,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 type DecryptFn = (blob: Blob, secret: string) => void;
 
-export default (): [LoadableResult<ReadableStream<Uint8Array>>, DecryptFn] => {
+export default function useFileDecryption(): [
+  LoadableResult<ReadableStream<Uint8Array>>,
+  DecryptFn,
+] {
   const [{ input, ikm, output, loading }, dispatch] = useReducer(reducer, { loading: false });
 
   const decrypt = useCallback<DecryptFn>(
@@ -64,4 +67,4 @@ export default (): [LoadableResult<ReadableStream<Uint8Array>>, DecryptFn] => {
   }, [loading, input, ikm]);
 
   return [useLoadableResult(loading, output), decrypt];
-};
+}

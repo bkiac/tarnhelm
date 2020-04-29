@@ -1,7 +1,7 @@
 import { useCallback, useReducer, useEffect, Reducer } from 'react';
 
 import * as file from '../lib/file';
-import { isAnyLoading } from '../utils';
+import { isAnyLoading, exists } from '../utils';
 import useBlobDownload from './useBlobDownload';
 import useFileDecryption from './useFileDecryption';
 
@@ -75,7 +75,7 @@ interface Progress {
 
 type DownloadFn = (id: string, secret: string) => void;
 
-export default (): [Progress, DownloadFn] => {
+export default function useDecryptedFileDownload(): [Progress, DownloadFn] {
   const [{ id, secret, loading, status }, dispatch] = useReducer(reducer, {
     loading: false,
     status: Status.Standby,
@@ -91,7 +91,7 @@ export default (): [Progress, DownloadFn] => {
   // Handle download on ID change
   useEffect(() => {
     if (status === Status.Downloading) {
-      if (id) {
+      if (exists(id)) {
         download(id);
         dispatch({ type: ActionTypes.Decrypt });
       }
@@ -101,7 +101,7 @@ export default (): [Progress, DownloadFn] => {
   // Handle decryption on download finish
   useEffect(() => {
     if (status === Status.Decrypting) {
-      if (secret && blob) {
+      if (exists(secret) && blob) {
         decrypt(blob, secret);
         dispatch({ type: ActionTypes.Save });
       }
@@ -112,7 +112,7 @@ export default (): [Progress, DownloadFn] => {
   useEffect(() => {
     if (status === Status.Saving) {
       (async () => {
-        if (id && plaintext) {
+        if (exists(id) && plaintext) {
           await file.save(plaintext, { name: id });
           dispatch({ type: ActionTypes.Reset });
         }
@@ -121,4 +121,4 @@ export default (): [Progress, DownloadFn] => {
   }, [status, downloading, decrypting, id, plaintext]);
 
   return [{ loading: isAnyLoading(loading, downloading, decrypting) }, downloadAndDecrypt];
-};
+}

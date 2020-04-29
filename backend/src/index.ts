@@ -4,11 +4,11 @@ import cors from 'cors';
  * Set up Express and WebSocket server before loading and defining routes
  * https://github.com/HenningM/express-ws#usage
  */
-import express from './wexpress';
+import express from './lib/wexpress';
 
 import routes from './routes';
 import config from './config';
-import { log, createStatsLogger } from './lib/utils';
+import { log, createStatsLogger } from './utils';
 
 const { app, wss } = express;
 

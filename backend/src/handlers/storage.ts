@@ -5,13 +5,13 @@ import expressWs from 'express-ws';
 import bytes from 'bytes';
 import { v4 as uuid } from 'uuid';
 
-import { log } from '../lib/utils';
+import { log } from '../utils';
 import * as storage from '../lib/storage';
 import * as webSocket from '../lib/web-socket';
 
 function eof(): stream.Transform {
   return new stream.Transform({
-    transform(chunk, encoding, callback) {
+    transform(chunk: Buffer, encoding, callback) {
       if (chunk.length === 1 && chunk[0] === 0) {
         this.push(null);
       } else {
@@ -23,7 +23,7 @@ function eof(): stream.Transform {
 }
 
 export const upload: expressWs.WebsocketRequestHandler = (client) => {
-  let fileStream: stream.Duplex;
+  let fileStream: stream.Duplex | undefined;
 
   client.addEventListener('close', (event) => {
     if (event.code !== 1000 && fileStream) {
@@ -32,7 +32,7 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
   });
 
   client.once('message', (msg: string) => {
-    const { name, type, size }: { name: string; type: string; size: number } = JSON.parse(msg);
+    const { name, type, size } = JSON.parse(msg) as { name: string; type: string; size: number };
 
     const id = `${uuid()}:${name}`;
     webSocket.send(client, { id });
@@ -53,8 +53,13 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
         (error) => {
           log('Storage error', error);
           client.close();
-          fileStream.destroy();
-          storage.del(id);
+          fileStream?.destroy();
+          storage.del(id).then(
+            () => {
+              log('Temporary file deleted');
+            },
+            () => {},
+          );
         },
       );
   });
@@ -76,8 +81,12 @@ export const download: express.RequestHandler<{ id: string }> = (req, res) => {
       .on('finish', () => {
         if (!cancelled) {
           finished = true;
-          log('Finish storage download and delete file', id);
-          storage.del(id);
+          storage.del(id).then(
+            () => {
+              log('Finish storage download and delete file', id);
+            },
+            () => {},
+          );
         }
       })
       .on('close', () => {

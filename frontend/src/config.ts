@@ -19,7 +19,7 @@ function url(options: { protocol: 'http' | 'ws'; secure: boolean; host: string }
   return `${protocol}://${options.host}`;
 }
 
-const host = process.env.REACT_APP_SERVER_HOST || '';
+const host = process.env.REACT_APP_SERVER_HOST ?? '';
 
 export default memo(
   (): Config => {

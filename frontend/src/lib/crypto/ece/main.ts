@@ -1,5 +1,3 @@
-import isNil from 'lodash.isnil';
-
 import * as stream from '../../stream';
 import { generateKey } from './key';
 import { KEY_LENGTH, TAG_LENGTH, RECORD_SIZE, Mode } from './constants';
@@ -122,7 +120,7 @@ async function createCipher(args: CipherParams): Promise<ECETransformer<Uint8Arr
   };
 
   const transform: ControllerTransformCallback = async (chunk, controller) => {
-    if (!isFirstChunk && !isNil(prevChunk)) await transformPrevChunk(prevChunk, false, controller);
+    if (!isFirstChunk && prevChunk) await transformPrevChunk(prevChunk, false, controller);
     isFirstChunk = false;
     prevChunk = Buffer.from(chunk.buffer);
   };
@@ -209,7 +207,7 @@ function createDecipher(args: DecipherParams): ECETransformer<Uint8Array, Buffer
   const start: ControllerCallback = () => {};
 
   const transform: ControllerTransformCallback = async (chunk, controller) => {
-    if (!isFirstChunk && !isNil(prevChunk)) await transformPrevChunk(prevChunk, false, controller);
+    if (!isFirstChunk && prevChunk) await transformPrevChunk(prevChunk, false, controller);
     isFirstChunk = false;
     prevChunk = Buffer.from(chunk.buffer);
   };

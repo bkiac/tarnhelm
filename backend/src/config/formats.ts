@@ -4,7 +4,7 @@ import { isString } from 'lodash';
 
 import restrictedPorts from './restricted-ports';
 
-export default (): void => {
+export default function addCustomFormats(): void {
   convict.addFormats({
     string: {
       validate: (value) => {
@@ -24,4 +24,4 @@ export default (): void => {
       },
     },
   });
-};
+}

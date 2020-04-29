@@ -15,7 +15,7 @@ export async function deriveKey(
   masterKey: CryptoKey,
   params: { salt: ArrayBuffer; info: string },
 ): Promise<CryptoKey> {
-  /* eslint-disable @typescript-eslint/ban-ts-ignore */
+  /* eslint-disable @typescript-eslint/ban-ts-comment */
   const { salt, info } = params;
   return crypto.subtle.deriveKey(
     {

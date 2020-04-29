@@ -14,7 +14,7 @@ export interface State {
   };
 }
 
-export default (file?: File): State => {
+export default function useFileEncryption(file?: File): State {
   const [state, setState] = useState<State>({
     loading: false,
   });
@@ -40,4 +40,4 @@ export default (file?: File): State => {
   }, [file]);
 
   return state;
-};
+}

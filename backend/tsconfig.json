@@ -1,37 +1,10 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    /* Basic Options */
     "target": "es6",
     "module": "commonjs",
     "lib": ["es5", "es6"],
-    "outDir": "./dist",
-
-    /* Strict Type-Checking Options */
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-
-    /* Additional Checks */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* Module Resolution Options */
-    "baseUrl": "./src",
-    "paths": {
-      "~*": ["./*"]
-    },
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-
-    /* Advanced Options */
-    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+    "outDir": "./dist"
   },
-  "include": ["src/**/*"]
+  "include": ["src"]
 }

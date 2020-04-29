@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import convict from 'convict';
 
-import applyCustomFormats from './formats';
+import addCustomFormats from './formats';
 
-applyCustomFormats();
+addCustomFormats();
 
 const config = convict({
   env: {

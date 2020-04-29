@@ -3,7 +3,11 @@ import { useMemo, useState } from 'react';
 import useFileEncryption, { State as EncryptionState } from './useFileEncryption';
 import useStreamUpload, { State as UploadStreamState } from './useStreamUpload';
 
-export default (): [EncryptionState, UploadStreamState, (f: File) => void] => {
+export default function useEncryptedFileUpload(): [
+  EncryptionState,
+  UploadStreamState,
+  (f: File) => void,
+] {
   const [file, setFile] = useState<File>();
 
   const encryption = useFileEncryption(file);
@@ -26,4 +30,4 @@ export default (): [EncryptionState, UploadStreamState, (f: File) => void] => {
   const progress = useStreamUpload(fileUpload);
 
   return [encryption, progress, setFile];
-};
+}

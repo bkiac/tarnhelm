@@ -14,7 +14,7 @@ type ReducerAction<T, P = undefined> = P extends undefined
   ? ReducerActionWithoutPayload<T>
   : ReducerActionWithPayload<T, P>;
 
-type LoadableResult<T> = {
+interface LoadableResult<T> {
   loading: boolean;
   data?: T;
-};
+}

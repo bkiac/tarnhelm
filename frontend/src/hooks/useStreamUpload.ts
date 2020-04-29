@@ -32,7 +32,7 @@ export interface State {
 
 const initialProgress = { loading: false, count: 0, uploaded: 0, percent: 0, estimate: undefined };
 
-export default (file?: FileUpload): State => {
+export default function useStreamUpload(file?: FileUpload): State {
   const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
 
   const [progress, setProgress] = useState<Progress>(initialProgress);
@@ -108,4 +108,4 @@ export default (file?: FileUpload): State => {
   }, [ws, file, finish]);
 
   return { id, progress, loading: progress.loading };
-};
+}

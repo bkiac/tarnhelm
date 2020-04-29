@@ -1,4 +1,15 @@
-export function open(uri: string): Promise<WebSocket> {
+import { exists } from '../utils';
+
+interface Response<D> {
+  data?: D;
+  error?: string;
+}
+
+function parseResponse<D = any>(message: any): Response<D> {
+  return JSON.parse(message) as Response<D>;
+}
+
+export async function open(uri: string): Promise<WebSocket> {
   return new Promise((resolve, reject) => {
     try {
       const ws = new WebSocket(uri);
@@ -9,7 +20,7 @@ export function open(uri: string): Promise<WebSocket> {
   });
 }
 
-export function close(ws: WebSocket): Promise<void> {
+export async function close(ws: WebSocket): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
       ws.addEventListener('close', () => resolve(), { once: true });
@@ -20,15 +31,15 @@ export function close(ws: WebSocket): Promise<void> {
   });
 }
 
-export function listen<T = any>(ws: WebSocket): Promise<T> {
+export async function listen<T = any>(ws: WebSocket): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     ws.addEventListener(
       'message',
       (event) => {
         try {
-          const { data, error } = JSON.parse(event.data);
-          if (error) throw new Error(error);
-          resolve(data);
+          const res = parseResponse(event.data);
+          if (exists(res.error)) throw new Error(res.error);
+          resolve(res.data);
         } catch (error) {
           reject(error);
         }
@@ -43,7 +54,7 @@ export function addMessageListener<T = any>(
   listener: (data: T, error?: Error) => void,
 ): void {
   ws.addEventListener('message', (event) => {
-    const { data, error } = JSON.parse(event.data);
-    listener(data, error);
+    const res = parseResponse(event.data);
+    listener(res.data, exists(res.error) ? new Error(res.error) : undefined);
   });
 }

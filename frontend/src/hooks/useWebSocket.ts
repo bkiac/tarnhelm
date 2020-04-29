@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, Reducer, Dispatch } from 'react';
+import { useCallback, useEffect, useReducer, Reducer } from 'react';
 
 import config from '../config';
 import * as webSocket from '../lib/web-socket';
@@ -98,32 +98,6 @@ interface Options {
   lazy: boolean;
 }
 
-function createClose(dispatch: Dispatch<ConnectionAction>): (ws: WebSocket) => Promise<void> {
-  return async function close(ws: WebSocket): Promise<void> {
-    try {
-      await webSocket.close(ws);
-      dispatch({ type: ActionType.DisconnectSuccess });
-    } catch (error) {
-      dispatch({ type: ActionType.DisconnectFailure, payload: { error } });
-    }
-  };
-}
-
-function createOpen(
-  currentWs: WebSocket | undefined,
-  dispatch: Dispatch<ConnectionAction>,
-): (uri: string) => Promise<void> {
-  return async function open(uri: string): Promise<void> {
-    try {
-      if (currentWs) currentWs.close();
-      const ws = await webSocket.open(config().server.origin.ws + uri);
-      dispatch({ type: ActionType.ConnectSuccess, payload: { ws } });
-    } catch (error) {
-      dispatch({ type: ActionType.ConnectFailure, payload: { error } });
-    }
-  };
-}
-
 function init(options: Options): Connection {
   if (options.lazy) {
     return { status: ConnectionStatus.Closed, loading: false };
@@ -134,10 +108,10 @@ function init(options: Options): Connection {
   };
 }
 
-export default (
-  uri = '',
+export default function useWebSocket(
+  url = '',
   options: Options = { lazy: false },
-): [Connection, () => void, () => void] => {
+): [Connection, () => void, () => void] {
   const [connection, dispatch] = useReducer(reducer, init(options));
 
   const connect = useCallback(() => dispatch({ type: ActionType.ConnectPending }), []);
@@ -147,19 +121,32 @@ export default (
     }
   }, [connection.ws]);
 
-  /** Handle mount, URI change and manual reconnect */
+  /** Handle mount, URL change and manual reconnect */
   useEffect(() => {
-    const open = createOpen(connection.ws, dispatch);
     if (connection.status === ConnectionStatus.Opening) {
-      open(uri);
+      (async () => {
+        try {
+          if (connection.ws) connection.ws.close();
+          const ws = await webSocket.open(config().server.origin.ws + url);
+          dispatch({ type: ActionType.ConnectSuccess, payload: { ws } });
+        } catch (error) {
+          dispatch({ type: ActionType.ConnectFailure, payload: { error: error as Error } });
+        }
+      })();
     }
-  }, [uri, connection.ws, connection.status]);
+  }, [url, connection.ws, connection.status]);
 
   /** Handle manual disconnect */
   useEffect(() => {
-    const close = createClose(dispatch);
-    if (connection.status === ConnectionStatus.Closing && connection.ws) {
-      close(connection.ws);
+    if (connection.status === ConnectionStatus.Closing) {
+      (async () => {
+        try {
+          if (connection.ws) await webSocket.close(connection.ws);
+          dispatch({ type: ActionType.DisconnectSuccess });
+        } catch (error) {
+          dispatch({ type: ActionType.DisconnectFailure, payload: { error: error as Error } });
+        }
+      })();
     }
   }, [connection.ws, connection.status]);
 
@@ -173,4 +160,4 @@ export default (
   }, [connection.ws]);
 
   return [connection, connect, disconnect];
-};
+}

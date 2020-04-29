@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, Reducer } from 'react';
 import axios from 'axios';
 
 import useLoadableResult from './useLoadableResult';
+import { exists } from '../utils';
 
 enum ActionTypes {
   Start,
@@ -41,7 +42,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 type DownloadFn = (id: string) => void;
 
-export default (): [LoadableResult<Blob>, DownloadFn] => {
+export default function useBlobDownload(): [LoadableResult<Blob>, DownloadFn] {
   const [{ id, loading, blob }, dispatch] = useReducer(reducer, { loading: false });
 
   const download = useCallback<DownloadFn>(
@@ -52,8 +53,8 @@ export default (): [LoadableResult<Blob>, DownloadFn] => {
   useEffect(() => {
     if (loading) {
       // TODO: Handle cancellation and failure
-      (async (): Promise<void> => {
-        if (id) {
+      (async () => {
+        if (exists(id)) {
           const response = await axios.get(`/download/${id}`, {
             responseType: 'blob',
           });
@@ -64,4 +65,4 @@ export default (): [LoadableResult<Blob>, DownloadFn] => {
   }, [loading, id]);
 
   return [useLoadableResult(loading, blob), download];
-};
+}

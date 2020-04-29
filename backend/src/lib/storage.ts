@@ -18,7 +18,7 @@ const s3 = new AWS.S3({
   endpoint,
 });
 
-export function set(
+export async function set(
   file: FileUploadArgs,
   listener?: (progress: AWS.S3.ManagedUpload.Progress) => void,
 ): Promise<AWS.S3.ManagedUpload.SendData> {
