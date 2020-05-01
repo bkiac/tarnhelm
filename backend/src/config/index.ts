@@ -20,6 +20,15 @@ const config = convict({
     env: 'PORT',
   },
 
+  redis: {
+    url: {
+      doc: 'The Redis server URL.',
+      format: 'string',
+      default: '',
+      env: 'REDIS_URL',
+    },
+  },
+
   storage: {
     endpoint: {
       doc: 'The S3 endpoint.',
