@@ -4,7 +4,7 @@ import * as AWSRequest from 'aws-sdk/lib/request';
 
 import config from '../../config';
 
-const { accessKey, endpoint, bucket } = config.get('storage');
+const { accessKey, endpoint, bucket } = config.get('s3');
 const s3 = new AWS.S3({
   accessKeyId: accessKey.id,
   secretAccessKey: accessKey.secret,

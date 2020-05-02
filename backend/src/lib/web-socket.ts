@@ -1,8 +1,12 @@
 import * as WebSocket from 'ws';
-import { isString, isError } from 'lodash';
+import { omitBy } from 'lodash';
 
-export function send(ws: WebSocket, message: string | object | Error): void {
-  if (isString(message)) return ws.send(message);
-  if (isError(message)) return ws.send(JSON.stringify({ error: message }));
-  return ws.send(JSON.stringify({ data: message }));
+export function send(
+  ws: WebSocket,
+  message: {
+    data?: SafeAny;
+    error?: { status: number; reason: string | string[] };
+  },
+): void {
+  return ws.send(JSON.stringify(omitBy(message)));
 }

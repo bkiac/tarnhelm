@@ -2,6 +2,8 @@
 import { Server } from 'ws';
 import { memoize } from 'lodash';
 
+export const ONE_DAY_IN_SECONDS = 86400;
+
 export function log(message: string, meta?: any): void {
   console.log(new Date(), message, meta);
 }

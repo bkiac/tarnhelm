@@ -2,10 +2,11 @@ import * as stream from 'stream';
 import * as crypto from 'crypto';
 import { isNil } from 'lodash';
 
+import config from '../../config';
 import * as s3 from './s3';
 import * as redis from './redis';
 
-const ONE_DAY_IN_SECONDS = 86400;
+const storageConfig = config.get('storage');
 
 interface StorageMetadata {
   downloadLimit: number;
@@ -52,7 +53,7 @@ export async function setMetadata(
 export async function getMetadata(id: string): Promise<StorageMetadata> {
   try {
     const res = await redis.get(id);
-    if (isNil(res)) throw new Error(`Entry with id ${id} does not exist.`);
+    if (isNil(res)) throw new Error(`Metadata with id ${id} does not exist.`);
     return parseMetadata(res);
   } catch (err) {
     throw new Error((err as Error).message);
@@ -78,7 +79,11 @@ export async function set(
   listener?: s3.S3UploadListener,
 ): ReturnType<typeof s3.set> {
   const { id, metadata, size } = file;
-  const { expiry = ONE_DAY_IN_SECONDS, downloadLimit = 1, authPublicKey } = options;
+  const {
+    expiry = storageConfig.expiry.def,
+    downloadLimit = storageConfig.downloads.def,
+    authPublicKey,
+  } = options;
 
   const nonce = crypto.randomBytes(16).toString('base64');
   await setMetadata(
