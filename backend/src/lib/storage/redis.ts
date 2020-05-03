@@ -24,12 +24,14 @@ function promisifyRedis<C extends (...args: any[]) => Promise<any>>(
 ): C {
   /* eslint-disable */
   // @ts-ignore
-  return util.promisify<any, any, any>(command);
+  return util.promisify<any, any, any>(command).bind(redis);
   /* eslint-enable */
 }
 
 /* eslint-disable @typescript-eslint/unbound-method */
-const setAsync: (key: string, value: string, opts?: string[]) => OK = promisifyRedis(redis.set);
+const setAsync: (key: string, value: string, ...options: string[]) => OK = promisifyRedis(
+  redis.set,
+);
 
 interface RedisSetOptions {
   EX?: number;
@@ -60,7 +62,7 @@ export async function set(key: string, value: string, opts?: RedisSetOptions): O
     if (KEEPTTL) modifiers.push('KEEPTTL');
   }
 
-  return setAsync(key, value, modifiers);
+  return setAsync(key, value, ...modifiers);
 }
 
 /** https://redis.io/commands/get */
