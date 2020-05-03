@@ -1,41 +1,44 @@
 import * as stream from '../../stream';
-import { generateKey } from './key';
+import { generateContentEncryptionKey } from './keysmith';
 import { KEY_LENGTH, TAG_LENGTH, RECORD_SIZE, Mode } from './constants';
 import generateNonceBase from './nonce';
 import slice from './slice';
-import { generateSalt } from './generate';
 
-/** Encrypted Content-Encoding Transformer */
-type ECETransformer<I, O> = RequiredBy<Transformer<I, O>, 'transform'>;
+type IV =
+  | Int8Array
+  | Int16Array
+  | Int32Array
+  | Uint8Array
+  | Uint16Array
+  | Uint32Array
+  | Uint8ClampedArray
+  | Float32Array
+  | Float64Array
+  | DataView
+  | ArrayBuffer;
 
-interface ECEParams {
-  ikm: Uint8Array;
-  recordSize: number;
+type Data =
+  | Int8Array
+  | Int16Array
+  | Int32Array
+  | Uint8Array
+  | Uint16Array
+  | Uint32Array
+  | Uint8ClampedArray
+  | Float32Array
+  | Float64Array
+  | DataView
+  | ArrayBuffer;
+
+export async function sign(key: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
+  return crypto.subtle.sign('HMAC', key, data);
 }
 
-interface CipherParams extends ECEParams {
-  salt: ArrayBuffer;
+export async function encrypt(iv: IV, key: CryptoKey, plaintext: Data): Promise<ArrayBuffer> {
+  return crypto.subtle.encrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, plaintext);
 }
 
-interface DecipherParams extends ECEParams {
-  ikm: Uint8Array;
-}
-
-interface ECEHeader {
-  salt: ArrayBuffer;
-  recordSize: number;
-  length: number;
-}
-
-export async function encrypt(iv: Buffer, key: CryptoKey, plaintext: Buffer): Promise<ArrayBuffer> {
-  return crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plaintext);
-}
-
-export async function decrypt(
-  iv: Buffer,
-  key: CryptoKey,
-  ciphertext: Buffer,
-): Promise<ArrayBuffer> {
+export async function decrypt(iv: IV, key: CryptoKey, ciphertext: Data): Promise<ArrayBuffer> {
   return crypto.subtle.decrypt(
     {
       name: 'AES-GCM',
@@ -47,7 +50,20 @@ export async function decrypt(
   );
 }
 
-async function createCipher(args: CipherParams): Promise<ECETransformer<Uint8Array, Buffer>> {
+/** Encrypted Content-Encoding Transformer */
+type ECETransformer<I, O> = RequiredBy<Transformer<I, O>, 'transform'>;
+
+interface ECEHeader {
+  salt: ArrayBuffer;
+  recordSize: number;
+  length: number;
+}
+
+async function createCipher(
+  salt: ArrayBuffer,
+  ikm: Uint8Array,
+  recordSize = RECORD_SIZE,
+): Promise<ECETransformer<Uint8Array, Buffer>> {
   type Controller = TransformStreamDefaultController<Buffer>;
   type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>;
   type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
@@ -55,18 +71,12 @@ async function createCipher(args: CipherParams): Promise<ECETransformer<Uint8Arr
     Buffer
   >;
 
-  const {
-    recordSize,
-    salt,
-    ikm: { buffer: ikm },
-  } = args;
-
   let i = 0;
   let prevChunk: Buffer | undefined;
   let isFirstChunk = true;
 
-  const key = await generateKey(ikm, salt);
-  const { generateNonce } = await generateNonceBase(ikm, salt);
+  const key = await generateContentEncryptionKey(salt, ikm);
+  const { generateNonce } = await generateNonceBase(salt, ikm);
 
   /**
    * Pad records so all of them will have the same length.
@@ -134,17 +144,13 @@ async function createCipher(args: CipherParams): Promise<ECETransformer<Uint8Arr
   return { start, transform, flush };
 }
 
-function createDecipher(args: DecipherParams): ECETransformer<Uint8Array, Buffer> {
+function createDecipher(ikm: Uint8Array): ECETransformer<Uint8Array, Buffer> {
   type Controller = TransformStreamDefaultController<Buffer>;
   type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>;
   type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
     Uint8Array,
     Buffer
   >;
-
-  const {
-    ikm: { buffer: ikm },
-  } = args;
 
   let i = 0;
   let prevChunk: Buffer | undefined;
@@ -196,8 +202,8 @@ function createDecipher(args: DecipherParams): ECETransformer<Uint8Array, Buffer
     if (i === 0) {
       // The first chunk during decryption contains only the header
       const header = readHeader(chunk);
-      key = await generateKey(ikm, header.salt);
-      ({ generateNonce } = await generateNonceBase(ikm, header.salt));
+      key = await generateContentEncryptionKey(header.salt, ikm);
+      ({ generateNonce } = await generateNonceBase(header.salt, ikm));
     } else {
       controller.enqueue(await decryptRecord(chunk, isFinal));
     }
@@ -222,21 +228,20 @@ function createDecipher(args: DecipherParams): ECETransformer<Uint8Array, Buffer
 }
 
 export async function encryptStream(
-  plainstream: ReadableStream<Uint8Array>,
-  params: PartialBy<CipherParams, 'recordSize' | 'salt'>,
+  salt: ArrayBuffer,
+  ikm: Uint8Array,
+  plaintext: ReadableStream<Uint8Array>,
 ): Promise<ReadableStream<Buffer>> {
-  const { recordSize = RECORD_SIZE, ikm, salt = generateSalt() } = params;
-  const sliced = slice(plainstream, { mode: Mode.Encrypt, recordSize });
-  const cipher = await createCipher({ recordSize, ikm, salt });
+  const sliced = slice(Mode.Encrypt, plaintext);
+  const cipher = await createCipher(salt, ikm);
   return stream.transform(sliced, cipher);
 }
 
 export function decryptStream(
-  cipherstream: ReadableStream<Uint8Array>,
-  params: PartialBy<DecipherParams, 'recordSize'>,
+  ikm: Uint8Array, // Salt is stored in the header of the encrypted stream
+  ciphertext: ReadableStream<Uint8Array>,
 ): ReadableStream<Buffer> {
-  const { recordSize = RECORD_SIZE, ikm } = params;
-  const sliced = slice(cipherstream, { mode: Mode.Decrypt, recordSize });
-  const decipher = createDecipher({ recordSize, ikm });
+  const sliced = slice(Mode.Decrypt, ciphertext);
+  const decipher = createDecipher(ikm);
   return stream.transform(sliced, decipher);
 }

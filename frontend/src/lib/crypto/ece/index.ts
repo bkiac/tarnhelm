@@ -1,5 +1,5 @@
 export * from './constants';
-export * from './key';
+export * from './keysmith';
 export * from './main';
 export * from './generate';
 export * from './utils';
