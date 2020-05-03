@@ -20,19 +20,15 @@ interface Keyring {
   decryptStream: DecryptStream;
 }
 
-export default function useKeyring(secretb64?: string): [true, undefined] | [false, Keyring] {
+export default function useKeyring(secretb64?: string): Keyring | undefined {
   const secret = useMemo(
     () => (isNil(secretb64) ? crypto.ece.generateIKM() : base64.toArray(secretb64)),
     [secretb64],
   );
 
-  const [loading, setLoading] = useState(true);
-
   const [keyring, setKeyring] = useState<Keyring | undefined>();
   useEffect(() => {
     (async () => {
-      setLoading(true);
-
       const _secretb64 = base64.fromArray(secret);
 
       const authKey = await crypto.ece.generateAuthenticationKey(new Uint8Array(), secret);
@@ -69,10 +65,8 @@ export default function useKeyring(secretb64?: string): [true, undefined] | [fal
         encryptStream,
         decryptStream,
       });
-
-      setLoading(false);
     })();
   }, [secret]);
 
-  return !loading && keyring ? [false, keyring] : [true, undefined];
+  return keyring;
 }

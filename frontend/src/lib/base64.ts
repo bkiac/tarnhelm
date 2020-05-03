@@ -1,6 +1,6 @@
 import base64 from 'base64-js';
 
-export function toBase64(array: Uint8Array): string {
+export function fromArray(array: Uint8Array): string {
   return base64.fromByteArray(array).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
