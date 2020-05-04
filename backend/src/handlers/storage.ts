@@ -27,14 +27,14 @@ function eof(): stream.Transform {
 
 interface UploadParams {
   metadata: string;
-  authPublicKey: string;
+  authb64: string;
   size?: number;
   downloadLimit?: number;
   expiry?: number;
 }
 
 function validateUploadParams(params: UploadParams): string[] {
-  const { metadata, authPublicKey, size, downloadLimit, expiry } = params;
+  const { metadata, authb64, size, downloadLimit, expiry } = params;
 
   const errors: string[] = [];
 
@@ -42,7 +42,7 @@ function validateUploadParams(params: UploadParams): string[] {
     !isNil(value) && value > max;
 
   if (isNil(metadata)) errors.push('Metadata is empty.');
-  if (isNil(authPublicKey)) errors.push('Authorization key is empty.');
+  if (isNil(authb64)) errors.push('Authentication key is empty.');
   if (isTooBig(size, storageConfig.fileSize.max))
     errors.push(`${size} is greater than ${storageConfig.fileSize.max}`);
   if (isTooBig(downloadLimit, storageConfig.downloads.max))
@@ -68,18 +68,17 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
       return client.close();
     }
 
-    const { metadata, size, downloadLimit, expiry, authPublicKey } = params;
-
     const id = uuid();
     webSocket.send(client, { data: id });
 
+    const { metadata, size, downloadLimit, expiry, authb64 } = params;
+
     fileStream = ws.createWebSocketStream(client).pipe(eof());
     log('Start storage upload', id);
-
     try {
       const data = await storage.set(
         { id, stream: fileStream, metadata, size },
-        { downloadLimit, expiry, authPublicKey },
+        { downloadLimit, expiry, authb64 },
         (progress) => webSocket.send(client, { data: progress.loaded }),
       );
       log('Finish storage upload', data);
@@ -140,7 +139,7 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
 
 export const getMetadata: express.RequestHandler<{ id: string }> = async (req, res) => {
   try {
-    const metadata = await storage.getMetadata(req.params.id);
+    const { authb64, downloadLimit, ...metadata } = await storage.getMetadata(req.params.id);
     res.send(metadata);
   } catch (error) {
     res.status(404);

@@ -10,7 +10,7 @@ const storageConfig = config.get('storage');
 
 interface StorageMetadata {
   downloadLimit: number;
-  authPublicKey: string;
+  authb64: string;
   nonce: string;
   encryptedContentMetadata: string;
 }
@@ -23,10 +23,10 @@ interface ParsedStorageMetadata {
 }
 
 function stringifyMetadata(metadata: StorageMetadata): string {
-  const { downloadLimit, authPublicKey, nonce, encryptedContentMetadata } = metadata;
+  const { downloadLimit, authb64, nonce, encryptedContentMetadata } = metadata;
   return JSON.stringify({
     d: downloadLimit,
-    a: authPublicKey,
+    a: authb64,
     n: nonce,
     c: encryptedContentMetadata,
   });
@@ -36,7 +36,7 @@ function parseMetadata(metadataString: string): StorageMetadata {
   const { d, a, n, c } = JSON.parse(metadataString) as ParsedStorageMetadata;
   return {
     downloadLimit: d,
-    authPublicKey: a,
+    authb64: a,
     nonce: n,
     encryptedContentMetadata: c,
   };
@@ -68,7 +68,7 @@ export interface StorageUploadArgs {
 }
 
 export interface StorageUploadOptions {
-  authPublicKey: string;
+  authb64: string;
   downloadLimit?: number;
   expiry?: number; // in seconds
 }
@@ -82,7 +82,7 @@ export async function set(
   const {
     expiry = storageConfig.expiry.def,
     downloadLimit = storageConfig.downloads.def,
-    authPublicKey,
+    authb64,
   } = options;
 
   const nonce = crypto.randomBytes(16).toString('base64');
@@ -90,7 +90,7 @@ export async function set(
     id,
     {
       downloadLimit,
-      authPublicKey,
+      authb64,
       nonce,
       encryptedContentMetadata: metadata,
     },
