@@ -1,40 +1,31 @@
-import React, { ReactElement, useRef, useState, useEffect } from 'react';
+import React, { useCallback, ReactElement, useRef, useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
+import isNil from 'lodash.isnil';
 
 import config from '../config';
-import { exists } from '../utils';
-import { useEncryptedFileUpload } from '../hooks';
+import { useUpload } from '../hooks';
 
 function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
   const [hasFile, setHasFile] = useState(false);
 
-  const [counter, setCounter] = useState(0);
+  const [state, upload] = useUpload();
+  const {
+    secretb64,
+    id,
+    status,
+    progress: { loading, percent, ticks, estimate },
+  } = state;
 
-  const [
-    { secret },
-    {
-      id,
-      loading,
-      progress: { percent, count, estimate },
-    },
-    upload,
-  ] = useEncryptedFileUpload();
-
-  function handleClick(event: React.MouseEvent): void {
-    event.preventDefault();
-    setCounter(counter + 1);
-  }
-
-  useEffect(() => {
-    if (filesRef.current?.files && filesRef.current.files[0] && counter > 0) {
+  const handleClick = useCallback(() => {
+    if (!loading && filesRef.current?.files && filesRef.current.files[0]) {
       upload(filesRef.current.files[0]);
     }
-  }, [upload, counter]);
+  }, [loading, upload]);
 
-  const to = `/download/${id}&${secret?.b64}`;
-  const href = `${config().app.origin}${to}}`;
+  const to = `/download/${id}&${secretb64}`;
+  const href = config().app.origin + to;
 
   return (
     <>
@@ -49,25 +40,25 @@ function Upload(): ReactElement {
         Upload
       </button>
 
-      {loading && (
-        <div>
-          <p>Uploading...</p>
-          <p>
-            {Math.floor(percent * 100)}%, #{count}
-          </p>
-          {estimate && (
-            <p>
-              {format(estimate, 'yyyy-MM-dd HH:mm:ss')} {formatDistanceToNow(estimate)}
-            </p>
-          )}
-        </div>
-      )}
+      <div>
+        {status === 0 && <p>Setting up keys...</p>}
 
-      {!loading && exists(id) && secret && (
-        <div>
-          <Link to={to}>{href}</Link>
-        </div>
-      )}
+        {status !== 0 && loading && (
+          <>
+            <p>Uploading...</p>
+            <p>
+              {Math.floor(percent * 100)}%, #{ticks}
+            </p>
+            {estimate && (
+              <p>
+                {format(estimate, 'yyyy-MM-dd HH:mm:ss')} {formatDistanceToNow(estimate)}
+              </p>
+            )}
+          </>
+        )}
+
+        {!loading && !isNil(id) && !isNil(secretb64) && <Link to={to}>{href}</Link>}
+      </div>
     </>
   );
 }

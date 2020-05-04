@@ -20,7 +20,7 @@ function App(): ReactElement {
             </section>
           </Route>
 
-          <Route exact path="/download/:id&:secret">
+          <Route exact path="/download/:id&:secretb64">
             <section>
               <h2>Download</h2>
               <Download />
