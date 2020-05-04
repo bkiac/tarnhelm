@@ -1,12 +1,12 @@
 import * as WebSocket from 'ws';
-import { omitBy } from 'lodash';
+import { pickBy } from 'lodash';
 
 export function send(
   ws: WebSocket,
   message: {
     data?: SafeAny;
-    error?: { status: number; reason: string | string[] };
+    error?: { status: number; reason: string[] };
   },
 ): void {
-  return ws.send(JSON.stringify(omitBy(message)));
+  return ws.send(JSON.stringify(pickBy(message)));
 }
