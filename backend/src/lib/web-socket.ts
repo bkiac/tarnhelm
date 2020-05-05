@@ -5,7 +5,7 @@ export function send(
   ws: WebSocket,
   message: {
     data?: SafeAny;
-    error?: { status: number; reason: string[] };
+    error?: number;
   },
 ): void {
   return ws.send(JSON.stringify(pickBy(message)));

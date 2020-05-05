@@ -26,6 +26,18 @@ function eof(): stream.Transform {
   });
 }
 
+function limiter(limit = storageConfig.fileSize.max): stream.Transform {
+  let length = 0;
+  return new stream.Transform({
+    transform(chunk: Buffer, encoding, callback): void {
+      length += chunk.length;
+      this.push(chunk);
+      if (length > limit) return callback(new Error('limit'));
+      return callback();
+    },
+  });
+}
+
 interface UploadParams {
   metadata: string;
   authb64: string;
@@ -63,10 +75,12 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
   client.once('message', async (msg: string) => {
     const params = JSON.parse(msg) as UploadParams;
+
     const errors = validateUploadParams(params);
     if (errors.length > 0) {
-      webSocket.send(client, { error: { status: 400, reason: errors } });
-      return client.close();
+      webSocket.send(client, { error: 400 });
+      client.close();
+      return;
     }
 
     const id = uuid();
@@ -74,23 +88,34 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
     const { metadata, size, downloadLimit, expiry, authb64 } = params;
 
-    fileStream = ws.createWebSocketStream(client).pipe(eof());
-    log('Start storage upload', id);
     try {
+      fileStream = ws.createWebSocketStream(client).pipe(eof()).pipe(limiter());
+
+      log('Start storage upload', id);
+
       const data = await storage.set(
         { id, stream: fileStream, metadata, size },
         { downloadLimit, expiry, authb64 },
         (progress) => webSocket.send(client, { data: progress.loaded }),
       );
+
       log('Finish storage upload', data);
     } catch (e) {
-      log('Storage error', { id, error: e as Error });
-      fileStream.destroy();
-      await storage.del(id);
-      log('Temporary file deleted', id);
-    }
+      const error = e as Error;
 
-    return client.close();
+      log('Storage error', { id, error });
+
+      webSocket.send(client, {
+        error: error.message === 'limit' ? 413 : 500,
+      });
+
+      fileStream?.destroy();
+      await storage.del(id);
+
+      log('Temporary file deleted', id);
+    } finally {
+      client.close();
+    }
   });
 };
 
@@ -151,12 +176,11 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
                   },
                   () => {},
                 );
+              } else {
+                log('Finish storage download', id);
               }
-              log('Finish storage download', id);
             },
-            (err) => {
-              log('Error during decreasing download limit', { id, err: err as Error });
-            },
+            () => {},
           );
         }
       })

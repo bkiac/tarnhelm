@@ -1,13 +1,8 @@
 import isNil from 'lodash.isnil';
 
-interface WebSocketError {
-  status: number;
-  reason: string[];
-}
-
 interface Response<D> {
   data?: D;
-  error?: WebSocketError;
+  error?: number;
 }
 
 function parseResponse<D = any>(message: any): Response<D> {
@@ -52,7 +47,7 @@ export async function listen<T = any>(ws: WebSocket): Promise<T> {
 
 export function addMessageListener<T = any>(
   ws: WebSocket,
-  listener: (data: T, error?: WebSocketError) => void,
+  listener: (data: T, error?: number) => void,
 ): void {
   ws.addEventListener('message', (event) => {
     const res = parseResponse(event.data);
