@@ -5,6 +5,7 @@ import { isNil, Dictionary } from 'lodash';
 import config from '../../config';
 import * as s3 from './s3';
 import * as redis from './redis';
+import { log } from '../../utils';
 
 const storageConfig = config.get('storage');
 
@@ -72,10 +73,6 @@ export async function isAvailable(id: string): Promise<boolean> {
   }
 }
 
-export async function existsMany(ids: string[]): Promise<boolean[]> {
-  return redis.exists(...ids);
-}
-
 export async function get(id: string): Promise<ReturnType<typeof s3.get>> {
   const available = await isAvailable(id);
   if (!available) throw new Error(`File with id "${id}" is not available.`);
@@ -87,11 +84,6 @@ export async function del(id: string): ReturnType<typeof s3.del> {
   return s3.del(id);
 }
 
-export async function delMany(ids: string[]): ReturnType<typeof s3.delMany> {
-  await redis.del(...ids);
-  return s3.delMany(...ids);
-}
-
 export async function bumpDownloads(id: string): Promise<number> {
   return redis.hincrby(id, 'downloads', 1);
 }
@@ -99,4 +91,28 @@ export async function bumpDownloads(id: string): Promise<number> {
 export async function setNonce(id: string, nonce = generateNonce()): Promise<string> {
   await redis.hset(id, { nonce });
   return nonce;
+}
+
+export async function clean(): Promise<void> {
+  // TODO: handle more than 1000 files
+  const files = await s3.list();
+  const keys = files.Contents?.map((fileObject) => fileObject.Key).filter<string>(
+    (key): key is string => !isNil(key),
+  );
+  if (keys) {
+    log(`There are ${keys.length} files in S3.`);
+    const ttls = await Promise.all(keys.map(async (key) => redis.ttl(key)));
+    const keysToDelete = ttls.reduce<string[]>((acc, ttl, i) => {
+      if (ttl <= 0) acc.push(keys[i]);
+      return acc;
+    }, []);
+    if (keysToDelete.length > 0) {
+      log(`Deleting ${keysToDelete.length} unavailable files.`);
+      await s3.delMany(keysToDelete);
+    } else {
+      log('There are no unavailable files.');
+    }
+  } else {
+    log('There are no unavailable files.');
+  }
 }

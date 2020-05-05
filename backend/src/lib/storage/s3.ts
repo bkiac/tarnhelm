@@ -43,7 +43,7 @@ export async function del(
 }
 
 export async function delMany(
-  ...keys: string[]
+  keys: string[],
 ): Promise<AWSRequest.PromiseResult<AWS.S3.Types.DeleteObjectsOutput, AWS.AWSError>> {
   return s3
     .deleteObjects({
@@ -51,4 +51,15 @@ export async function delMany(
       Delete: { Objects: keys.map((key) => ({ Key: key })) },
     })
     .promise();
+}
+
+export async function list(options?: {
+  maxKeys?: number;
+  continuationToken?: string;
+}): Promise<AWSRequest.PromiseResult<AWS.S3.Types.ListObjectsV2Output, AWS.AWSError>> {
+  const params = {
+    Bucket: bucket,
+    ...(options && { MaxKeys: options.maxKeys, ContinuationToken: options.continuationToken }),
+  };
+  return s3.listObjectsV2(params).promise();
 }

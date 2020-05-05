@@ -116,20 +116,6 @@ export async function expire(key: string, seconds: number): Promise<boolean> {
 /** https://redis.io/commands/ttl */
 export const ttl: (key: string) => Promise<number> = promisifyRedis(redis.ttl);
 
-const existsOneAsync: (key: string) => Promise<number> = promisifyRedis(redis.exists);
-const existsManyAsync: (...keys: string[]) => Promise<number[]> = promisifyRedis(redis.exists);
-
-/** https://redis.io/commands/exists */
-export async function exists(...keys: string[]): Promise<boolean[]> {
-  const result: number[] = [];
-  if (keys.length === 1) {
-    result.push(await existsOneAsync(keys[0]));
-  } else {
-    result.push(...(await existsManyAsync(...keys)));
-  }
-  return result.map((value) => value === 1);
-}
-
 /** https://redis.io/commands/hincrby */
 export const hincrby: (
   key: string,
