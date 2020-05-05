@@ -138,10 +138,11 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
   const [{ ws }, connect, disconnect] = useWebSocket('/upload', { lazy: true });
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { file, status } = state;
+  const { file, status, options } = state;
 
   const upload = useCallback<Upload>(
-    (_file, options) => dispatch({ type: ActionType.Start, payload: { file: _file, options } }),
+    (_file, _options) =>
+      dispatch({ type: ActionType.Start, payload: { file: _file, options: _options } }),
     [],
   );
 
@@ -177,6 +178,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
           };
           const encryptedContentMetadata = await keyring.encryptMetadata(contentMetadata);
           const uploadParams = {
+            ...options,
             authb64: keyring.authb64,
             metadata: encryptedContentMetadata,
           };
@@ -210,7 +212,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
         })();
       }
     }
-  }, [keyring, ws, file, status]);
+  }, [keyring, ws, file, status, options]);
 
   return useMemo(() => [{ ...state, secretb64: keyring?.secretb64 }, upload], [
     state,
