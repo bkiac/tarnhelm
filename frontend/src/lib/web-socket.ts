@@ -1,8 +1,8 @@
-import { exists } from '../utils';
+import isNil from 'lodash.isnil';
 
 interface Response<D> {
   data?: D;
-  error?: string;
+  error?: number;
 }
 
 function parseResponse<D = any>(message: any): Response<D> {
@@ -36,13 +36,9 @@ export async function listen<T = any>(ws: WebSocket): Promise<T> {
     ws.addEventListener(
       'message',
       (event) => {
-        try {
-          const res = parseResponse(event.data);
-          if (exists(res.error)) throw new Error(res.error);
-          resolve(res.data);
-        } catch (error) {
-          reject(error);
-        }
+        const res = parseResponse(event.data);
+        if (!isNil(res.error)) reject(res.error);
+        resolve(res.data);
       },
       { once: true },
     );
@@ -51,10 +47,10 @@ export async function listen<T = any>(ws: WebSocket): Promise<T> {
 
 export function addMessageListener<T = any>(
   ws: WebSocket,
-  listener: (data: T, error?: Error) => void,
+  listener: (data: T, error?: number) => void,
 ): void {
   ws.addEventListener('message', (event) => {
     const res = parseResponse(event.data);
-    listener(res.data, exists(res.error) ? new Error(res.error) : undefined);
+    listener(res.data, !isNil(res.error) ? res.error : undefined);
   });
 }

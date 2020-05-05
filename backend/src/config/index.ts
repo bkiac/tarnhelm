@@ -2,6 +2,7 @@
 import convict from 'convict';
 
 import addCustomFormats from './formats';
+import { ONE_DAY_IN_SECONDS } from '../utils';
 
 addCustomFormats();
 
@@ -20,18 +21,27 @@ const config = convict({
     env: 'PORT',
   },
 
-  storage: {
+  redis: {
+    url: {
+      doc: 'The Redis server URL.',
+      format: 'string',
+      default: '',
+      env: 'REDIS_URL',
+    },
+  },
+
+  s3: {
     endpoint: {
       doc: 'The S3 endpoint.',
       format: 'url',
       default: '',
-      env: 'STORAGE_ENDPOINT',
+      env: 'S3_ENDPOINT',
     },
     bucket: {
       doc: 'The S3 bucket.',
       format: 'string',
       default: '',
-      env: 'STORAGE_BUCKET',
+      env: 'S3_BUCKET',
     },
     accessKey: {
       id: {
@@ -39,14 +49,55 @@ const config = convict({
         format: 'string',
         default: '',
         sensitive: true,
-        env: 'STORAGE_ACCESS_KEY_ID',
+        env: 'S3_ACCESS_KEY_ID',
       },
       secret: {
         doc: 'The S3 access key secret.',
         format: 'string',
         default: '',
         sensitive: true,
-        env: 'STORAGE_ACCESS_KEY_SECRET',
+        env: 'S3_ACCESS_KEY_SECRET',
+      },
+    },
+  },
+
+  storage: {
+    downloads: {
+      def: {
+        doc: 'Default number of downloads.',
+        format: Number,
+        default: 1,
+        env: 'STORAGE_DEFAULT_DOWNLOADS',
+      },
+      max: {
+        doc: 'Number of max downloads.',
+        format: Number,
+        default: 200,
+        env: 'STORAGE_MAX_DOWNLOADS',
+      },
+    },
+
+    expiry: {
+      def: {
+        doc: 'Default expiry in seconds.',
+        format: Number,
+        default: ONE_DAY_IN_SECONDS,
+        env: 'STORAGE_DEFAULT_EXPIRY',
+      },
+      max: {
+        doc: 'Max expiry in seconds.',
+        format: Number,
+        default: 14 * ONE_DAY_IN_SECONDS,
+        env: 'STORAGE_MAX_EXPIRY',
+      },
+    },
+
+    fileSize: {
+      max: {
+        doc: 'Max file size in bytes.',
+        format: Number,
+        default: 5 * 1024 * 1024 * 1024, // 5GB
+        env: 'STORAGE_MAX_FILE_SIZE',
       },
     },
   },

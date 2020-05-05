@@ -1,5 +1,5 @@
 import * as stream from '../../stream';
-import { Mode } from './constants';
+import { Mode, RECORD_SIZE } from './constants';
 
 function createSlicer(
   mode: Mode,
@@ -63,9 +63,9 @@ function createSlicer(
 }
 
 export default function slice(
+  mode: Mode,
   input: ReadableStream<Uint8Array>,
-  options: { mode: Mode; recordSize: number },
+  recordSize = RECORD_SIZE,
 ): ReadableStream<Uint8Array> {
-  const { mode, recordSize } = options;
   return stream.transform(input, createSlicer(mode, recordSize));
 }

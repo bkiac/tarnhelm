@@ -1,4 +1,4 @@
-import { exists } from '../utils';
+import isNil from 'lodash.isnil';
 
 /* eslint-disable no-await-in-loop */
 export async function read<T>(
@@ -88,7 +88,7 @@ export async function toArrayBuffer(
   stream: ReadableStream<Uint8Array>,
   size?: number,
 ): Promise<ArrayBuffer> {
-  if (exists(size)) {
+  if (!isNil(size)) {
     const result = new Uint8Array(size);
     let offset = 0;
     await read(stream, (chunk) => {

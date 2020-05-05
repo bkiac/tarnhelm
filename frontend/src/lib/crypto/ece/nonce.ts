@@ -1,6 +1,6 @@
 import { MAX_INT32 } from '../utils';
 import { NONCE_LENGTH } from './constants';
-import * as key from './key';
+import { generateNonceKey, exportKey } from './keysmith';
 
 /**
  * Check if `number` is in the range of 32-bit integer
@@ -25,12 +25,11 @@ export function generateNonce(seq: number, nb: Buffer): Buffer {
 }
 
 export default async function generateNonceBase(
-  ikm: ArrayBuffer,
   salt: ArrayBuffer,
+  ikm: Uint8Array,
 ): Promise<{ nonceBase: Buffer; generateNonce: (seq: number) => Buffer }> {
-  const masterKey = await key.importKey(ikm);
-  const secretKey = await key.deriveKey(masterKey, { salt, info: 'nonce' });
-  const base = await key.exportKey(secretKey);
+  const nonceKey = await generateNonceKey(salt, ikm);
+  const base = await exportKey(nonceKey);
 
   const nonceBase = Buffer.from(base.slice(0, NONCE_LENGTH));
   const _generateNonce = (seq: number): Buffer => generateNonce(seq, nonceBase);
