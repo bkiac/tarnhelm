@@ -1,10 +1,11 @@
 import Redis from 'redis';
 import * as util from 'util';
-import { isNil } from 'lodash';
+import { isNil, flatten, Dictionary } from 'lodash';
 
 import config from '../../config';
 
-type OK = Promise<'OK'>;
+type OK = 'OK';
+type Value = string | number;
 
 const { url: redisUrl } = config.get('redis');
 const redis = Redis.createClient({
@@ -29,7 +30,7 @@ function promisifyRedis<C extends (...args: any[]) => Promise<any>>(
 }
 
 /* eslint-disable @typescript-eslint/unbound-method */
-const setAsync: (key: string, value: string, ...options: string[]) => OK = promisifyRedis(
+const setAsync: (key: string, value: Value, ...options: string[]) => Promise<OK> = promisifyRedis(
   redis.set,
 );
 
@@ -42,7 +43,7 @@ interface RedisSetOptions {
 }
 
 /** https://redis.io/commands/set */
-export async function set(key: string, value: string, opts?: RedisSetOptions): OK {
+export async function set(key: string, value: Value, opts?: RedisSetOptions): Promise<OK> {
   const modifiers: string[] = [];
   if (opts) {
     const { EX, PX, NX, XX, KEEPTTL } = opts;
@@ -66,15 +67,51 @@ export async function set(key: string, value: string, opts?: RedisSetOptions): O
 }
 
 /** https://redis.io/commands/get */
-export const get: (key: string) => Promise<string | undefined> = promisifyRedis(redis.get);
+export const get: (key: string) => Promise<Value> = promisifyRedis(redis.get);
 
 /** https://redis.io/commands/mget */
-export const mget: (keys: string[]) => Promise<Array<string | undefined>> = promisifyRedis(
-  redis.mget,
+export const mget: (keys: string[]) => Promise<Value[]> = promisifyRedis(redis.mget);
+
+const hsetAsync: (key: string, ...fieldValuePairs: any[]) => Promise<number> = promisifyRedis(
+  redis.hset,
+);
+
+/** https://redis.io/commands/hset */
+export async function hset(key: string, fieldValueObject: Dictionary<Value>): Promise<number> {
+  const fieldValuePairs = flatten(Object.entries(fieldValueObject));
+  return hsetAsync(key, ...fieldValuePairs);
+}
+
+const hmsetAsync: (key: string, ...fieldValuePairs: any[]) => Promise<OK> = promisifyRedis(
+  redis.hmset,
+);
+
+/** https://redis.io/commands/hmset */
+export async function hmset(key: string, fieldValueObject: Dictionary<Value>): Promise<OK> {
+  const fieldValuePairs = flatten(Object.entries(fieldValueObject));
+  return hmsetAsync(key, ...fieldValuePairs);
+}
+
+/** https://redis.io/commands/hget */
+export const hget: (key: string, field: string) => Promise<Value | undefined> = promisifyRedis(
+  redis.hget,
+);
+
+/** https://redis.io/commands/hgetall */
+export const hgetall: (key: string) => Promise<Dictionary<Value | undefined>> = promisifyRedis(
+  redis.hgetall,
 );
 
 /** https://redis.io/commands/del */
-export const del: (...keys: string[]) => Promise<number> = promisifyRedis(redis.del);
+export const del: (...keys: string[]) => Promise<OK> = promisifyRedis(redis.del);
+
+const expireAsync: (key: string, seconds: number) => Promise<number> = promisifyRedis(redis.expire);
+
+/** https://redis.io/commands/expire */
+export async function expire(key: string, seconds: number): Promise<boolean> {
+  const success = await expireAsync(key, seconds);
+  return success === 1;
+}
 
 /** https://redis.io/commands/ttl */
 export const ttl: (key: string) => Promise<number> = promisifyRedis(redis.ttl);
@@ -92,4 +129,11 @@ export async function exists(...keys: string[]): Promise<boolean[]> {
   }
   return result.map((value) => value === 1);
 }
+
+/** https://redis.io/commands/hincrby */
+export const hincrby: (
+  key: string,
+  field: string,
+  increment: number,
+) => Promise<number> = promisifyRedis(redis.hincrby);
 /* eslint-enable */

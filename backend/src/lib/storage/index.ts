@@ -1,6 +1,6 @@
 import * as stream from 'stream';
 import * as crypto from 'crypto';
-import { isNil } from 'lodash';
+import { isNil, Dictionary } from 'lodash';
 
 import config from '../../config';
 import * as s3 from './s3';
@@ -8,56 +8,22 @@ import * as redis from './redis';
 
 const storageConfig = config.get('storage');
 
-interface StorageMetadata {
+function generateNonce(): string {
+  return crypto.randomBytes(16).toString('base64');
+}
+
+interface StorageMetadata extends Dictionary<string | number> {
   downloadLimit: number;
+  downloads: number;
   authb64: string;
   nonce: string;
   encryptedContentMetadata: string;
 }
 
-interface ParsedStorageMetadata {
-  d: number;
-  a: string;
-  n: string;
-  c: string;
-}
-
-function stringifyMetadata(metadata: StorageMetadata): string {
-  const { downloadLimit, authb64, nonce, encryptedContentMetadata } = metadata;
-  return JSON.stringify({
-    d: downloadLimit,
-    a: authb64,
-    n: nonce,
-    c: encryptedContentMetadata,
-  });
-}
-
-function parseMetadata(metadataString: string): StorageMetadata {
-  const { d, a, n, c } = JSON.parse(metadataString) as ParsedStorageMetadata;
-  return {
-    downloadLimit: d,
-    authb64: a,
-    nonce: n,
-    encryptedContentMetadata: c,
-  };
-}
-
-export async function setMetadata(
-  id: string,
-  metadata: StorageMetadata,
-  expiry?: number,
-): Promise<void> {
-  await redis.set(id, stringifyMetadata(metadata), !isNil(expiry) ? { EX: expiry } : undefined);
-}
-
 export async function getMetadata(id: string): Promise<StorageMetadata> {
-  try {
-    const res = await redis.get(id);
-    if (isNil(res)) throw new Error(`Metadata with id ${id} does not exist.`);
-    return parseMetadata(res);
-  } catch (err) {
-    throw new Error((err as Error).message);
-  }
+  const res = (await redis.hgetall(id)) as StorageMetadata;
+  if (isNil(res)) throw new Error(`Metadata with id "${id}" does not exist.`);
+  return res;
 }
 
 export interface StorageUploadArgs {
@@ -85,24 +51,25 @@ export async function set(
     authb64,
   } = options;
 
-  const nonce = crypto.randomBytes(16).toString('base64');
-  await setMetadata(
-    id,
-    {
-      downloadLimit,
-      authb64,
-      nonce,
-      encryptedContentMetadata: metadata,
-    },
-    expiry,
-  );
+  await redis.hmset(id, {
+    downloadLimit,
+    downloads: 0,
+    authb64,
+    nonce: generateNonce(),
+    encryptedContentMetadata: metadata,
+  });
+  await redis.expire(id, expiry);
 
   return s3.set({ key: id, body: file.stream, length: size }, listener);
 }
 
-export async function exists(id: string): Promise<boolean> {
-  const [result] = await redis.exists(id);
-  return result;
+export async function isAvailable(id: string): Promise<boolean> {
+  try {
+    const { downloads, downloadLimit } = await getMetadata(id);
+    return downloads < downloadLimit;
+  } catch (error) {
+    return false;
+  }
 }
 
 export async function existsMany(ids: string[]): Promise<boolean[]> {
@@ -110,8 +77,8 @@ export async function existsMany(ids: string[]): Promise<boolean[]> {
 }
 
 export async function get(id: string): Promise<ReturnType<typeof s3.get>> {
-  const fileExists = await exists(id);
-  if (!fileExists) throw new Error(`File does not exist with id ${id}.`);
+  const available = await isAvailable(id);
+  if (!available) throw new Error(`File with id "${id}" is not available.`);
   return s3.get(id);
 }
 
@@ -125,18 +92,11 @@ export async function delMany(ids: string[]): ReturnType<typeof s3.delMany> {
   return s3.delMany(...ids);
 }
 
-export async function decreaseDownloadLimit(id: string): Promise<number> {
-  const { downloadLimit, ...restOfMetadata } = await getMetadata(id);
-  const newDownloadLimit = downloadLimit - 1;
-  if (newDownloadLimit === 0) {
-    await del(id);
-  } else {
-    await setMetadata(id, { ...restOfMetadata, downloadLimit: newDownloadLimit });
-  }
-  return newDownloadLimit;
+export async function bumpDownloads(id: string): Promise<number> {
+  return redis.hincrby(id, 'downloads', 1);
 }
 
-export async function setNonce(id: string, nonce: string): Promise<void> {
-  const metadata = await getMetadata(id);
-  await setMetadata(id, { ...metadata, nonce });
+export async function setNonce(id: string, nonce = generateNonce()): Promise<string> {
+  await redis.hset(id, { nonce });
+  return nonce;
 }

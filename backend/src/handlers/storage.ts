@@ -100,7 +100,13 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
       params: { id },
     } = req;
 
-    const { authb64, nonce } = await storage.getMetadata(id);
+    const { authb64, nonce, downloads, downloadLimit } = await storage.getMetadata(id);
+
+    if (downloads >= downloadLimit) {
+      res.sendStatus(404);
+      return;
+    }
+
     const authHeader = req.header('Authorization')?.split(' ')[1];
     if (isNil(authHeader)) {
       res.sendStatus(401);
@@ -122,8 +128,7 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
       return;
     }
 
-    const newNonce = crypto.randomBytes(16).toString('base64');
-    await storage.setNonce(id, newNonce);
+    const newNonce = await storage.setNonce(id);
     res.set('WWW-Authenticate', `tarnhelm ${newNonce}`);
 
     const fileStream = await storage.get(id);
@@ -137,10 +142,17 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
       .on('finish', () => {
         if (!cancelled) {
           finished = true;
-          storage.decreaseDownloadLimit(id).then(
-            (downloadLimit) => {
-              if (downloadLimit === 0) return log('Finish storage download and delete file', id);
-              return log('Finish storage download', id);
+          storage.bumpDownloads(id).then(
+            (newDownloads) => {
+              if (newDownloads >= downloadLimit) {
+                storage.del(id).then(
+                  () => {
+                    log('Finish storage download and delete file', id);
+                  },
+                  () => {},
+                );
+              }
+              log('Finish storage download', id);
             },
             (err) => {
               log('Error during decreasing download limit', { id, err: err as Error });
@@ -162,7 +174,15 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
 
 export const getMetadata: express.RequestHandler<{ id: string }> = async (req, res) => {
   try {
-    const { authb64, downloadLimit, ...metadata } = await storage.getMetadata(req.params.id);
+    const { authb64, downloads, downloadLimit, ...metadata } = await storage.getMetadata(
+      req.params.id,
+    );
+
+    if (downloads >= downloadLimit) {
+      res.sendStatus(404);
+      return;
+    }
+
     res.send(metadata);
   } catch (error) {
     res.sendStatus(404);
