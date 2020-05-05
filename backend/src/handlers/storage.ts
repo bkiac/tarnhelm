@@ -4,6 +4,7 @@ import express from 'express';
 import expressWs from 'express-ws';
 import { v4 as uuid } from 'uuid';
 import { isNil } from 'lodash';
+import * as crypto from 'crypto';
 
 import config from '../config';
 import { log } from '../utils';
@@ -99,8 +100,31 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
       params: { id },
     } = req;
 
-    // TODO: get metadata, validate signed nonce with auth header
-    // const metadata = await storage.getMetadata(id);
+    const { authb64, nonce } = await storage.getMetadata(id);
+    const authHeader = req.header('Authorization')?.split(' ')[1];
+    if (isNil(authHeader)) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const hash = crypto
+      .createHmac('sha256', Buffer.from(authb64, 'base64'))
+      .update(Buffer.from(nonce, 'base64'))
+      .digest();
+    try {
+      const authenticated = crypto.timingSafeEqual(hash, Buffer.from(authHeader, 'base64'));
+      if (!authenticated) {
+        res.sendStatus(401);
+        return;
+      }
+    } catch (error) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const newNonce = crypto.randomBytes(16).toString('base64');
+    await storage.setNonce(id, newNonce);
+    res.set('WWW-Authenticate', `tarnhelm ${newNonce}`);
 
     const fileStream = await storage.get(id);
 
@@ -132,8 +156,7 @@ export const download: express.RequestHandler<{ id: string }> = async (req, res)
         }
       });
   } catch (error) {
-    res.status(404);
-    res.send(error);
+    res.sendStatus(404);
   }
 };
 
@@ -142,7 +165,6 @@ export const getMetadata: express.RequestHandler<{ id: string }> = async (req, r
     const { authb64, downloadLimit, ...metadata } = await storage.getMetadata(req.params.id);
     res.send(metadata);
   } catch (error) {
-    res.status(404);
-    res.send(error);
+    res.sendStatus(404);
   }
 };

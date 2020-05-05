@@ -185,7 +185,7 @@ export default function useDownload(id: string, secretb64: string): [State, Down
             const response = await axios.get(`/download/${id}`, {
               responseType: 'blob',
               headers: {
-                Authentication: signature,
+                Authorization: signature,
               },
             });
 

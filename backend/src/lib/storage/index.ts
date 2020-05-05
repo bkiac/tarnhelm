@@ -135,3 +135,8 @@ export async function decreaseDownloadLimit(id: string): Promise<number> {
   }
   return newDownloadLimit;
 }
+
+export async function setNonce(id: string, nonce: string): Promise<void> {
+  const metadata = await getMetadata(id);
+  await setMetadata(id, { ...metadata, nonce });
+}
