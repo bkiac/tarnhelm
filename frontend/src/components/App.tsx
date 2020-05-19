@@ -1,37 +1,43 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
 
+import theme from '../theme';
+import axios from '../lib/axios';
+import GlobalStyle from './GlobalStyle';
+import Layout from './Layout';
+import Footer from './Footer';
 import Upload from './Upload';
 import Download from './Download';
+import '../styles/index.scss';
 
-function App(): ReactElement {
-  return (
-    <Router>
-      <div>
-        <header>
-          <h1>Tarnhelm</h1>
-        </header>
+// Set up axios
+axios();
 
-        <Switch>
-          <Route exact path="/upload">
-            <section>
-              <h2>Upload</h2>
+const App: React.FC = () => (
+  <Router>
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <Layout
+        main={
+          <Switch>
+            <Route exact path="/upload">
+              <h1>Upload</h1>
               <Upload />
-            </section>
-          </Route>
+            </Route>
 
-          <Route exact path="/download/:id&:secretb64">
-            <section>
-              <h2>Download</h2>
+            <Route exact path="/download/:id&:secretb64">
+              <h1>Download</h1>
               <Download />
-            </section>
-          </Route>
+            </Route>
 
-          <Redirect to="/upload" />
-        </Switch>
-      </div>
-    </Router>
-  );
-}
+            <Redirect to="/upload" />
+          </Switch>
+        }
+        footer={<Footer />}
+      />
+    </ThemeProvider>
+  </Router>
+);
 
 export default App;

@@ -5,13 +5,17 @@ interface StyleProps {
   content: string;
 }
 
-const StyledAppTitle = styled.span<StyledProps<StyleProps>>`
-  font-size: 9vw;
+const StyledAppTitle = styled.p<StyledProps<StyleProps>>`
+  margin: 0;
+
+  font-size: 3rem;
   font-family: 'Roboto Condensed', sans-serif;
   font-style: italic;
   font-weight: 700;
   color: #fff;
+
   position: relative;
+
   animation: glitch 5s 5s infinite;
 
   &:before,
@@ -36,9 +40,8 @@ const StyledAppTitle = styled.span<StyledProps<StyleProps>>`
   }
 `;
 
-const AppTitle: React.FunctionComponent = () => {
-  const title = 'Tarnhelm';
-  return <StyledAppTitle content={title}>{title}</StyledAppTitle>;
-};
+const title = 'Tarnhelm';
+
+const AppTitle: React.FC = () => <StyledAppTitle content={title}>{title}</StyledAppTitle>;
 
 export default AppTitle;
