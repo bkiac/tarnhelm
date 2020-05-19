@@ -4,12 +4,12 @@ import { ThemeProvider } from 'styled-components';
 
 import theme from '../theme';
 import axios from '../lib/axios';
+import '../index.css';
 import GlobalStyle from './GlobalStyle';
 import Layout from './Layout';
 import Footer from './Footer';
 import Upload from './Upload';
 import Download from './Download';
-import '../styles/index.scss';
 
 // Set up axios
 axios();
