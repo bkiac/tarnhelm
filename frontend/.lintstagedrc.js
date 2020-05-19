@@ -2,6 +2,6 @@ const base = require('../.lintstagedrc');
 
 module.exports = {
   ...base,
-  '*.html': ['prettier --write'],
+  '*.{html,css,scss}': ['prettier --write'],
   '*.tsx': ['prettier --write', 'eslint --cache --fix'],
 };
