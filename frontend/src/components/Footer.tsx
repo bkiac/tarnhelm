@@ -31,6 +31,10 @@ const Footer: React.FunctionComponent = () => {
         Thanks
       </Item>
 
+      <Item as="a" href="https://github.com/bkiac/tarnhelm">
+        Code
+      </Item>
+
       {/* TODO: Replace mock address */}
       <Item as="p">Tips: 1MDymCkRRkdwcBitxyfuMSbmYyc2zbZ9jc</Item>
     </Container>
