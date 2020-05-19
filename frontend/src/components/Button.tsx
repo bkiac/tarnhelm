@@ -31,7 +31,7 @@ const glitch = keyframes`
 const StyledButton = styled.button<StyleProps>((props) => {
   const [paddingTopBottom, paddingLeftRight] = ['8px', '16px'];
   return css`
-    font-size: 1.25em;
+    font-size: 1.5rem;
     font-family: 'Roboto Condensed', sans-serif;
     font-style: italic;
     font-weight: 700;
