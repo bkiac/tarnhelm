@@ -31,7 +31,12 @@ const Footer: React.FunctionComponent = () => {
         Thanks
       </Item>
 
-      <Item as="a" href="https://github.com/bkiac/tarnhelm">
+      <Item
+        as="a"
+        href="https://github.com/bkiac/tarnhelm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Code
       </Item>
 
