@@ -36,8 +36,7 @@ const Footer: React.FunctionComponent = () => {
         Code
       </Item>
 
-      {/* TODO: Replace mock address */}
-      <Item as="p">Tips: 1MDymCkRRkdwcBitxyfuMSbmYyc2zbZ9jc</Item>
+      <Item as="p">Tips: bc1qe95pnse2q0yp7jwzu4pdjv7xz3gamzucum5nyh</Item>
     </Container>
   );
 };
