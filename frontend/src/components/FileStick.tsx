@@ -87,7 +87,7 @@ const FileInfoTop = styled(FileInfo)`
 const FileStick: React.FC<{
   name: string;
   size: number;
-  onDelete?: () => void;
+  onDelete: () => void;
 }> = ({ name, size, onDelete }) => {
   return (
     <StyledFileStick>

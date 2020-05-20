@@ -29,6 +29,7 @@ module.exports = {
 
   rules: {
     ...base.rules,
+
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': 'off',
 

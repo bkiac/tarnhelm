@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Vault } from '../components';
+import { Upload } from '../components';
 
 const Container = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ const H1 = styled.h1`
   margin-bottom: 0.5rem;
 `;
 
-const H3 = styled.h3`
+const H2 = styled.h2`
   font-size: 1.25rem;
   font-weight: normal;
   margin: 0;
@@ -26,8 +26,8 @@ const UploadPage: React.FC = () => {
   return (
     <Container>
       <H1>Tarnhelm Title</H1>
-      <H3>Tarnhelm Description</H3>
-      <Vault />
+      <H2>Tarnhelm Description</H2>
+      <Upload />
     </Container>
   );
 };
