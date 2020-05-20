@@ -17,9 +17,6 @@ const noiseOptions = {
   fraction: 2,
 };
 
-// Disable these ESLint rules here because it sees `twitch` and `noise` functions as any
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return */
-const twitchAnim = (): FlattenSimpleInterpolation => twitch(twitchOptions);
 const glitchAnim1 = (): FlattenSimpleInterpolation =>
   css`
     ${noise(noiseOptions)}, ${twitch({ ...twitchOptions, delay: twitchOptions.delay + 0.05 })}
@@ -28,7 +25,6 @@ const glitchAnim2 = (): FlattenSimpleInterpolation =>
   css`
     ${noise(noiseOptions)}, ${twitch(twitchOptions)}
   `;
-/* eslint-enable */
 
 const StyledAppTitle = styled.p<StyledProps<StyleProps>>(
   (props) => css`
@@ -40,7 +36,7 @@ const StyledAppTitle = styled.p<StyledProps<StyleProps>>(
     text-transform: uppercase;
     color: ${props.theme.colors.white};
     position: relative;
-    animation: ${twitchAnim};
+    animation: ${twitch(twitchOptions)};
 
     &:before,
     &:after {

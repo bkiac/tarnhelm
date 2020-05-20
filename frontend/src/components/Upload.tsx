@@ -5,6 +5,7 @@ import isNil from 'lodash.isnil';
 
 import config from '../config';
 import { useUpload } from '../hooks';
+import Button from './Button';
 
 function Upload(): ReactElement {
   const filesRef = useRef<HTMLInputElement>(null);
@@ -78,9 +79,9 @@ function Upload(): ReactElement {
         </label>
       </div>
 
-      <button type="button" onClick={handleClick} disabled={uploadDisabled}>
+      <Button onClick={handleClick} disabled={uploadDisabled}>
         Upload
-      </button>
+      </Button>
 
       <div>
         {status === 0 && <p>Setting up keys...</p>}

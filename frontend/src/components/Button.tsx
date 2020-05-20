@@ -15,8 +15,6 @@ const glitchOptions = {
 
 const StyledButton = styled.button<StyleProps>((props) => {
   const [paddingTopBottom, paddingLeftRight] = ['8px', '16px'];
-  // Disable this ESLint rule because it sees `glitch` function as any
-  /* eslint-disable @typescript-eslint/no-unsafe-call */
   return css`
     font-size: 1.5rem;
     font-family: 'Roboto Condensed', sans-serif;
@@ -83,7 +81,6 @@ const StyledButton = styled.button<StyleProps>((props) => {
       border: 1px solid ${props.theme.colors.radicalRed}
     }
   `;
-  /* eslint-enable */
 });
 
 interface Props {

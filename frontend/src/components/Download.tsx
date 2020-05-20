@@ -29,7 +29,7 @@ const Download: React.FunctionComponent = () => {
           {metadata && (
             <>
               <div>Name: {metadata.name}</div>
-              <div>Size: {bytes(metadata.size)}</div> {/* eslint-disable-line */}
+              <div>Size: {bytes(metadata.size)}</div>
             </>
           )}
 

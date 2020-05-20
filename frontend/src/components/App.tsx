@@ -8,8 +8,9 @@ import '../index.css';
 import GlobalStyle from './GlobalStyle';
 import Layout from './Layout';
 import Footer from './Footer';
-import Upload from './Upload';
+// import Upload from './Upload';
 import Download from './Download';
+import { UploadPage } from '../pages';
 
 // Set up axios
 axios();
@@ -22,8 +23,7 @@ const App: React.FC = () => (
         main={
           <Switch>
             <Route exact path="/upload">
-              <h1>Upload</h1>
-              <Upload />
+              <UploadPage />
             </Route>
 
             <Route exact path="/download/:id&:secretb64">
