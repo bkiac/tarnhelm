@@ -14,6 +14,7 @@ const glitchOptions: { size: number; unit: 'px'; duration: number } = {
 
 const StyledLink = styled.a((props) => {
   return css`
+    color: ${props.theme.colors.white};
     text-decoration: none;
     padding: 0 0.5rem 0.25rem;
     border-bottom: ${borderSizeWithUnit} solid ${props.theme.colors.white};
