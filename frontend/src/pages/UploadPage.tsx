@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Vault, Button } from '../components';
+import { Vault } from '../components';
 
 const Container = styled.div`
   display: flex;
@@ -28,7 +28,6 @@ const UploadPage: React.FC = () => {
       <H1>Tarnhelm Title</H1>
       <H3>Tarnhelm Description</H3>
       <Vault />
-      <Button>Upload</Button>
     </Container>
   );
 };

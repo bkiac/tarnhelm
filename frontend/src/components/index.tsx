@@ -12,5 +12,5 @@ export { default as IconButton } from './IconButton';
 export { default as InternalLink } from './InternalLink';
 export { default as Layout } from './Layout';
 export { default as Link } from './Link';
-export { default as Upload } from './Upload';
+export { default as Upload } from './Vault';
 export { default as Vault } from './Vault';
