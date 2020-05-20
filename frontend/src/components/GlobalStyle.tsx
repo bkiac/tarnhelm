@@ -8,15 +8,12 @@ const GlobalStyle = createGlobalStyle`
 
   html {
     font-size: 16px;
+    font-family: 'Roboto Mono', monospace;
+    color: ${(props) => props.theme.colors.white};
   }
 
   body {
     background-color: ${(props) => props.theme.colors.black};
-  }
-
-  * {
-    font-family: 'Roboto Mono', monospace;
-    color: ${(props) => props.theme.colors.white};
   }
 `;
 

@@ -19,6 +19,10 @@ const StyledLink = styled.a((props) => {
     border-bottom: ${borderSizeWithUnit} solid ${props.theme.colors.white};
     position: relative;
 
+    &:visited {
+      color: ${props.theme.colors.white};
+    }
+
     &:before,
     &:after {
       content: '';
