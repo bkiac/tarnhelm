@@ -3,17 +3,15 @@ import styled, { css } from 'styled-components';
 
 import { glitch } from '../animations';
 
-interface StyleProps {
-  content: string;
-}
-
 const glitchSize = 0.06;
 const glitchOptions = {
   size: glitchSize,
   duration: 0.3,
 };
 
-const StyledButton = styled.button<StyleProps>((props) => {
+const StyledButton = styled.button<{
+  content: string;
+}>((props) => {
   const [paddingTopBottom, paddingLeftRight] = ['8px', '16px'];
   return css`
     font-size: 1.5rem;
@@ -28,6 +26,14 @@ const StyledButton = styled.button<StyleProps>((props) => {
 
     padding: ${paddingTopBottom} ${paddingLeftRight};
 
+    &:disabled {
+      color: ${props.theme.colors.sangria};
+      border: 1px solid ${props.theme.colors.sangria};
+      background-color: ${props.theme.colors.black};
+    }
+
+    ${!props.disabled &&
+    css`
     span:first-child {
       position: relative;
       left: 0;
@@ -80,6 +86,7 @@ const StyledButton = styled.button<StyleProps>((props) => {
     &:focus {
       border: 1px solid ${props.theme.colors.radicalRed}
     }
+    `}
   `;
 });
 

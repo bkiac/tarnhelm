@@ -2,14 +2,19 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 import SaveIcon from './SaveIcon';
+import DeathIcon from './DeathIcon';
 import FileStick from './FileStick';
 
-const StyledVault = styled.div<{ isEmpty: boolean; hasError?: boolean }>(
-  (props) => css`
+const StyledVault = styled.div<{
+  isEmpty: boolean;
+  hasError?: boolean;
+}>((props) => {
+  return css`
     border: 1px solid ${props.hasError ? props.theme.colors.sangria : props.theme.colors.broom};
     padding: 2rem 4rem;
-
     height: 30vw;
+    color: ${props.hasError ? props.theme.colors.sangria : props.theme.colors.cyan};
+    font-size: 10rem;
 
     ${props.isEmpty &&
     css`
@@ -19,17 +24,19 @@ const StyledVault = styled.div<{ isEmpty: boolean; hasError?: boolean }>(
       justify-content: center;
       align-items: center;
     `}
-  `,
-);
+  `;
+});
 
 const StyledFileStick = styled(FileStick)`
   margin-bottom: 1rem;
 `;
 
-const StyledSaveIcon = styled(SaveIcon)(
+const Text = styled.p<{
+  hasError?: boolean;
+}>(
   (props) => css`
-    font-size: 10rem;
-    color: ${props.theme.colors.cyan};
+    font-size: 1rem;
+    color: ${props.hasError ? props.theme.colors.sangria : props.theme.colors.white};
   `,
 );
 
@@ -46,25 +53,27 @@ const Vault: React.FC<{
   hasError?: boolean;
 }> = ({ files, isDragActive, hasError }) => {
   const isEmpty = files.length === 0;
+
+  function renderPartial(Icon: any, message: React.ReactNode): React.ReactElement {
+    return (
+      <>
+        <Icon />
+        <Text hasError={hasError}>{message}</Text>
+      </>
+    );
+  }
+
   return (
     <StyledVault isEmpty={isEmpty} hasError={hasError}>
       {hasError ? (
-        <div>error</div>
+        renderPartial(DeathIcon, 'Unexpected Error')
       ) : (
         <>
           {isEmpty ? (
             <>
-              {isDragActive ? (
-                <>
-                  <StyledSaveIcon />
-                  <p>Drop files to start</p>
-                </>
-              ) : (
-                <>
-                  <StyledSaveIcon />
-                  <p>Click or drop files to start</p>
-                </>
-              )}
+              {isDragActive
+                ? renderPartial(SaveIcon, 'Drop files to start')
+                : renderPartial(SaveIcon, 'Click or drop files to start')}
             </>
           ) : (
             files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)

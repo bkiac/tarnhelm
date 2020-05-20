@@ -17,6 +17,8 @@ const StyledFileStick = styled.div((props) => {
   const height = 50;
   const triangleHeight = height / 2;
   return css`
+    font-size: 1rem;
+    color: ${props.theme.colors.white};
     display: flex;
     padding: 0.5rem 1rem;
     background-color: ${props.theme.colors.radicalRed};

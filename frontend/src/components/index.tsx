@@ -1,8 +1,10 @@
 export { default as App } from './App';
 export { default as AppTitle } from './AppTitle';
 export { default as Button } from './Button';
+export { default as DeathIcon } from './DeathIcon';
 export { default as DeleteIcon } from './DeleteIcon';
 export { default as Download } from './Download';
+export { default as ErrorIcon } from './ErrorIcon';
 export { default as ExternalLink } from './ExternalLink';
 export { default as FileStick } from './FileStick';
 export { default as Footer } from './Footer';

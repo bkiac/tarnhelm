@@ -1,5 +1,5 @@
-import React, { useMemo, useCallback, ReactElement, useState } from 'react';
-import styled from 'styled-components';
+import React, { useMemo, useCallback, useState } from 'react';
+import styled, { css } from 'styled-components';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import isNil from 'lodash.isnil';
@@ -10,6 +10,7 @@ import bytes from 'bytes';
 
 import config from '../config';
 import { useUpload } from '../hooks';
+import ErrorIcon from './ErrorIcon';
 import Vault from './Vault';
 import Button from './Button';
 
@@ -40,6 +41,12 @@ const InfoRow = styled.div`
   }
 `;
 
+const StyledTotalSize = styled.p<{ hasError?: boolean }>(
+  (props) => css`
+    color: ${props.hasError ? props.theme.colors.sangria : props.theme.colors.white};
+  `,
+);
+
 function isDuplicate<A extends File, B extends File>(a: A, b: B): boolean {
   return (
     a.name === b.name && a.size === b.size && a.type === b.type && a.lastModified === b.lastModified
@@ -51,10 +58,19 @@ interface FileObject {
   file: File;
 }
 
-function Upload(): ReactElement {
+const TotalSize: React.FC<{ hasError?: boolean }> = ({ hasError, children }) => (
+  <StyledTotalSize hasError={hasError}>
+    {hasError && <ErrorIcon />}
+    {children}
+  </StyledTotalSize>
+);
+
+const Upload: React.FC = () => {
   const [fileObjects, setFileObjects] = useState<FileObject[]>([]);
   const files = useMemo(() => fileObjects.map((fo) => fo.file), [fileObjects]);
   const totalSize = useMemo(() => files.reduce((size, file) => size + file.size, 0), [files]);
+  const hasFiles = files.length > 0;
+  const areFilesTooLarge = totalSize > 5 * 1024 * 1024 * 1024;
 
   const addFiles = useCallback((newFiles: File[]) => {
     setFileObjects((oldFileObjects) => [
@@ -79,17 +95,6 @@ function Upload(): ReactElement {
     [fileObjects, createFileDeleteHandler],
   );
 
-  const handleDrop = useCallback<DropHandler>(
-    (newFiles) => addFiles(differenceWith(newFiles, files, isDuplicate)),
-    [files, addFiles],
-  );
-  const hasFiles = files.length > 0;
-  const dropzone = useDropzone({
-    onDrop: handleDrop,
-    noClick: hasFiles,
-    noKeyboard: hasFiles,
-  });
-
   const [expiry, setExpiry] = useState(1); // days
   const [downloadLimit, setDownloadLimit] = useState(1);
 
@@ -101,6 +106,17 @@ function Upload(): ReactElement {
     progress: { loading, percent, ticks, estimate },
   } = state;
 
+  const handleDrop = useCallback<DropHandler>(
+    (newFiles) => addFiles(differenceWith(newFiles, files, isDuplicate)),
+    [files, addFiles],
+  );
+  const dropzone = useDropzone({
+    onDrop: handleDrop,
+    noClick: hasFiles,
+    noKeyboard: hasFiles,
+    disabled: areFilesTooLarge,
+  });
+
   const handleClick = useCallback(() => {
     if (!loading && hasFiles) upload(files[0], { expiry: expiry * 86400, downloadLimit });
   }, [files, hasFiles, loading, upload, expiry, downloadLimit]);
@@ -110,8 +126,14 @@ function Upload(): ReactElement {
 
   const uploadDisabled = useMemo(
     () =>
-      !hasFiles || loading || expiry < 1 || expiry > 14 || downloadLimit < 1 || downloadLimit > 200,
-    [hasFiles, loading, expiry, downloadLimit],
+      !hasFiles ||
+      areFilesTooLarge ||
+      loading ||
+      expiry < 1 ||
+      expiry > 14 ||
+      downloadLimit < 1 ||
+      downloadLimit > 200,
+    [hasFiles, areFilesTooLarge, loading, expiry, downloadLimit],
   );
 
   return (
@@ -124,7 +146,7 @@ function Upload(): ReactElement {
       <Info>
         <InfoRow>
           <p>Total Size</p>
-          <p>{bytes(totalSize)}</p>
+          <TotalSize hasError={areFilesTooLarge}>{bytes(totalSize)}</TotalSize>
         </InfoRow>
 
         <InfoRow>
@@ -156,7 +178,7 @@ function Upload(): ReactElement {
         </InfoRow>
       </Info>
 
-      {!uploadDisabled && (
+      {hasFiles && (
         <Button onClick={handleClick} disabled={uploadDisabled}>
           Upload
         </Button>
@@ -183,6 +205,6 @@ function Upload(): ReactElement {
       </div>
     </Container>
   );
-}
+};
 
 export default Upload;
