@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
 import AppTitle from './AppTitle';
+import InternalLink from './InternalLink';
+import ExternalLink from './ExternalLink';
 
 const Container = styled.div`
   display: flex;
@@ -27,16 +28,11 @@ const Footer: React.FunctionComponent = () => {
     <Container>
       <Item as={AppTitle} />
 
-      <Item as={Link} to="/thanks">
+      <Item as={InternalLink} to="/thanks">
         Thanks
       </Item>
 
-      <Item
-        as="a"
-        href="https://github.com/bkiac/tarnhelm"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Item as={ExternalLink} href="https://github.com/bkiac/tarnhelm" target="_blank">
         Code
       </Item>
 
