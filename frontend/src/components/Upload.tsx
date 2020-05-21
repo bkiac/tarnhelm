@@ -43,7 +43,7 @@ const InfoRow = styled.div`
 
 const StyledTotalSize = styled.p<{ hasError?: boolean }>(
   (props) => css`
-    color: ${props.hasError ? props.theme.colors.sangria : props.theme.colors.white};
+    color: ${props.hasError ? props.theme.palette.error : props.theme.palette.foreground};
   `,
 );
 

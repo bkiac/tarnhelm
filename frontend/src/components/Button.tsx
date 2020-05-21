@@ -19,17 +19,17 @@ const StyledButton = styled.button<{
     font-style: italic;
     font-weight: 700;
     text-transform: uppercase;
-    color: ${props.theme.colors.black};
+    color: ${props.theme.palette.background};
     border: none;
-    background-color: ${props.theme.colors.broom};
+    background-color: ${props.theme.palette.primary};
     position: relative;
 
     padding: ${paddingTopBottom} ${paddingLeftRight};
 
     &:disabled {
-      color: ${props.theme.colors.sangria};
-      border: 1px solid ${props.theme.colors.sangria};
-      background-color: ${props.theme.colors.black};
+      color: ${props.theme.palette.error};
+      border: 1px solid ${props.theme.palette.error};
+      background-color: ${props.theme.palette.background};
     }
 
     ${!props.disabled &&
@@ -38,7 +38,7 @@ const StyledButton = styled.button<{
       position: relative;
       left: 0;
       top: 0;
-      text-shadow: ${glitchSize}em ${glitchSize}em ${props.theme.colors.cyan};
+      text-shadow: ${glitchSize}em ${glitchSize}em ${props.theme.palette.secondary};
       color: inherit;
       z-index: 3;
     }
@@ -56,13 +56,13 @@ const StyledButton = styled.button<{
       }
 
       &:before {
-        color: ${props.theme.colors.cyan};
+        color: ${props.theme.palette.secondary};
         z-index: 1;
       }
 
       &:after {
         left: 0;
-        color: ${props.theme.colors.radicalRed};
+        color: ${props.theme.palette.tertiary};
         z-index: 2;
       }
     }
@@ -84,7 +84,7 @@ const StyledButton = styled.button<{
     }
 
     &:focus {
-      border: 1px solid ${props.theme.colors.radicalRed}
+      border: 1px solid ${props.theme.palette.tertiary}
     }
     `}
   `;

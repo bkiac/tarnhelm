@@ -16,7 +16,7 @@ const commonStyles = css(
   (props) => css`
     margin: 0;
     text-align: center;
-    color: ${props.theme.colors.white};
+    color: ${props.theme.palette.foreground};
   `,
 );
 

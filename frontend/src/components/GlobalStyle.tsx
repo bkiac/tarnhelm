@@ -9,11 +9,11 @@ const GlobalStyle = createGlobalStyle`
   html {
     font-size: 16px;
     font-family: 'Roboto Mono', monospace;
-    color: ${(props) => props.theme.colors.white};
+    color: ${(props) => props.theme.palette.foreground};
   }
 
   body {
-    background-color: ${(props) => props.theme.colors.black};
+    background-color: ${(props) => props.theme.palette.background};
   }
 `;
 

@@ -14,14 +14,14 @@ const glitchOptions: { size: number; unit: 'px'; duration: number } = {
 
 const StyledLink = styled.a((props) => {
   return css`
-    color: ${props.theme.colors.white};
+    color: ${props.theme.palette.foreground};
     text-decoration: none;
     padding: 0 0.5rem 0.25rem;
-    border-bottom: ${borderSizeWithUnit} solid ${props.theme.colors.white};
+    border-bottom: ${borderSizeWithUnit} solid ${props.theme.palette.foreground};
     position: relative;
 
     &:visited {
-      color: ${props.theme.colors.white};
+      color: ${props.theme.palette.foreground};
     }
 
     &:before,
@@ -36,12 +36,12 @@ const StyledLink = styled.a((props) => {
     }
 
     &:before {
-      background-color: ${props.theme.colors.cyan};
+      background-color: ${props.theme.palette.secondary};
       z-index: -1;
     }
 
     &:after {
-      background-color: ${props.theme.colors.radicalRed};
+      background-color: ${props.theme.palette.tertiary};
       z-index: -2;
     }
 

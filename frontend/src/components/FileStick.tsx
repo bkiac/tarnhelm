@@ -17,10 +17,10 @@ const StyledFileStick = styled.div((props) => {
   const triangleHeight = height / 2;
   return css`
     font-size: 1rem;
-    color: ${props.theme.colors.white};
+    color: ${props.theme.palette.foreground};
     display: flex;
     padding: 0.5rem 1rem;
-    background-color: ${props.theme.colors.radicalRed};
+    background-color: ${props.theme.palette.tertiary};
     height: ${height}px;
     position: relative;
     align-items: center;
@@ -31,7 +31,7 @@ const StyledFileStick = styled.div((props) => {
       top: 0;
       right: 0;
       border-left: ${triangleHeight}px solid transparent;
-      border-top: ${triangleHeight}px solid ${props.theme.colors.black};
+      border-top: ${triangleHeight}px solid ${props.theme.palette.background};
     }
   `;
 });
@@ -40,7 +40,7 @@ const StyledIconButton = styled(IconButton)(
   (props) =>
     css`
       font-size: 36px;
-      color: ${props.theme.colors.white};
+      color: ${props.theme.palette.foreground};
       margin-right: 8px;
       position: relative;
 
@@ -51,20 +51,20 @@ const StyledIconButton = styled(IconButton)(
         top: 0;
         left: 0;
         overflow: hidden;
-        background: ${props.theme.colors.radicalRed};
+        background: ${props.theme.palette.tertiary};
       }
 
       &:hover {
         cursor: pointer;
 
         &:before {
-          text-shadow: 0.05em 0.025em ${props.theme.colors.cyan};
+          text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
           animation: ${noise(noiseOptions)};
         }
 
         &:after {
           left: 1px;
-          text-shadow: 0.025em 0.05em ${props.theme.colors.broom};
+          text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
           animation: ${noise(noiseOptions)};
         }
       }

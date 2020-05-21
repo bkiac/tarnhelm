@@ -34,7 +34,7 @@ const StyledAppTitle = styled.span<{
     font-style: italic;
     font-weight: 700;
     text-transform: uppercase;
-    color: ${props.theme.colors.white};
+    color: ${props.theme.palette.foreground};
     position: relative;
     animation: ${twitch(twitchOptions)};
 
@@ -44,18 +44,18 @@ const StyledAppTitle = styled.span<{
       position: absolute;
       top: 0;
       overflow: hidden;
-      background: ${props.theme.colors.black};
+      background: ${props.theme.palette.background};
     }
 
     &:before {
       left: -2px;
-      text-shadow: -0.05em 0 ${props.theme.colors.radicalRed};
+      text-shadow: -0.05em 0 ${props.theme.palette.tertiary};
       animation: ${glitchAnim1};
     }
 
     &:after {
       left: 2px;
-      text-shadow: -0.05em 0 ${props.theme.colors.broom};
+      text-shadow: -0.05em 0 ${props.theme.palette.primary};
       animation: ${glitchAnim2};
     }
 `,

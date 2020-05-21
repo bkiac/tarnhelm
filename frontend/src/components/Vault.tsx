@@ -10,10 +10,10 @@ const StyledVault = styled.div<{
   hasError?: boolean;
 }>((props) => {
   return css`
-    border: 1px solid ${props.hasError ? props.theme.colors.sangria : props.theme.colors.broom};
+    border: 1px solid ${props.hasError ? props.theme.palette.error : props.theme.palette.primary};
     padding: 2rem 4rem;
     height: 30vw;
-    color: ${props.hasError ? props.theme.colors.sangria : props.theme.colors.cyan};
+    color: ${props.hasError ? props.theme.palette.error : props.theme.palette.secondary};
     font-size: 10rem;
 
     ${props.isEmpty &&
@@ -36,7 +36,7 @@ const Text = styled.p<{
 }>(
   (props) => css`
     font-size: 1rem;
-    color: ${props.hasError ? props.theme.colors.sangria : props.theme.colors.white};
+    color: ${props.hasError ? props.theme.palette.error : props.theme.palette.foreground};
   `,
 );
 
