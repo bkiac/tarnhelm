@@ -1,13 +1,7 @@
-import styled from 'styled-components';
+import React from 'react';
 
 import Icon from './Icon';
 
-export const content = '\\e901';
-
-const SaveIcon = styled(Icon)`
-  &:before {
-    content: '${content}';
-  }
-`;
+const SaveIcon: React.FC = () => <Icon glyph="save" />;
 
 export default SaveIcon;

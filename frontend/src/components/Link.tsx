@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import { glitch } from '../animations';
+import { glitch } from '../styles/animations';
 
 const borderSize = 1;
 const borderUnit = 'px';

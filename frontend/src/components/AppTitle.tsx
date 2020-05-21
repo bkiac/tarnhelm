@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css, StyledProps, FlattenSimpleInterpolation } from 'styled-components';
 
-import { twitch, noise } from '../animations';
+import { twitch, noise } from '../styles/animations';
 
 interface StyleProps {
   content: string;

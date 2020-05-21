@@ -1,18 +1,13 @@
-import styled from 'styled-components';
+import styled, { DefaultThemeIconContentCodes } from 'styled-components';
 
-const StyledIcon = styled.i`
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'tarnhelm-icons' !important;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
+import { iconFont } from '../styles/mixins';
 
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+const StyledIcon = styled.i<{ glyph: keyof DefaultThemeIconContentCodes }>`
+  ${iconFont}
+
+  &:before {
+    content: ${(props) => `'${props.theme.iconContentCodes[props.glyph]}'`};
+  }
 `;
 
 export default StyledIcon;

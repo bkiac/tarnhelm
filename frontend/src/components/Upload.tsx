@@ -10,7 +10,7 @@ import bytes from 'bytes';
 
 import config from '../config';
 import { useUpload } from '../hooks';
-import ErrorIcon from './ErrorIcon';
+import DangerIcon from './DangerIcon';
 import Vault from './Vault';
 import Button from './Button';
 
@@ -60,7 +60,7 @@ interface FileObject {
 
 const TotalSize: React.FC<{ hasError?: boolean }> = ({ hasError, children }) => (
   <StyledTotalSize hasError={hasError}>
-    {hasError && <ErrorIcon />}
+    {hasError && <DangerIcon />}
     {children}
   </StyledTotalSize>
 );

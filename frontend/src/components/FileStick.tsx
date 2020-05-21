@@ -2,10 +2,9 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import bytes from 'bytes';
 
-import { noise } from '../animations';
-import Icon from './Icon';
+import { noise } from '../styles/animations';
 import IconButton from './IconButton';
-import DeleteIcon, { content as iconContentCode } from './DeleteIcon';
+import DeleteIcon from './DeleteIcon';
 
 const noiseOptions = {
   duration: 3,
@@ -37,43 +36,38 @@ const StyledFileStick = styled.div((props) => {
   `;
 });
 
-const Glitch = styled(Icon)(
-  (props) =>
-    css`
-    &:before,
-    &:after {
-      content: '${iconContentCode}';
-      position: absolute;
-      top: 0;
-      left: 0;
-      overflow: hidden;
-      background: ${props.theme.colors.radicalRed};
-    }
-
-    &:hover {
-      cursor: pointer;
-
-      &:before {
-        text-shadow: 0.05em 0.025em ${props.theme.colors.cyan};
-        animation: ${noise(noiseOptions)};
-      } 
-
-      &:after {
-        left: 1px;
-        text-shadow: 0.025em 0.05em ${props.theme.colors.broom};
-        animation: ${noise(noiseOptions)};
-      }
-    }
-  `,
-);
-
-const StyledDeleteIcon = styled(DeleteIcon)(
+const StyledIconButton = styled(IconButton)(
   (props) =>
     css`
       font-size: 36px;
       color: ${props.theme.colors.white};
       margin-right: 8px;
       position: relative;
+
+      &:before,
+      &:after {
+        content: '${props.theme.iconContentCodes.delete}';
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        background: ${props.theme.colors.radicalRed};
+      }
+
+      &:hover {
+        cursor: pointer;
+
+        &:before {
+          text-shadow: 0.05em 0.025em ${props.theme.colors.cyan};
+          animation: ${noise(noiseOptions)};
+        }
+
+        &:after {
+          left: 1px;
+          text-shadow: 0.025em 0.05em ${props.theme.colors.broom};
+          animation: ${noise(noiseOptions)};
+        }
+      }
     `,
 );
 
@@ -93,11 +87,9 @@ const FileStick: React.FC<{
 }> = ({ name, size, onDelete }) => {
   return (
     <StyledFileStick>
-      <IconButton onClick={onDelete}>
-        <StyledDeleteIcon>
-          <Glitch as="span" />
-        </StyledDeleteIcon>
-      </IconButton>
+      <StyledIconButton onClick={onDelete}>
+        <DeleteIcon />
+      </StyledIconButton>
 
       <div>
         <FileInfoTop>{name}</FileInfoTop>

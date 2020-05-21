@@ -1,13 +1,7 @@
-import styled from 'styled-components';
+import React from 'react';
 
 import Icon from './Icon';
 
-export const content = '\\e900';
+const DeleteIcon: React.FC = () => <Icon glyph="delete" />;
 
-const StyledDeleteIcon = styled(Icon)`
-  &:before {
-    content: '${content}';
-  }
-`;
-
-export default StyledDeleteIcon;
+export default DeleteIcon;

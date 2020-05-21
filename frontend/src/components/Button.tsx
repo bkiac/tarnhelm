@@ -1,7 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-import { glitch } from '../animations';
+import { glitch } from '../styles/animations';
 
 const glitchSize = 0.06;
 const glitchOptions = {

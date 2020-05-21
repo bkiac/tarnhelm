@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 
-import theme from '../theme';
+import theme from '../styles/theme';
 import axios from '../lib/axios';
-import '../index.css';
+import '../styles/index.css';
 import GlobalStyle from './GlobalStyle';
 import Layout from './Layout';
 import Footer from './Footer';
