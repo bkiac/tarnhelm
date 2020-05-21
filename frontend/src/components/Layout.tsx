@@ -18,12 +18,9 @@ const Footer = styled.footer`
   margin-top: auto;
 `;
 
-interface Props {
-  main: React.ReactNode;
+const Layout: React.FC<{
   footer: React.ReactNode;
-}
-
-const Layout: React.FC<Props> = ({ main, footer }) => {
+}> = ({ children: main, footer }) => {
   return (
     <Container>
       <Main>{main}</Main>

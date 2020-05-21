@@ -1,11 +1,9 @@
 import React from 'react';
-import styled, { css, StyledProps, FlattenSimpleInterpolation } from 'styled-components';
+import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
+import { Link } from 'react-router-dom';
 
 import { twitch, noise } from '../styles/animations';
-
-interface StyleProps {
-  content: string;
-}
+import A from './A';
 
 const twitchOptions = {
   duration: 5,
@@ -26,7 +24,9 @@ const glitchAnim2 = (): FlattenSimpleInterpolation =>
     ${noise(noiseOptions)}, ${twitch(twitchOptions)}
   `;
 
-const StyledAppTitle = styled.p<StyledProps<StyleProps>>(
+const StyledAppTitle = styled.span<{
+  content: string;
+}>(
   (props) => css`
     margin: 0;
     font-size: 2.5rem;
@@ -63,6 +63,10 @@ const StyledAppTitle = styled.p<StyledProps<StyleProps>>(
 
 const title = 'Tarnhelm';
 
-const AppTitle: React.FC = () => <StyledAppTitle content={title}>{title}</StyledAppTitle>;
+const AppTitle: React.FC = () => (
+  <A as={Link} to="/">
+    <StyledAppTitle content={title}>{title}</StyledAppTitle>
+  </A>
+);
 
 export default AppTitle;
