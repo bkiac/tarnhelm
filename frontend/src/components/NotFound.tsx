@@ -1,8 +1,41 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const StyledNotFound = styled.p``;
+const fontSize = 3;
 
-const NotFound: React.FC = () => <StyledNotFound>404</StyledNotFound>;
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column-reverse;
+  padding: 1rem;
+  height: 60vh;
+`;
+
+const commonStyles = css(
+  (props) => css`
+    margin: 0;
+    text-align: center;
+    color: ${props.theme.colors.white};
+  `,
+);
+
+const Code = styled.h2`
+  ${commonStyles}
+  font-size: ${fontSize * 2}rem;
+  font-weight: bold;
+`;
+
+const ErrorMessage = styled.h1`
+  ${commonStyles}
+  font-size: ${fontSize}rem;
+`;
+
+const NotFound: React.FC = () => (
+  <Container>
+    <ErrorMessage>Not Found</ErrorMessage>
+    <Code>404</Code>
+  </Container>
+);
 
 export default NotFound;
