@@ -26,6 +26,7 @@ const config = convict({
       doc: 'The Redis server URL.',
       format: 'string',
       default: '',
+      sensitive: true,
       env: 'REDIS_URL',
     },
   },
@@ -35,12 +36,14 @@ const config = convict({
       doc: 'The S3 endpoint.',
       format: 'url',
       default: '',
+      sensitive: true,
       env: 'S3_ENDPOINT',
     },
     bucket: {
       doc: 'The S3 bucket.',
       format: 'string',
       default: '',
+      sensitive: true,
       env: 'S3_BUCKET',
     },
     accessKey: {

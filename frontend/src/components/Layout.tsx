@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import isNil from 'lodash.isnil';
 
 const Container = styled.div`
   padding: 1rem;
@@ -19,14 +20,12 @@ const Footer = styled.footer`
 `;
 
 const Layout: React.FC<{
-  footer: React.ReactNode;
-}> = ({ children: main, footer }) => {
-  return (
-    <Container>
-      <Main>{main}</Main>
-      <Footer>{footer}</Footer>
-    </Container>
-  );
-};
+  footer?: React.ReactNode;
+}> = ({ children: main, footer }) => (
+  <Container>
+    <Main>{main}</Main>
+    {!isNil(footer) && <Footer>{footer}</Footer>}
+  </Container>
+);
 
 export default Layout;
