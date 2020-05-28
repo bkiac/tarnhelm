@@ -5,6 +5,7 @@ import UploadPage from './UploadPage';
 import DownloadPage from './DownloadPage';
 import NotFoundPage from './NotFoundPage';
 import ThanksPage from './ThanksPage';
+import LoadingPage from './LoadingPage';
 
 const Pages: React.FC = () => (
   <Switch>
@@ -32,6 +33,6 @@ const Pages: React.FC = () => (
   </Switch>
 );
 
-export { UploadPage, DownloadPage, NotFoundPage, ThanksPage };
+export { UploadPage, DownloadPage, NotFoundPage, ThanksPage, LoadingPage };
 
 export default Pages;

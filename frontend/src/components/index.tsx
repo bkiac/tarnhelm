@@ -15,6 +15,7 @@ export { default as IconButton } from './IconButton';
 export { default as InternalLink } from './InternalLink';
 export { default as Layout } from './Layout';
 export { default as Link } from './Link';
+export { default as Loader } from './Loader';
 export { default as NotFound } from './NotFound';
 export { default as Page } from './Page';
 export { default as SaveIcon } from './SaveIcon';

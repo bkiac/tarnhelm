@@ -10,9 +10,8 @@ import './styles/index.css';
 import GlobalStyle from './components/GlobalStyle';
 
 import { usePing } from './hooks';
-import Layout from './components/Layout';
-import Footer from './components/Footer';
-import Pages from './pages';
+import { Layout, Footer } from './components';
+import Pages, { LoadingPage } from './pages';
 
 const App: React.FC = () => {
   const loading = usePing();
@@ -20,7 +19,7 @@ const App: React.FC = () => {
     <Router>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <Layout footer={!loading && <Footer />}>{loading ? <p>...</p> : <Pages />}</Layout>
+        <Layout footer={!loading && <Footer />}>{loading ? <LoadingPage /> : <Pages />}</Layout>
       </ThemeProvider>
     </Router>
   );

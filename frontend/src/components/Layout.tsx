@@ -13,6 +13,7 @@ const Container = styled.div`
 const Main = styled.main`
   width: 50%;
   align-self: center;
+  height: 100%;
 `;
 
 const Footer = styled.footer`
