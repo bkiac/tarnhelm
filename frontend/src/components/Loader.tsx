@@ -1,90 +1,49 @@
 import React from 'react';
-import styled, { css, keyframes, StyledProps, Keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
-function createScaleAndColorKeyframes(props: StyledProps<{}>): Keyframes {
-  return keyframes`
-    25% {
-      background-color: ${props.theme.palette.primary};
-      transform: scale(1.3) translate(-2px, -2px);
-    }
-
-    50% {
-      background-color: ${props.theme.palette.secondary};
-      transform: scale(1);
-    }
-
-    75% {
-      background-color: ${props.theme.palette.tertiary};
-      transform: scale(1);
-    }
-  `;
-}
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 const StyledLoader = styled.div(
   (props) => css`
-    background-color: ${props.theme.palette.background};
-    width: 60px;
-    height: 60px;
-    transform: rotate(45deg);
+    width: 68px;
+    height: 68px;
+    border: 2px solid ${props.theme.palette.secondary};
+    position: relative;
+    animation: ${rotate} 2.6s linear infinite;
 
-    div {
-      width: 6px;
-      height: 6px;
-      background: #ffed0b;
-      float: left;
-      margin-bottom: 12px;
-      animation: ${createScaleAndColorKeyframes(props)} 2s ease infinite;
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      animation: ${rotate} 1.3s linear infinite;
+      animation-direction: reverse;
+    }
 
-      &:not(:nth-child(4n + 4)) {
-        margin-right: 12px;
-      }
+    &:before {
+      border: 2px solid ${props.theme.palette.primary};
+      width: 48px;
+      height: 48px;
+      margin: -26px 0 0 -26px;
+    }
 
-      &:nth-child(1) {
-        animation-delay: 0;
-      }
-
-      &:nth-child(2),
-      &:nth-child(5) {
-        animation-delay: 0.1s;
-      }
-
-      &:nth-child(3),
-      &:nth-child(6),
-      &:nth-child(9) {
-        animation-delay: 0.2s;
-      }
-
-      &:nth-child(4),
-      &:nth-child(7),
-      &:nth-child(10),
-      &:nth-child(13) {
-        animation-delay: 0.3s;
-      }
-
-      &:nth-child(8),
-      &:nth-child(11),
-      &:nth-child(14) {
-        animation-delay: 0.4s;
-      }
-
-      &:nth-child(12),
-      &:nth-child(15) {
-        animation-delay: 0.5s;
-      }
-
-      &:nth-child(16) {
-        animation-delay: 0.6s;
-      }
+    &:after {
+      border: 2px solid ${props.theme.palette.tertiary};
+      width: 96px;
+      height: 96px;
+      margin: -50px 0 0 -50px;
     }
   `,
 );
 
-const Loader: React.FC = () => (
-  <StyledLoader>
-    {Array.from(Array(16)).map((_, i) => (
-      <div key={i} /> // eslint-disable-line react/no-array-index-key
-    ))}
-  </StyledLoader>
-);
+const Loader: React.FC = () => <StyledLoader />;
 
 export default Loader;
