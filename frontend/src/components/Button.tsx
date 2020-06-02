@@ -23,6 +23,7 @@ const StyledButton = styled.button<{
     border: none;
     background-color: ${props.theme.palette.primary};
     position: relative;
+    cursor: pointer;
 
     padding: ${paddingTopBottom} ${paddingLeftRight};
 
