@@ -8,24 +8,27 @@ import FileStick from './FileStick';
 const StyledVault = styled.div<{
   isEmpty: boolean;
   hasError?: boolean;
-}>((props) => {
-  return css`
+}>(
+  (props) => css`
     border: 1px solid ${props.hasError ? props.theme.palette.error : props.theme.palette.primary};
-    padding: 2rem 4rem;
+    padding: 2rem 0;
     height: 30vw;
     color: ${props.hasError ? props.theme.palette.error : props.theme.palette.secondary};
     font-size: 10rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 
     ${props.isEmpty &&
     css`
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
       justify-content: center;
-      align-items: center;
     `}
-  `;
-});
+  `,
+);
 
 const StyledFileStick = styled(FileStick)`
   margin-bottom: 1rem;

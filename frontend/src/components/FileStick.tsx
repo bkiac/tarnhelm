@@ -24,6 +24,7 @@ const StyledFileStick = styled.div((props) => {
     height: ${height}px;
     position: relative;
     align-items: center;
+    width: 20vw;
 
     &:after {
       content: '';
@@ -74,6 +75,10 @@ const StyledIconButton = styled(IconButton)(
 const FileInfo = styled.p`
   text-align: left;
   margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 16vw;
 `;
 
 const FileInfoTop = styled(FileInfo)`
@@ -83,20 +88,19 @@ const FileInfoTop = styled(FileInfo)`
 const FileStick: React.FC<{
   name: string;
   size: number;
+  className?: string;
   onDelete: () => void;
-}> = ({ name, size, onDelete }) => {
-  return (
-    <StyledFileStick>
-      <StyledIconButton onClick={onDelete}>
-        <DeleteIcon />
-      </StyledIconButton>
+}> = ({ className, name, size, onDelete }) => (
+  <StyledFileStick className={className}>
+    <StyledIconButton onClick={onDelete}>
+      <DeleteIcon />
+    </StyledIconButton>
 
-      <div>
-        <FileInfoTop>{name}</FileInfoTop>
-        <FileInfo>{bytes(size)}</FileInfo>
-      </div>
-    </StyledFileStick>
-  );
-};
+    <div>
+      <FileInfoTop title={name}>{name}</FileInfoTop>
+      <FileInfo>{bytes(size)}</FileInfo>
+    </div>
+  </StyledFileStick>
+);
 
 export default FileStick;
