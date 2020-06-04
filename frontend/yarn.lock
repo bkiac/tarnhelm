@@ -1518,6 +1518,27 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.random@^3.2.6":
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/@types/lodash.random/-/lodash.random-3.2.6.tgz#64b08abad168dca39c778ed40cce75b2f9e168eb"
+  integrity sha512-RRr0pKm+3USvG/HTkuRKA8v2EqXu19VXC09j4VL2UQec8Yx8Fn6wYTPGjYdmX4UFd23ykS7SLFkiULS/rv8kTA==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.sample@^4.2.6":
+  version "4.2.6"
+  resolved "https://registry.yarnpkg.com/@types/lodash.sample/-/lodash.sample-4.2.6.tgz#ec7f6a6dbd0401c4a1e5f5b3c85fa5a85a42a84a"
+  integrity sha512-hxBvsUjPcW1O8mC9TiBE4m8TwvLuUU+zW8J6GI1M6WmPg8J87mXGt7zavpJ/9Znb+0rVsSB3VNAjCFaJ9YUJKg==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.samplesize@^4.2.6":
+  version "4.2.6"
+  resolved "https://registry.yarnpkg.com/@types/lodash.samplesize/-/lodash.samplesize-4.2.6.tgz#d9ba20aa254cc39705737e840cb4a8228d31ef29"
+  integrity sha512-yBgEuIxVIM+corHdvB+NHgzni1Oc0aEd7acuO/jET0vO2Y2f6sl7vfQlaZKgzcN+ZqWLB6B2VQTKc1T5zQra+Q==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash@*":
   version "4.14.150"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.150.tgz#649fe44684c3f1fcb6164d943c5a61977e8cf0bd"
@@ -6922,6 +6943,21 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
+
+lodash.random@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.random/-/lodash.random-3.2.0.tgz#96e24e763333199130d2c9e2fd57f91703cc262d"
+  integrity sha1-luJOdjMzGZEw0sni/Vf5FwPMJi0=
+
+lodash.sample@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/lodash.sample/-/lodash.sample-4.2.1.tgz#5e4291b0c753fa1abeb0aab8fb29df1b66f07f6d"
+  integrity sha1-XkKRsMdT+hq+sKq4+ynfG2bwf20=
+
+lodash.samplesize@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.samplesize/-/lodash.samplesize-4.2.0.tgz#460762fbb2b342290517499e90d51586db465ff9"
+  integrity sha1-Rgdi+7KzQikFF0mekNUVhttGX/k=
 
 lodash.sortby@^4.7.0:
   version "4.7.0"

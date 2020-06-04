@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import bytes from 'bytes';
 
 import { noise } from '../styles/animations';
+import { useTextObfuscate } from '../hooks';
 import IconButton from './IconButton';
 import DeleteIcon from './DeleteIcon';
 
@@ -79,28 +80,43 @@ const FileInfo = styled.p`
   white-space: nowrap;
   text-overflow: ellipsis;
   width: 16vw;
+  font-size: 0.8rem;
 `;
 
 const FileInfoTop = styled(FileInfo)`
   margin-bottom: 0.25rem;
+  font-size: 1rem;
 `;
 
 const FileStick: React.FC<{
   name: string;
   size: number;
   className?: string;
+  obfuscate?: boolean;
   onDelete: () => void;
-}> = ({ className, name, size, onDelete }) => (
-  <StyledFileStick className={className}>
-    <StyledIconButton onClick={onDelete}>
-      <DeleteIcon />
-    </StyledIconButton>
+}> = ({ className, name, size, obfuscate, onDelete }) => {
+  const [obfuscatedName, obfuscateName] = useTextObfuscate(name, 100);
+  const [obfuscatedSize, obfuscateSize] = useTextObfuscate(bytes(size), 100);
 
-    <div>
-      <FileInfoTop title={name}>{name}</FileInfoTop>
-      <FileInfo>{bytes(size)}</FileInfo>
-    </div>
-  </StyledFileStick>
-);
+  useEffect(() => {
+    if (obfuscate) {
+      obfuscateName();
+      obfuscateSize();
+    }
+  }, [obfuscate, obfuscateName, obfuscateSize]);
+
+  return (
+    <StyledFileStick className={className}>
+      <StyledIconButton onClick={onDelete}>
+        <DeleteIcon />
+      </StyledIconButton>
+
+      <div>
+        <FileInfoTop title={name}>{obfuscatedName}</FileInfoTop>
+        <FileInfo>{obfuscatedSize}</FileInfo>
+      </div>
+    </StyledFileStick>
+  );
+};
 
 export default FileStick;

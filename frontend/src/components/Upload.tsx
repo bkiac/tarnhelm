@@ -139,7 +139,7 @@ const Upload: React.FC = () => {
   return (
     <Container>
       <Dropzone {...dropzone.getRootProps()}>
-        <Vault files={filesInVault} isDragActive={dropzone.isDragActive} />
+        <Vault files={filesInVault} isDragActive={dropzone.isDragActive} loading={loading} />
         <input {...dropzone.getInputProps()} />
       </Dropzone>
 

@@ -53,8 +53,9 @@ interface FileObject {
 const Vault: React.FC<{
   files: FileObject[];
   isDragActive: boolean;
+  loading?: boolean;
   hasError?: boolean;
-}> = ({ files, isDragActive, hasError }) => {
+}> = ({ files, isDragActive, loading = false, hasError }) => {
   const isEmpty = files.length === 0;
 
   function renderPartial(Icon: any, message: React.ReactNode): React.ReactElement {
@@ -79,7 +80,7 @@ const Vault: React.FC<{
                 : renderPartial(SaveIcon, 'Click or drop files to start')}
             </>
           ) : (
-            files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)
+            files.map(({ id, ...f }) => <StyledFileStick key={id} obfuscate={loading} {...f} />)
           )}
         </>
       )}
