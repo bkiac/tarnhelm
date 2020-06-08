@@ -12,6 +12,7 @@ import { useUpload } from '../hooks';
 import DangerIcon from './DangerIcon';
 import Vault from './Vault';
 import Button from './Button';
+import Select from './Select';
 
 const Container = styled.div`
   width: 30vw;
@@ -33,10 +34,10 @@ const Info = styled.div`
 const InfoRow = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1rem;
 
   & > p {
     margin: 0;
-    margin-bottom: 1rem;
   }
 `;
 
@@ -64,12 +65,65 @@ const TotalSize: React.FC<{ hasError?: boolean }> = ({ hasError, children }) => 
   </StyledTotalSize>
 );
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024;
+
+const ONE_MINUTE = 60;
+const ONE_HOUR = 60 * ONE_MINUTE;
+const ONE_DAY = 24 * ONE_HOUR;
+const ONE_WEEK = 7 * ONE_DAY;
+const EXPIRY_OPTIONS = [
+  {
+    value: 5 * ONE_MINUTE,
+    label: '5 minutes',
+  },
+  {
+    value: ONE_HOUR,
+    label: '1 hour',
+  },
+  {
+    value: ONE_DAY,
+    label: '1 day',
+  },
+  {
+    value: ONE_WEEK,
+    label: '1 week',
+  },
+  {
+    value: 2 * ONE_WEEK,
+    label: '2 weeks',
+  },
+];
+
+const DOWNLOAD_LIMIT_OPTIONS = [
+  {
+    value: 1,
+  },
+  {
+    value: 2,
+  },
+  {
+    value: 3,
+  },
+  {
+    value: 5,
+  },
+  {
+    value: 20,
+  },
+  {
+    value: 100,
+  },
+  {
+    value: 200,
+  },
+];
+
 const Upload: React.FC = () => {
   const [fileObjects, setFileObjects] = useState<FileObject[]>([]);
   const files = useMemo(() => fileObjects.map((fo) => fo.file), [fileObjects]);
   const totalSize = useMemo(() => files.reduce((size, file) => size + file.size, 0), [files]);
   const hasFiles = files.length > 0;
-  const areFilesTooLarge = totalSize > 5 * 1024 * 1024 * 1024;
+  const areFilesTooLarge = totalSize > MAX_FILE_SIZE;
 
   const addFiles = useCallback((newFiles: File[]) => {
     setFileObjects((oldFileObjects) => [
@@ -94,8 +148,8 @@ const Upload: React.FC = () => {
     [fileObjects, createFileDeleteHandler],
   );
 
-  const [expiry, setExpiry] = useState(1); // days
-  const [downloadLimit, setDownloadLimit] = useState(1);
+  const [expiry, setExpiry] = useState(EXPIRY_OPTIONS[0].value);
+  const [downloadLimit, setDownloadLimit] = useState(DOWNLOAD_LIMIT_OPTIONS[0].value);
 
   const [state, upload] = useUpload();
   const {
@@ -117,7 +171,7 @@ const Upload: React.FC = () => {
   });
 
   const handleClick = useCallback(() => {
-    if (!loading && hasFiles) upload(files[0], { expiry: expiry * 86400, downloadLimit });
+    if (!loading && hasFiles) upload(files[0], { expiry, downloadLimit });
   }, [files, hasFiles, loading, upload, expiry, downloadLimit]);
 
   const to = `/download/${id}&${secretb64}`;
@@ -132,7 +186,7 @@ const Upload: React.FC = () => {
       areFilesTooLarge ||
       loading ||
       expiry < 1 ||
-      expiry > 14 ||
+      expiry > 2 * ONE_WEEK ||
       downloadLimit < 1 ||
       downloadLimit > 200,
     [hasFiles, areFilesTooLarge, loading, expiry, downloadLimit],
@@ -159,19 +213,12 @@ const Upload: React.FC = () => {
         <InfoRow>
           <p>Expires After</p>
           {uploading || success ? (
-            <p>
-              {expiry} {`day${expiry === 1 ? '' : 's'}`}
-            </p>
+            <p>{EXPIRY_OPTIONS.find((option) => option.value === expiry)?.label}</p>
           ) : (
-            <input
-              style={{ color: 'black' }}
-              id="expiry"
-              type="number"
-              min="1"
-              max="14"
-              disabled={loading}
+            <Select
               value={expiry}
-              onChange={(event) => setExpiry(Number.parseInt(event.target.value, 10))}
+              options={EXPIRY_OPTIONS}
+              onChange={(value) => setExpiry(value)}
             />
           )}
         </InfoRow>
@@ -181,15 +228,10 @@ const Upload: React.FC = () => {
           {uploading || success ? (
             <p>{downloadLimit}</p>
           ) : (
-            <input
-              style={{ color: 'black' }}
-              id="downloadLimit"
-              type="number"
-              min="1"
-              max="200"
-              disabled={loading}
+            <Select
               value={downloadLimit}
-              onChange={(event) => setDownloadLimit(Number.parseInt(event.target.value, 10))}
+              options={DOWNLOAD_LIMIT_OPTIONS}
+              onChange={(value) => setDownloadLimit(value)}
             />
           )}
         </InfoRow>

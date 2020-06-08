@@ -20,5 +20,6 @@ export { default as NotFound } from './NotFound';
 export { default as Page } from './Page';
 export { default as SaveIcon } from './SaveIcon';
 export { default as SecurityIcon } from './SecurityIcon';
+export { default as Select } from './Select';
 export { default as Upload } from './Upload';
 export { default as Vault } from './Vault';
