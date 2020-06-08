@@ -35,58 +35,58 @@ const StyledButton = styled.button<{
 
     ${!props.disabled &&
     css`
-    span:first-child {
-      position: relative;
-      left: 0;
-      top: 0;
-      text-shadow: ${glitchSize}em ${glitchSize}em ${props.theme.palette.secondary};
-      color: inherit;
-      z-index: 3;
-    }
-
-    span:nth-child(2) {
-      position: absolute;
-      top: ${paddingTopBottom};
-      left: ${paddingLeftRight};
-
-      &:before, 
-      &:after {
-        content: '${props.content}';
-        position: absolute;
-        top: 0;
-      }
-
-      &:before {
-        color: ${props.theme.palette.secondary};
-        z-index: 1;
-      }
-
-      &:after {
-        left: 0;
-        color: ${props.theme.palette.tertiary};
-        z-index: 2;
-      }
-    }
-
-    &:hover, 
-    &:focus {
       span:first-child {
-        text-shadow: none;
+        position: relative;
+        left: 0;
+        top: 0;
+        text-shadow: ${glitchSize}em ${glitchSize}em ${props.theme.palette.secondary};
+        color: inherit;
+        z-index: 3;
       }
 
       span:nth-child(2) {
-        &:before {
-          animation: ${glitch(glitchOptions)};
-        }
+        position: absolute;
+        top: ${paddingTopBottom};
+        left: ${paddingLeftRight};
+
+        &:before, 
         &:after {
-          animation: ${glitch({ ...glitchOptions, direction: 'reverse' })};
+          content: '${props.content}';
+          position: absolute;
+          top: 0;
+        }
+
+        &:before {
+          color: ${props.theme.palette.secondary};
+          z-index: 1;
+        }
+
+        &:after {
+          left: 0;
+          color: ${props.theme.palette.tertiary};
+          z-index: 2;
         }
       }
-    }
 
-    &:focus {
-      border: 1px solid ${props.theme.palette.tertiary}
-    }
+      &:hover, 
+      &:focus {
+        span:first-child {
+          text-shadow: none;
+        }
+
+        span:nth-child(2) {
+          &:before {
+            animation: ${glitch(glitchOptions)};
+          }
+          &:after {
+            animation: ${glitch({ ...glitchOptions, direction: 'reverse' })};
+          }
+        }
+      }
+
+      &:focus {
+        border: 1px solid ${props.theme.palette.tertiary}
+      }
     `}
   `;
 });
