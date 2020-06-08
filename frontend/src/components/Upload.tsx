@@ -1,6 +1,5 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { format, formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import isNil from 'lodash.isnil';
 import differenceWith from 'lodash.differencewith';
@@ -103,7 +102,7 @@ const Upload: React.FC = () => {
     secretb64,
     id,
     status,
-    progress: { loading, percent, ticks, estimate },
+    progress: { loading, percent },
   } = state;
 
   const handleDrop = useCallback<DropHandler>(
@@ -124,6 +123,9 @@ const Upload: React.FC = () => {
   const to = `/download/${id}&${secretb64}`;
   const href = config().app.origin + to;
 
+  const uploading = status !== 0 && loading;
+  const success = !loading && !isNil(id) && !isNil(secretb64);
+
   const uploadDisabled = useMemo(
     () =>
       !hasFiles ||
@@ -139,7 +141,12 @@ const Upload: React.FC = () => {
   return (
     <Container>
       <Dropzone {...dropzone.getRootProps()}>
-        <Vault files={filesInVault} isDragActive={dropzone.isDragActive} loading={loading} />
+        <Vault
+          files={filesInVault}
+          isDragActive={dropzone.isDragActive}
+          loading={loading}
+          success={success}
+        />
         <input {...dropzone.getInputProps()} />
       </Dropzone>
 
@@ -150,59 +157,60 @@ const Upload: React.FC = () => {
         </InfoRow>
 
         <InfoRow>
-          <p>Expire</p>
-          <input
-            style={{ color: 'black' }}
-            id="expiry"
-            type="number"
-            min="1"
-            max="14"
-            disabled={loading}
-            value={expiry}
-            onChange={(event) => setExpiry(Number.parseInt(event.target.value, 10))}
-          />
+          <p>Expires After</p>
+          {uploading || success ? (
+            <p>
+              {expiry} {`day${expiry === 1 ? '' : 's'}`}
+            </p>
+          ) : (
+            <input
+              style={{ color: 'black' }}
+              id="expiry"
+              type="number"
+              min="1"
+              max="14"
+              disabled={loading}
+              value={expiry}
+              onChange={(event) => setExpiry(Number.parseInt(event.target.value, 10))}
+            />
+          )}
         </InfoRow>
 
         <InfoRow>
           <p>Download Limit</p>
-          <input
-            style={{ color: 'black' }}
-            id="downloadLimit"
-            type="number"
-            min="1"
-            max="200"
-            disabled={loading}
-            value={downloadLimit}
-            onChange={(event) => setDownloadLimit(Number.parseInt(event.target.value, 10))}
-          />
+          {uploading || success ? (
+            <p>{downloadLimit}</p>
+          ) : (
+            <input
+              style={{ color: 'black' }}
+              id="downloadLimit"
+              type="number"
+              min="1"
+              max="200"
+              disabled={loading}
+              value={downloadLimit}
+              onChange={(event) => setDownloadLimit(Number.parseInt(event.target.value, 10))}
+            />
+          )}
         </InfoRow>
+
+        {uploading && (
+          <>
+            <InfoRow>
+              <p>Progress</p>
+              <p>{Math.floor(percent * 100)}%</p>
+            </InfoRow>
+          </>
+        )}
       </Info>
 
-      {hasFiles && (
+      {hasFiles && !loading && !success && (
         <Button onClick={handleClick} disabled={uploadDisabled}>
           Upload
         </Button>
       )}
 
-      <div>
-        {status === 0 && <p>Setting up keys...</p>}
-
-        {status !== 0 && loading && (
-          <>
-            <p>Uploading...</p>
-            <p>
-              {Math.floor(percent * 100)}%, #{ticks}
-            </p>
-            {estimate && (
-              <p>
-                {format(estimate, 'yyyy-MM-dd HH:mm:ss')} {formatDistanceToNow(estimate)}
-              </p>
-            )}
-          </>
-        )}
-
-        {!loading && !isNil(id) && !isNil(secretb64) && <Link to={to}>{href}</Link>}
-      </div>
+      {success && <Link to={to}>{href}</Link>}
     </Container>
   );
 };

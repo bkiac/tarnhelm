@@ -6,6 +6,7 @@ declare module 'styled-components' {
     save: '\\e901';
     death: '\\e902';
     danger: '\\e903';
+    security: '\\e904';
   }
 
   export interface DefaultThemeColors {

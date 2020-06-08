@@ -10,6 +10,7 @@ const iconContentCodes: DefaultThemeIconContentCodes = {
   save: '\\e901',
   death: '\\e902',
   danger: '\\e903',
+  security: '\\e904',
 };
 
 const colors: DefaultThemeColors = {

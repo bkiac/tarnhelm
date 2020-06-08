@@ -3,10 +3,12 @@ import styled, { css } from 'styled-components';
 
 import SaveIcon from './SaveIcon';
 import DeathIcon from './DeathIcon';
+import SecurityIcon from './SecurityIcon';
 import FileStick from './FileStick';
+import Loader from './Loader';
 
 const StyledVault = styled.div<{
-  isEmpty: boolean;
+  center: boolean;
   hasError?: boolean;
 }>(
   (props) => css`
@@ -22,7 +24,7 @@ const StyledVault = styled.div<{
     justify-content: flex-start;
     align-items: center;
 
-    ${props.isEmpty &&
+    ${props.center &&
     css`
       cursor: pointer;
       justify-content: center;
@@ -54,8 +56,9 @@ const Vault: React.FC<{
   files: FileObject[];
   isDragActive: boolean;
   loading?: boolean;
+  success?: boolean;
   hasError?: boolean;
-}> = ({ files, isDragActive, loading = false, hasError }) => {
+}> = ({ files, isDragActive, loading = false, success = false, hasError }) => {
   const isEmpty = files.length === 0;
 
   function renderPartial(Icon: any, message: React.ReactNode): React.ReactElement {
@@ -68,22 +71,23 @@ const Vault: React.FC<{
   }
 
   return (
-    <StyledVault isEmpty={isEmpty} hasError={hasError}>
-      {hasError ? (
-        renderPartial(DeathIcon, 'Unexpected Error')
-      ) : (
-        <>
-          {isEmpty ? (
-            <>
-              {isDragActive
-                ? renderPartial(SaveIcon, 'Drop files to start')
-                : renderPartial(SaveIcon, 'Click or drop files to start')}
-            </>
-          ) : (
-            files.map(({ id, ...f }) => <StyledFileStick key={id} obfuscate={loading} {...f} />)
-          )}
-        </>
-      )}
+    <StyledVault center={isEmpty || loading || success} hasError={hasError}>
+      {hasError && renderPartial(DeathIcon, 'Unexpected Error')}
+
+      {!hasError && isEmpty && isDragActive && renderPartial(SaveIcon, 'Drop files to start')}
+      {!hasError &&
+        isEmpty &&
+        !isDragActive &&
+        renderPartial(SaveIcon, 'Click or drop files to start')}
+
+      {!hasError && loading && <Loader />}
+
+      {!hasError && !loading && success && renderPartial(SecurityIcon, 'Success')}
+
+      {!hasError &&
+        !loading &&
+        !success &&
+        files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)}
     </StyledVault>
   );
 };
