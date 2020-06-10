@@ -11,7 +11,7 @@
     "format": "yarn prettier && yarn eslint",
     "lint": "eslint src/ --ext .js,.ts,.tsx --cache --fix",
     "test": "react-scripts test --watchAll=false --passWithNoTests",
-    "test:watch": "react-scripts watch",
+    "test:watch": "react-scripts test",
     "prettier": "prettier --write \"src/**/*\" && prettier-package-json --write",
     "type": "tsc --noEmit",
     "watch": "react-scripts start"
