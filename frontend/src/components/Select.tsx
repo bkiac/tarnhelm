@@ -58,7 +58,7 @@ const Menu = styled.ul(
     background-color: ${props.theme.palette.background};
     box-sizing: border-box;
     margin-top: -1px;
-    max-height: 200px;
+    max-height: 100px;
     overflow-y: auto;
     position: absolute;
     top: 100%;
