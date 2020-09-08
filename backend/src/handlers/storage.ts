@@ -51,15 +51,23 @@ function validateUploadParams(params: UploadParams): string[] {
 
   const errors: string[] = [];
 
+  const isTooSmall = (value: number | undefined, min: number): boolean =>
+    !isNil(value) && value < min;
   const isTooBig = (value: number | undefined, max: number): boolean =>
     !isNil(value) && value > max;
 
   if (isNil(metadata)) errors.push('Metadata is empty.');
+
   if (isNil(authb64)) errors.push('Authentication key is empty.');
+
   if (isTooBig(size, storageConfig.fileSize.max))
     errors.push(`${size} is greater than ${storageConfig.fileSize.max}`);
+
+  if (isTooSmall(downloadLimit, 1)) errors.push(`${downloadLimit} is lower than 1`);
   if (isTooBig(downloadLimit, storageConfig.downloads.max))
     errors.push(`${downloadLimit} is greater than ${storageConfig.downloads.max}`);
+
+  if (isTooSmall(expiry, 1)) errors.push(`${expiry} is lower than 1 second`);
   if (isTooBig(expiry, storageConfig.expiry.max))
     errors.push(`${expiry} is greater than ${storageConfig.expiry.max}`);
 

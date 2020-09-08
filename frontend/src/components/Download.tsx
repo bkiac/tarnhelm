@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Redirect } from 'react-router-dom';
 import bytes from 'bytes';
 
 import { useDownload } from '../hooks';
 
-const Download: React.FunctionComponent = () => {
+const Download: React.FC = () => {
   const { id, secretb64 } = useParams<{ id: string; secretb64: string }>();
 
   const [count, setCount] = useState(0);
@@ -16,32 +16,30 @@ const Download: React.FunctionComponent = () => {
     return download();
   }, [download]);
 
+  if (error) return <Redirect to="/404" />;
+
   return (
     <>
       <div>ID: {id}</div>
       <div>Secret: {secretb64}</div>
-      {error ? (
-        <p>404</p>
-      ) : (
-        <div>
-          {status === 0 && <p>Setting up keys...</p>}
+      <div>
+        {status === 0 && <p>Setting up keys...</p>}
 
-          {metadata && (
-            <>
-              <div>Name: {metadata.name}</div>
-              <div>Size: {bytes(metadata.size)}</div> {/* eslint-disable-line */}
-            </>
-          )}
+        {metadata && (
+          <>
+            <div>Name: {metadata.name}</div>
+            <div>Size: {bytes(metadata.size)}</div>
+          </>
+        )}
 
-          {status !== 0 && loading && <p>...</p>}
+        {status !== 0 && loading && <p>...</p>}
 
-          {!loading && count === 0 && (
-            <button type="button" onClick={handleClick} disabled={loading}>
-              Download
-            </button>
-          )}
-        </div>
-      )}
+        {!loading && count === 0 && (
+          <button type="button" onClick={handleClick} disabled={loading}>
+            Download
+          </button>
+        )}
+      </div>
     </>
   );
 };
