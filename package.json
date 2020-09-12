@@ -1,9 +1,9 @@
 {
   "name": "tarnhelm",
   "license": "MIT",
-  "author": "bkiac <benceknab.iac@gmail.com>",
+  "author": "Bence Knáb <benceknab@pm.me>",
   "repository": "git@github.com:bkiac/tarnhelm.git",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "postinstall": "lerna bootstrap",
     "format": "yarn prettier && yarn lint",
