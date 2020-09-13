@@ -4,7 +4,7 @@ import type { Server } from "ws"
 
 export const ONE_DAY_IN_SECONDS = 86400
 
-export function log(message: string, meta?: any): void {
+export function log(message: string, meta?: Record<string, unknown>): void {
 	console.log(new Date(), message, meta)
 }
 

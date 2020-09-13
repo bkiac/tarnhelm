@@ -10,12 +10,14 @@ const s3 = new AWS.S3({
 	endpoint,
 })
 
-export interface S3UploadArgs {
+export type S3UploadArgs = {
 	key: string
 	body: stream.Readable
 	length?: number
 }
+
 export type S3UploadListener = (progress: AWS.S3.ManagedUpload.Progress) => void
+
 export async function set(
 	data: S3UploadArgs,
 	listener?: (progress: AWS.S3.ManagedUpload.Progress) => void,
@@ -27,7 +29,9 @@ export async function set(
 		Body: body,
 		ContentLength: length,
 	})
-	if (listener) managedUpload.on("httpUploadProgress", listener)
+	if (listener) {
+		managedUpload.on("httpUploadProgress", listener)
+	}
 	return managedUpload.promise()
 }
 

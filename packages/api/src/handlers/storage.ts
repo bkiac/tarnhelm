@@ -31,13 +31,12 @@ function limiter(limit = storageConfig.fileSize.max): stream.Transform {
 		transform(chunk: Buffer, encoding, callback): void {
 			length += chunk.length
 			this.push(chunk)
-			if (length > limit) return callback(new Error("limit"))
-			return callback()
+			return length > limit ? callback(new Error("limit")) : callback()
 		},
 	})
 }
 
-interface UploadParams {
+type UploadParams = {
 	metadata: string
 	authb64: string
 	size?: number
@@ -50,28 +49,37 @@ function validateUploadParams(params: UploadParams): string[] {
 
 	const errors: string[] = []
 
-	const isTooSmall = (value: number | undefined, min: number): boolean =>
-		!isNil(value) && value < min
-	const isTooBig = (value: number | undefined, max: number): boolean =>
-		!isNil(value) && value > max
+	if (isNil(metadata)) {
+		errors.push("Metadata is empty.")
+	}
 
-	if (isNil(metadata)) errors.push("Metadata is empty.")
+	if (isNil(authb64)) {
+		errors.push("Authentication key is empty.")
+	}
 
-	if (isNil(authb64)) errors.push("Authentication key is empty.")
-
-	if (isTooBig(size, storageConfig.fileSize.max))
+	if (size != null && size > storageConfig.fileSize.max) {
 		errors.push(`${size} is greater than ${storageConfig.fileSize.max}`)
+	}
 
-	if (isTooSmall(downloadLimit, 1))
-		errors.push(`${downloadLimit} is lower than 1`)
-	if (isTooBig(downloadLimit, storageConfig.downloads.max))
-		errors.push(
-			`${downloadLimit} is greater than ${storageConfig.downloads.max}`,
-		)
+	if (downloadLimit != null) {
+		if (downloadLimit < 1) {
+			errors.push(`${downloadLimit} is lower than 1`)
+		}
+		if (downloadLimit > storageConfig.downloads.max) {
+			errors.push(
+				`${downloadLimit} is greater than ${storageConfig.downloads.max}`,
+			)
+		}
+	}
 
-	if (isTooSmall(expiry, 1)) errors.push(`${expiry} is lower than 1 second`)
-	if (isTooBig(expiry, storageConfig.expiry.max))
-		errors.push(`${expiry} is greater than ${storageConfig.expiry.max}`)
+	if (expiry != null) {
+		if (expiry < 1) {
+			errors.push(`${expiry} is lower than 1 second`)
+		}
+		if (expiry > storageConfig.expiry.max) {
+			errors.push(`${expiry} is greater than ${storageConfig.expiry.max}`)
+		}
+	}
 
 	return errors
 }
@@ -80,10 +88,12 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 	let fileStream: stream.Duplex | undefined
 
 	client.addEventListener("close", (event) => {
-		if (event.code !== 1000 && fileStream) fileStream.destroy()
+		if (event.code !== 1000 && fileStream) {
+			fileStream.destroy()
+		}
 	})
 
-	client.once("message", async (msg: string) => {
+	client.once("message", (msg: string) => {
 		const params = JSON.parse(msg) as UploadParams
 
 		const errors = validateUploadParams(params)
@@ -98,34 +108,39 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
 		const { metadata, size, downloadLimit, expiry, authb64 } = params
 
-		try {
-			fileStream = ws.createWebSocketStream(client).pipe(eof()).pipe(limiter())
+		fileStream = ws.createWebSocketStream(client).pipe(eof()).pipe(limiter())
 
-			log("Start storage upload", id)
+		log("Start storage upload", { id })
 
-			const data = await storage.set(
+		storage
+			.set(
 				{ id, stream: fileStream, metadata, size },
 				{ downloadLimit, expiry, authb64 },
 				(progress) => webSocket.send(client, { data: progress.loaded }),
 			)
-
-			log("Finish storage upload", data)
-		} catch (e) {
-			const error = e as Error
-
-			log("Storage error", { id, error })
-
-			webSocket.send(client, {
-				error: error.message === "limit" ? 413 : 500,
+			.then((data) => {
+				log("Finish storage upload", { data })
 			})
+			.catch((error: Error) => {
+				log("Storage error", { id, error })
 
-			fileStream?.destroy()
-			await storage.del(id)
+				webSocket.send(client, {
+					error: error.message === "limit" ? 413 : 500,
+				})
 
-			log("Temporary file deleted", id)
-		} finally {
-			client.close()
-		}
+				fileStream?.destroy()
+				storage
+					.del(id)
+					.then(() => {
+						log("Temporary file deleted", { id })
+					})
+					.catch((error2: Error) => {
+						log("Storage error", { id, error: error2 })
+					})
+			})
+			.finally(() => {
+				client.close()
+			})
 	})
 }
 
@@ -169,7 +184,7 @@ export const download: express.RequestHandler<{ id: string }> = async (
 				res.sendStatus(401)
 				return
 			}
-		} catch (error) {
+		} catch (error: unknown) {
 			res.sendStatus(401)
 			return
 		}
@@ -182,7 +197,7 @@ export const download: express.RequestHandler<{ id: string }> = async (
 		let cancelled = false
 		let finished = false
 
-		log("Start storage download", id)
+		log("Start storage download", { id })
 		fileStream
 			.pipe(res)
 			.on("finish", () => {
@@ -193,12 +208,12 @@ export const download: express.RequestHandler<{ id: string }> = async (
 							if (newDownloads >= downloadLimit) {
 								storage.del(id).then(
 									() => {
-										log("Finish storage download and delete file", id)
+										log("Finish storage download and delete file", { id })
 									},
 									() => {},
 								)
 							} else {
-								log("Finish storage download", id)
+								log("Finish storage download", { id })
 							}
 						},
 						() => {},
@@ -208,11 +223,11 @@ export const download: express.RequestHandler<{ id: string }> = async (
 			.on("close", () => {
 				if (!finished) {
 					cancelled = true
-					log("Storage download error", id)
+					log("Storage download error", { id })
 					fileStream.destroy()
 				}
 			})
-	} catch (error) {
+	} catch (error: unknown) {
 		res.sendStatus(404)
 	}
 }
@@ -235,7 +250,7 @@ export const getMetadata: express.RequestHandler<{ id: string }> = async (
 		}
 
 		res.send(metadata)
-	} catch (error) {
+	} catch (error: unknown) {
 		res.sendStatus(404)
 	}
 }

@@ -1,12 +1,17 @@
 import express from "express"
 import expressWs from "express-ws"
 
+/**
+ * Set up Express and WebSocket server before loading and defining routes
+ * https://github.com/HenningM/express-ws#usage
+ */
+
 // Augment Express app with a WebSocket server
-const { app, getWss } = expressWs(express())
+const instance = expressWs(express())
 
 const wexpress = {
-	app,
-	wss: getWss(),
+	app: instance.app,
+	wss: instance.getWss(),
 }
 
 export default wexpress

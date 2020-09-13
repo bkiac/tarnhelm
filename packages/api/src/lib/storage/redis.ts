@@ -1,4 +1,4 @@
-import type { Dictionary} from "lodash";
+import type { Dictionary } from "lodash"
 import { flatten, isNil } from "lodash"
 import Redis from "redis"
 import * as util from "util"
@@ -23,10 +23,8 @@ const redis = Redis.createClient({
 function promisifyRedis<C extends (...args: any[]) => Promise<any>>(
 	command: (...args: any[]) => any,
 ): C {
-	/* eslint-disable */
-	// @ts-ignore
+	// @ts-expect-error:
 	return util.promisify<any, any, any>(command).bind(redis)
-	/* eslint-enable */
 }
 
 /* eslint-disable @typescript-eslint/unbound-method */
@@ -36,7 +34,7 @@ const setAsync: (
 	...options: string[]
 ) => Promise<OK> = promisifyRedis(redis.set)
 
-interface RedisSetOptions {
+type RedisSetOptions = {
 	EX?: number
 	PX?: number
 	NX?: true
@@ -60,13 +58,15 @@ export async function set(
 			modifiers.push("PX", PX.toString())
 		}
 
-		if (NX) {
+		if (NX != null) {
 			modifiers.push("NX")
-		} else if (XX) {
+		} else if (XX != null) {
 			modifiers.push("XX")
 		}
 
-		if (KEEPTTL) modifiers.push("KEEPTTL")
+		if (KEEPTTL != null && KEEPTTL) {
+			modifiers.push("KEEPTTL")
+		}
 	}
 
 	return setAsync(key, value, ...modifiers)

@@ -1,5 +1,4 @@
 import * as crypto from "crypto"
-import type { Dictionary} from "lodash";
 import { isNil } from "lodash"
 import type * as stream from "stream"
 import config from "../../config"
@@ -13,7 +12,7 @@ function generateNonce(): string {
 	return crypto.randomBytes(16).toString("base64")
 }
 
-interface StorageMetadata extends Dictionary<string | number> {
+type StorageMetadata = {
 	downloadLimit: number
 	downloads: number
 	authb64: string
@@ -23,18 +22,20 @@ interface StorageMetadata extends Dictionary<string | number> {
 
 export async function getMetadata(id: string): Promise<StorageMetadata> {
 	const res = (await redis.hgetall(id)) as StorageMetadata
-	if (isNil(res)) throw new Error(`Metadata with id "${id}" does not exist.`)
+	if (isNil(res)) {
+		throw new Error(`Metadata with id "${id}" does not exist.`)
+	}
 	return res
 }
 
-export interface StorageUploadArgs {
+export type StorageUploadArgs = {
 	id: string
 	stream: stream.Readable
 	metadata: string
 	size?: number
 }
 
-export interface StorageUploadOptions {
+export type StorageUploadOptions = {
 	authb64: string
 	downloadLimit?: number
 	expiry?: number // in seconds
@@ -68,14 +69,16 @@ export async function isAvailable(id: string): Promise<boolean> {
 	try {
 		const { downloads, downloadLimit } = await getMetadata(id)
 		return downloads < downloadLimit
-	} catch (error) {
+	} catch (error: unknown) {
 		return false
 	}
 }
 
 export async function get(id: string): Promise<ReturnType<typeof s3.get>> {
 	const available = await isAvailable(id)
-	if (!available) throw new Error(`File with id "${id}" is not available.`)
+	if (!available) {
+		throw new Error(`File with id "${id}" is not available.`)
+	}
 	return s3.get(id)
 }
 
@@ -106,7 +109,9 @@ export async function clean(): Promise<void> {
 		log(`There are ${keys.length} files in S3.`)
 		const ttls = await Promise.all(keys.map(async (key) => redis.ttl(key)))
 		const keysToDelete = ttls.reduce<string[]>((acc, ttl, i) => {
-			if (ttl <= 0) acc.push(keys[i])
+			if (ttl <= 0) {
+				acc.push(keys[i])
+			}
 			return acc
 		}, [])
 		if (keysToDelete.length > 0) {
