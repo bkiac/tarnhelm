@@ -1,8 +1,8 @@
-import styled from 'styled-components';
+import styled from "styled-components"
 
 const A = styled.a`
-  color: inherit;
-  text-decoration: inherit;
-`;
+	color: inherit;
+	text-decoration: inherit;
+`
 
-export default A;
+export default A

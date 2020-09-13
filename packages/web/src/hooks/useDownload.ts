@@ -1,208 +1,218 @@
-import { useCallback, useEffect, useMemo, useReducer, Reducer } from 'react';
-import axios from 'axios';
-import isNil from 'lodash.isnil';
-
-import * as stream from '../lib/stream';
-import * as file from '../lib/file';
-import useKeyring from './useKeyring';
+import axios from "axios"
+import isNil from "lodash.isnil"
+import type { Reducer} from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react"
+import * as file from "../lib/file"
+import * as stream from "../lib/stream"
+import useKeyring from "./useKeyring"
 
 enum Status {
-  KeyringSetup,
-  Ready,
+	KeyringSetup,
+	Ready,
 
-  MetadataPending,
-  MetadataSuccess,
-  MetadataFailure,
+	MetadataPending,
+	MetadataSuccess,
+	MetadataFailure,
 
-  DownloadPending,
-  DownloadSuccess,
-  DownloadFailure,
+	DownloadPending,
+	DownloadSuccess,
+	DownloadFailure,
 }
 
 interface ContentMetadata {
-  name: string;
-  size: string;
-  type: string;
+	name: string
+	size: string
+	type: string
 }
 
 interface State {
-  loading: boolean;
-  status: Status;
-  metadata?: ContentMetadata;
-  signature?: string;
-  error?: Error;
+	loading: boolean
+	status: Status
+	metadata?: ContentMetadata
+	signature?: string
+	error?: Error
 }
 
 const initialState = {
-  loading: false,
-  status: Status.KeyringSetup,
-};
+	loading: false,
+	status: Status.KeyringSetup,
+}
 
 enum ActionType {
-  SetReady,
+	SetReady,
 
-  SetMetadataPending,
-  SetMetadataSuccess,
-  SetMetadataFailure,
+	SetMetadataPending,
+	SetMetadataSuccess,
+	SetMetadataFailure,
 
-  SetDownloadPending,
-  SetDownloadSuccess,
-  SetDownloadFailure,
+	SetDownloadPending,
+	SetDownloadSuccess,
+	SetDownloadFailure,
 }
 
-type SetReady = ReducerAction<ActionType.SetReady>;
-type SetMetadataPending = ReducerAction<ActionType.SetMetadataPending>;
+type SetReady = ReducerAction<ActionType.SetReady>
+type SetMetadataPending = ReducerAction<ActionType.SetMetadataPending>
 type SetMetadataSuccess = ReducerAction<
-  ActionType.SetMetadataSuccess,
-  { metadata: ContentMetadata; signature: string }
->;
-type SetMetadataFailure = ReducerAction<ActionType.SetMetadataFailure, Error>;
-type SetDownloadPending = ReducerAction<ActionType.SetDownloadPending>;
-type SetDownloadSuccess = ReducerAction<ActionType.SetDownloadSuccess>;
-type SetDownloadFailure = ReducerAction<ActionType.SetDownloadFailure, Error>;
+	ActionType.SetMetadataSuccess,
+	{ metadata: ContentMetadata; signature: string }
+>
+type SetMetadataFailure = ReducerAction<ActionType.SetMetadataFailure, Error>
+type SetDownloadPending = ReducerAction<ActionType.SetDownloadPending>
+type SetDownloadSuccess = ReducerAction<ActionType.SetDownloadSuccess>
+type SetDownloadFailure = ReducerAction<ActionType.SetDownloadFailure, Error>
 
 type Action =
-  | SetReady
-  | SetMetadataPending
-  | SetMetadataSuccess
-  | SetMetadataFailure
-  | SetDownloadPending
-  | SetDownloadSuccess
-  | SetDownloadFailure;
+	| SetReady
+	| SetMetadataPending
+	| SetMetadataSuccess
+	| SetMetadataFailure
+	| SetDownloadPending
+	| SetDownloadSuccess
+	| SetDownloadFailure
 
 const reducer: Reducer<State, Action> = (state, action) => {
-  switch (action.type) {
-    case ActionType.SetReady:
-      return {
-        ...state,
-        loading: false,
-        status: Status.Ready,
-      };
+	switch (action.type) {
+		case ActionType.SetReady:
+			return {
+				...state,
+				loading: false,
+				status: Status.Ready,
+			}
 
-    case ActionType.SetMetadataPending:
-      return {
-        loading: true,
-        status: Status.MetadataPending,
-      };
-    case ActionType.SetMetadataSuccess:
-      return {
-        ...state,
-        loading: true,
-        status: Status.MetadataSuccess,
-        metadata: action.payload.metadata,
-        signature: action.payload.signature,
-      };
-    case ActionType.SetMetadataFailure:
-      return {
-        ...state,
-        loading: false,
-        status: Status.MetadataFailure,
-        error: action.payload,
-      };
+		case ActionType.SetMetadataPending:
+			return {
+				loading: true,
+				status: Status.MetadataPending,
+			}
+		case ActionType.SetMetadataSuccess:
+			return {
+				...state,
+				loading: true,
+				status: Status.MetadataSuccess,
+				metadata: action.payload.metadata,
+				signature: action.payload.signature,
+			}
+		case ActionType.SetMetadataFailure:
+			return {
+				...state,
+				loading: false,
+				status: Status.MetadataFailure,
+				error: action.payload,
+			}
 
-    case ActionType.SetDownloadPending:
-      return {
-        ...state,
-        loading: true,
-        status: Status.DownloadPending,
-      };
-    case ActionType.SetDownloadSuccess:
-      return {
-        ...state,
-        loading: false,
-        status: Status.DownloadSuccess,
-      };
-    case ActionType.SetDownloadFailure:
-      return {
-        ...state,
-        loading: false,
-        status: Status.DownloadFailure,
-        error: action.payload,
-      };
+		case ActionType.SetDownloadPending:
+			return {
+				...state,
+				loading: true,
+				status: Status.DownloadPending,
+			}
+		case ActionType.SetDownloadSuccess:
+			return {
+				...state,
+				loading: false,
+				status: Status.DownloadSuccess,
+			}
+		case ActionType.SetDownloadFailure:
+			return {
+				...state,
+				loading: false,
+				status: Status.DownloadFailure,
+				error: action.payload,
+			}
 
-    default:
-      return state;
-  }
-};
-
-interface Metadata {
-  nonce: string;
-  encryptedContentMetadata: string;
+		default:
+			return state
+	}
 }
 
-type DownloadFn = () => void;
+interface Metadata {
+	nonce: string
+	encryptedContentMetadata: string
+}
 
-export default function useDownload(id: string, secretb64: string): [State, DownloadFn] {
-  const keyring = useKeyring(secretb64);
+type DownloadFn = () => void
 
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { status, metadata, signature } = state;
+export default function useDownload(
+	id: string,
+	secretb64: string,
+): [State, DownloadFn] {
+	const keyring = useKeyring(secretb64)
 
-  const download = useCallback<DownloadFn>(() => {
-    if (status === Status.Ready) dispatch({ type: ActionType.SetDownloadPending });
-  }, [status]);
+	const [state, dispatch] = useReducer(reducer, initialState)
+	const { status, metadata, signature } = state
 
-  useEffect(() => {
-    if (status === Status.KeyringSetup && keyring)
-      dispatch({ type: ActionType.SetMetadataPending });
-  }, [status, keyring]);
+	const download = useCallback<DownloadFn>(() => {
+		if (status === Status.Ready)
+			dispatch({ type: ActionType.SetDownloadPending })
+	}, [status])
 
-  useEffect(() => {
-    if (keyring) {
-      if (status === Status.MetadataPending) {
-        (async () => {
-          try {
-            const {
-              data: { encryptedContentMetadata, nonce },
-            } = await axios.get<Metadata>(`/metadata/${id}`);
+	useEffect(() => {
+		if (status === Status.KeyringSetup && keyring)
+			dispatch({ type: ActionType.SetMetadataPending })
+	}, [status, keyring])
 
-            const _metadata = await keyring.decryptMetadata<ContentMetadata>(
-              encryptedContentMetadata,
-            );
-            const _signature = await keyring.sign(nonce);
+	useEffect(() => {
+		if (keyring) {
+			if (status === Status.MetadataPending) {
+				;(async () => {
+					try {
+						const {
+							data: { encryptedContentMetadata, nonce },
+						} = await axios.get<Metadata>(`/metadata/${id}`)
 
-            dispatch({
-              type: ActionType.SetMetadataSuccess,
-              payload: { metadata: _metadata, signature: _signature },
-            });
-            dispatch({ type: ActionType.SetReady });
-          } catch (e) {
-            dispatch({
-              type: ActionType.SetMetadataFailure,
-              payload: e as Error,
-            });
-          }
-        })();
-      }
-    }
-  }, [keyring, id, status]);
+						const _metadata = await keyring.decryptMetadata<ContentMetadata>(
+							encryptedContentMetadata,
+						)
+						const _signature = await keyring.sign(nonce)
 
-  useEffect(() => {
-    if (keyring && !isNil(signature) && metadata) {
-      if (status === Status.DownloadPending) {
-        (async () => {
-          try {
-            const response = await axios.get(`/download/${id}`, {
-              responseType: 'blob',
-              headers: {
-                Authorization: signature,
-              },
-            });
+						dispatch({
+							type: ActionType.SetMetadataSuccess,
+							payload: { metadata: _metadata, signature: _signature },
+						})
+						dispatch({ type: ActionType.SetReady })
+					} catch (e) {
+						dispatch({
+							type: ActionType.SetMetadataFailure,
+							payload: e as Error,
+						})
+					}
+				})()
+			}
+		}
+	}, [keyring, id, status])
 
-            const blob = new Blob([response.data]);
-            const blobStream = stream.createBlobStream(blob);
-            const plaintext = keyring.decryptStream(blobStream);
-            await file.save(plaintext, { name: metadata.name, type: metadata.type });
+	useEffect(() => {
+		if (keyring && !isNil(signature) && metadata) {
+			if (status === Status.DownloadPending) {
+				;(async () => {
+					try {
+						const response = await axios.get(`/download/${id}`, {
+							responseType: "blob",
+							headers: {
+								Authorization: signature,
+							},
+						})
 
-            dispatch({ type: ActionType.SetDownloadSuccess });
-            dispatch({ type: ActionType.SetReady });
-          } catch (e) {
-            dispatch({ type: ActionType.SetDownloadFailure, payload: e as Error });
-          }
-        })();
-      }
-    }
-  }, [keyring, id, signature, metadata, status]);
+						const blob = new Blob([response.data])
+						const blobStream = stream.createBlobStream(blob)
+						const plaintext = keyring.decryptStream(blobStream)
+						await file.save(plaintext, {
+							name: metadata.name,
+							type: metadata.type,
+						})
 
-  return useMemo(() => [state, download], [state, download]);
+						dispatch({ type: ActionType.SetDownloadSuccess })
+						dispatch({ type: ActionType.SetReady })
+					} catch (e) {
+						dispatch({
+							type: ActionType.SetDownloadFailure,
+							payload: e as Error,
+						})
+					}
+				})()
+			}
+		}
+	}, [keyring, id, signature, metadata, status])
+
+	return useMemo(() => [state, download], [state, download])
 }

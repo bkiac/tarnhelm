@@ -1,3 +1,3 @@
-import * as storage from './storage';
+import * as storage from "./storage"
 
-export { storage };
+export { storage }

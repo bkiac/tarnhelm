@@ -1,32 +1,32 @@
-import React from 'react';
-import styled from 'styled-components';
-import isNil from 'lodash.isnil';
+import isNil from "lodash.isnil"
+import React from "react"
+import styled from "styled-components"
 
 const Container = styled.div`
-  padding: 1rem;
-  height: calc(100% - 2rem);
+	padding: 1rem;
+	height: calc(100% - 2rem);
 
-  display: flex;
-  flex-direction: column;
-`;
+	display: flex;
+	flex-direction: column;
+`
 
 const Main = styled.main`
-  width: 50%;
-  align-self: center;
-  height: 100%;
-`;
+	width: 50%;
+	align-self: center;
+	height: 100%;
+`
 
 const Footer = styled.footer`
-  margin-top: auto;
-`;
+	margin-top: auto;
+`
 
 const Layout: React.FC<{
-  footer?: React.ReactNode;
+	footer?: React.ReactNode
 }> = ({ children: main, footer }) => (
-  <Container>
-    <Main>{main}</Main>
-    {!isNil(footer) && <Footer>{footer}</Footer>}
-  </Container>
-);
+	<Container>
+		<Main>{main}</Main>
+		{!isNil(footer) && <Footer>{footer}</Footer>}
+	</Container>
+)
 
-export default Layout;
+export default Layout

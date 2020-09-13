@@ -1,7 +1,6 @@
-import React from 'react';
+import React from "react"
+import Icon from "./Icon"
 
-import Icon from './Icon';
+const DangerIcon: React.FC = () => <Icon glyph="danger" />
 
-const DangerIcon: React.FC = () => <Icon glyph="danger" />;
-
-export default DangerIcon;
+export default DangerIcon

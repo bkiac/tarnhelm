@@ -1,13 +1,13 @@
-import styled, { DefaultThemeIconContentCodes } from 'styled-components';
-
-import { iconFont } from '../styles/mixins';
+import type { DefaultThemeIconContentCodes } from "styled-components";
+import styled from "styled-components"
+import { iconFont } from "../styles/mixins"
 
 const StyledIcon = styled.i<{ glyph: keyof DefaultThemeIconContentCodes }>`
-  ${iconFont}
+	${iconFont}
 
-  &:before {
-    content: ${(props) => `'${props.theme.iconContentCodes[props.glyph]}'`};
-  }
-`;
+	&:before {
+		content: ${(props) => `'${props.theme.iconContentCodes[props.glyph]}'`};
+	}
+`
 
-export default StyledIcon;
+export default StyledIcon

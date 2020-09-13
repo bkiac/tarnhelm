@@ -1,26 +1,26 @@
 {
-  "compilerOptions": {
-    /* Shared */
-    "skipLibCheck": true,
+	"compilerOptions": {
+		/* Shared */
+		"skipLibCheck": true,
 
-    "strict": true,
+		"strict": true,
 
-    "noUnusedLocals": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
 
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
 
-    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
+		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
 
-    /* Backend */
-    "target": "es6",
-    "module": "commonjs",
-    "lib": ["es5", "es6"],
-    "outDir": "./dist"
-  },
-  "include": ["src"]
+		/* Backend */
+		"target": "es6",
+		"module": "commonjs",
+		"lib": ["es5", "es6"],
+		"outDir": "./dist"
+	},
+	"include": ["src"]
 }

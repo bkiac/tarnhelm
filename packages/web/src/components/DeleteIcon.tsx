@@ -1,7 +1,6 @@
-import React from 'react';
+import React from "react"
+import Icon from "./Icon"
 
-import Icon from './Icon';
+const DeleteIcon: React.FC = () => <Icon glyph="delete" />
 
-const DeleteIcon: React.FC = () => <Icon glyph="delete" />;
-
-export default DeleteIcon;
+export default DeleteIcon

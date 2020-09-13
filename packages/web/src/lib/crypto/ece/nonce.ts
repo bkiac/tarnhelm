@@ -1,6 +1,6 @@
-import { MAX_INT32 } from '../utils';
-import { NONCE_LENGTH } from './constants';
-import { generateNonceKey, exportKey } from './keysmith';
+import { MAX_INT32 } from "../utils"
+import { NONCE_LENGTH } from "./constants"
+import { exportKey, generateNonceKey } from "./keysmith"
 
 /**
  * Check if `number` is in the range of 32-bit integer
@@ -9,35 +9,35 @@ import { generateNonceKey, exportKey } from './keysmith';
  * https://stackoverflow.com/questions/5339538/bitwise-operators-changing-result-of-arithmetic
  */
 export function isSafeForBitwiseOperation(number: number): boolean {
-  return !(number > MAX_INT32);
+	return !(number > MAX_INT32)
 }
 
 export function generateNonce(seq: number, nb: Buffer): Buffer {
-  if (!isSafeForBitwiseOperation(seq)) {
-    throw new Error(`${seq} exceeds limit`);
-  }
-  const nonce = Buffer.from(nb);
-  const m = nonce.readUIntBE(nonce.length - 4, 4);
-  // Force unsigned xor
-  const xor = (m ^ seq) >>> 0; // eslint-disable-line no-bitwise
-  nonce.writeUIntBE(xor, nonce.length - 4, 4);
-  return nonce;
+	if (!isSafeForBitwiseOperation(seq)) {
+		throw new Error(`${seq} exceeds limit`)
+	}
+	const nonce = Buffer.from(nb)
+	const m = nonce.readUIntBE(nonce.length - 4, 4)
+	// Force unsigned xor
+	const xor = (m ^ seq) >>> 0 // eslint-disable-line no-bitwise
+	nonce.writeUIntBE(xor, nonce.length - 4, 4)
+	return nonce
 }
 
 export default async function generateNonceBase(
-  salt: ArrayBuffer,
-  ikm: Uint8Array,
+	salt: ArrayBuffer,
+	ikm: Uint8Array,
 ): Promise<{ nonceBase: Buffer; generateNonce: (seq: number) => Buffer }> {
-  const nonceKey = await generateNonceKey(salt, ikm);
-  const base = await exportKey(nonceKey);
+	const nonceKey = await generateNonceKey(salt, ikm)
+	const base = await exportKey(nonceKey)
 
-  const nonceBase = Buffer.from(base.slice(0, NONCE_LENGTH));
-  const _generateNonce = (seq: number): Buffer => generateNonce(seq, nonceBase);
+	const nonceBase = Buffer.from(base.slice(0, NONCE_LENGTH))
+	const _generateNonce = (seq: number): Buffer => generateNonce(seq, nonceBase)
 
-  return {
-    nonceBase,
-    generateNonce: _generateNonce,
-  };
+	return {
+		nonceBase,
+		generateNonce: _generateNonce,
+	}
 }
 
-export { NONCE_LENGTH };
+export { NONCE_LENGTH }

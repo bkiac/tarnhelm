@@ -1,19 +1,19 @@
 {
-  "compilerOptions": {
-    "skipLibCheck": true,
+	"compilerOptions": {
+		"skipLibCheck": true,
 
-    "strict": true,
+		"strict": true,
 
-    "noUnusedLocals": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
 
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
 
-    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
-  },
-  "include": ["src"]
+		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+	},
+	"include": ["src"]
 }

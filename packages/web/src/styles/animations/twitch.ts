@@ -1,4 +1,5 @@
-import { css, keyframes, FlattenSimpleInterpolation } from 'styled-components';
+import type { FlattenSimpleInterpolation} from "styled-components";
+import { css, keyframes } from "styled-components"
 
 const twitchKeyframes = keyframes`
   1% {
@@ -7,14 +8,14 @@ const twitchKeyframes = keyframes`
   2% {
     transform: rotateX(0deg) skewX(0deg);
   }
-`;
+`
 
 export default function twitch(opts: {
-  duration: number;
-  delay: number;
+	duration: number
+	delay: number
 }): FlattenSimpleInterpolation {
-  const { duration, delay } = opts;
-  return css`
-    ${twitchKeyframes} ${duration}s ${delay}s infinite
-  `;
+	const { duration, delay } = opts
+	return css`
+		${twitchKeyframes} ${duration}s ${delay}s infinite
+	`
 }

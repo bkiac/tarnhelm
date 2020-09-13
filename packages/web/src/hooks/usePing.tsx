@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from "axios"
+import { useEffect, useState } from "react"
 
 export default function usePing(): boolean {
-  const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    (async () => {
-      await axios.get('/ping');
-      setLoading(false);
-    })();
-  }, []);
+	useEffect(() => {
+		;(async () => {
+			await axios.get("/ping")
+			setLoading(false)
+		})()
+	}, [])
 
-  return loading;
+	return loading
 }
