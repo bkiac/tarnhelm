@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		/* Shared */
 		"skipLibCheck": true,
 
 		"strict": true,
@@ -13,7 +14,16 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 
-		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
+		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
+
+		/* Frontend */
+		"target": "es5",
+		"module": "esnext",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react",
+		"allowJs": true
 	},
 	"include": ["src"]
 }

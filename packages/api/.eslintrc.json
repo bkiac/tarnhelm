@@ -1,0 +1,6 @@
+{
+	"extends": ["bkiac/base"],
+	"parserOptions": {
+		"project": "./tsconfig.json"
+	}
+}

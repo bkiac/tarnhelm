@@ -1,0 +1,9 @@
+@font-face {
+	font-family: "tarnhelm-icons";
+	src: url("tarnhelm-icons.ttf?1la0bq") format("truetype"),
+		url("tarnhelm-icons.woff?1la0bq") format("woff"),
+		url("tarnhelm-icons.svg?1la0bq#tarnhelm-icons") format("svg");
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
