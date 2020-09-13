@@ -1,6 +1,6 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import type { FlattenSimpleInterpolation } from "styled-components";
+import type { FlattenSimpleInterpolation } from "styled-components"
 import styled, { css } from "styled-components"
 import { noise, twitch } from "../styles/animations"
 import A from "./A"

@@ -1,10 +1,5 @@
-import type {
-	FlattenSimpleInterpolation,
-	Keyframes} from "styled-components";
-import {
-	css,
-	keyframes
-} from "styled-components"
+import type { FlattenSimpleInterpolation, Keyframes } from "styled-components"
+import { css, keyframes } from "styled-components"
 
 type Unit = "em" | "px"
 

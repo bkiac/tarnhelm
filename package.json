@@ -11,7 +11,7 @@
 		"postinstall": "lerna bootstrap",
 		"lint": "run-s format packages:lint",
 		"lint-staged": "lint-staged --concurrent false",
-		"packages:fix": "lerna run fix --concurrency 1 --no-bail",
+		"packages:fix": "lerna run fix --concurrency 1 --stream --no-bail",
 		"packages:lint": "lerna run lint --no-bail",
 		"packages:pre-commit": "lerna run pre-commit --concurrency 1 --stream --no-bail",
 		"packages:test": "lerna run test --no-bail",

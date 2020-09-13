@@ -1,4 +1,4 @@
-import type { DefaultThemeIconContentCodes } from "styled-components";
+import type { DefaultThemeIconContentCodes } from "styled-components"
 import styled from "styled-components"
 import { iconFont } from "../styles/mixins"
 
