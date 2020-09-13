@@ -6,7 +6,7 @@ import * as stream from "stream"
 import { v4 as uuid } from "uuid"
 import * as ws from "ws"
 import config from "../config"
-import * as storage from "../lib/storage"
+import * as storage from "../lib/storage/storage"
 import * as webSocket from "../lib/web-socket"
 import { log } from "../utils"
 

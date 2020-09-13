@@ -1,7 +1,7 @@
 import cors from "cors"
 import cron from "cron"
 import config from "./config"
-import * as storage from "./lib/storage"
+import * as storage from "./lib/storage/storage"
 import express from "./lib/wexpress"
 import routes from "./routes"
 import { createStatsLogger, log } from "./utils"
