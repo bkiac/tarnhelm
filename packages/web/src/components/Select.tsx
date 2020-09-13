@@ -183,7 +183,9 @@ function Select<V extends React.ReactText>({
 	)
 	const createEnterChangeHandler = useCallback(
 		(newValue: V) => (event: React.KeyboardEvent) => {
-			if (event.key === "Enter") onChange(newValue)
+			if (event.key === "Enter") {
+				onChange(newValue)
+			}
 		},
 		[onChange],
 	)

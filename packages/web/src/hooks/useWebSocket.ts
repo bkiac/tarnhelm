@@ -1,13 +1,13 @@
-import type { Reducer} from "react";
+import type { Reducer } from "react"
 import { useCallback, useEffect, useReducer } from "react"
 import config from "../config"
 import * as webSocket from "../lib/web-socket"
 
 enum ConnectionStatus {
-	Opening,
-	Open,
-	Closing,
-	Closed,
+	Opening = 0,
+	Open = 1,
+	Closing = 2,
+	Closed = 3,
 }
 
 interface Connection {
@@ -18,12 +18,12 @@ interface Connection {
 }
 
 enum ActionType {
-	ConnectPending,
-	ConnectSuccess,
-	ConnectFailure,
-	DisconnectPending,
-	DisconnectSuccess,
-	DisconnectFailure,
+	ConnectPending = 0,
+	ConnectSuccess = 1,
+	ConnectFailure = 2,
+	DisconnectPending = 3,
+	DisconnectSuccess = 4,
+	DisconnectFailure = 5,
 }
 
 type ConnectPending = ReducerAction<ActionType.ConnectPending>
@@ -120,11 +120,11 @@ export default function useWebSocket(
 ): [Connection, () => void, () => void] {
 	const [connection, dispatch] = useReducer(reducer, init(options))
 
-	const connect = useCallback(
+	const handleConnect = useCallback(
 		() => dispatch({ type: ActionType.ConnectPending }),
 		[],
 	)
-	const disconnect = useCallback(() => {
+	const handleDisconnect = useCallback(() => {
 		if (connection.ws) {
 			dispatch({ type: ActionType.DisconnectPending })
 		}
@@ -133,35 +133,43 @@ export default function useWebSocket(
 	/** Handle mount, URL change and manual reconnect */
 	useEffect(() => {
 		if (connection.status === ConnectionStatus.Opening) {
-			;(async () => {
+			const connect = async (): Promise<void> => {
 				try {
-					if (connection.ws) connection.ws.close()
+					if (connection.ws) {
+						connection.ws.close()
+					}
 					const ws = await webSocket.open(config().server.origin.ws + url)
 					dispatch({ type: ActionType.ConnectSuccess, payload: { ws } })
-				} catch (error) {
+				} catch (error: unknown) {
 					dispatch({
 						type: ActionType.ConnectFailure,
 						payload: { error: error as Error },
 					})
 				}
-			})()
+			}
+
+			void connect()
 		}
 	}, [url, connection.ws, connection.status])
 
 	/** Handle manual disconnect */
 	useEffect(() => {
 		if (connection.status === ConnectionStatus.Closing) {
-			;(async () => {
+			const disconnect = async (): Promise<void> => {
 				try {
-					if (connection.ws) await webSocket.close(connection.ws)
+					if (connection.ws) {
+						await webSocket.close(connection.ws)
+					}
 					dispatch({ type: ActionType.DisconnectSuccess })
-				} catch (error) {
+				} catch (error: unknown) {
 					dispatch({
 						type: ActionType.DisconnectFailure,
 						payload: { error: error as Error },
 					})
 				}
-			})()
+			}
+
+			void disconnect()
 		}
 	}, [connection.ws, connection.status])
 
@@ -174,5 +182,5 @@ export default function useWebSocket(
 		}
 	}, [connection.ws])
 
-	return [connection, connect, disconnect]
+	return [connection, handleConnect, handleDisconnect]
 }

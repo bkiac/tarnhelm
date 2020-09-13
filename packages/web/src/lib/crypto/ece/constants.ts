@@ -4,6 +4,6 @@ export const TAG_LENGTH = 16
 export const RECORD_SIZE = 1024 * 64
 
 export enum Mode {
-	Encrypt,
-	Decrypt,
+	Encrypt = 0,
+	Decrypt = 1,
 }

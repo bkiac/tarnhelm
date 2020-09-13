@@ -152,8 +152,9 @@ async function createCipher(
 	}
 
 	const transform: ControllerTransformCallback = async (chunk, controller) => {
-		if (!isFirstChunk && prevChunk)
+		if (!isFirstChunk && prevChunk) {
 			await transformPrevChunk(prevChunk, false, controller)
+		}
 		isFirstChunk = false
 		prevChunk = Buffer.from(chunk.buffer)
 	}
@@ -239,8 +240,9 @@ function createDecipher(ikm: Uint8Array): ECETransformer<Uint8Array, Buffer> {
 	const start: ControllerCallback = () => {}
 
 	const transform: ControllerTransformCallback = async (chunk, controller) => {
-		if (!isFirstChunk && prevChunk)
+		if (!isFirstChunk && prevChunk) {
 			await transformPrevChunk(prevChunk, false, controller)
+		}
 		isFirstChunk = false
 		prevChunk = Buffer.from(chunk.buffer)
 	}

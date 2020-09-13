@@ -93,7 +93,7 @@ const FileStick: React.FC<{
 	className?: string
 	obfuscate?: boolean
 	onDelete: () => void
-}> = ({ className, name, size, obfuscate, onDelete }) => {
+}> = ({ className, name, size, obfuscate = false, onDelete }) => {
 	const [obfuscatedName, obfuscateName] = useTextObfuscate(name, 100)
 	const [obfuscatedSize, obfuscateSize] = useTextObfuscate(bytes(size), 100)
 

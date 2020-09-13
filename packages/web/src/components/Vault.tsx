@@ -8,7 +8,7 @@ import SecurityIcon from "./SecurityIcon"
 
 const StyledVault = styled.div<{
 	center: boolean
-	hasError?: boolean
+	hasError: boolean
 }>(
 	(props) => css`
 		border: 1px solid
@@ -41,7 +41,7 @@ const StyledFileStick = styled(FileStick)`
 `
 
 const Text = styled.p<{
-	hasError?: boolean
+	hasError: boolean
 }>(
 	(props) => css`
 		font-size: 1rem;
@@ -64,16 +64,22 @@ const Vault: React.FC<{
 	loading?: boolean
 	success?: boolean
 	hasError?: boolean
-}> = ({ files, isDragActive, loading = false, success = false, hasError }) => {
+}> = ({
+	files,
+	isDragActive,
+	loading = false,
+	success = false,
+	hasError = false,
+}) => {
 	const isEmpty = files.length === 0
 
 	function renderPartial(
-		Icon: any,
+		icon: React.ReactNode,
 		message: React.ReactNode,
 	): React.ReactElement {
 		return (
 			<>
-				<Icon />
+				{icon}
 				<Text hasError={hasError}>{message}</Text>
 			</>
 		)
@@ -81,23 +87,23 @@ const Vault: React.FC<{
 
 	return (
 		<StyledVault center={isEmpty || loading || success} hasError={hasError}>
-			{hasError && renderPartial(DeathIcon, "Unexpected Error")}
+			{hasError && renderPartial(<DeathIcon />, "Unexpected Error")}
 
 			{!hasError &&
 				isEmpty &&
 				isDragActive &&
-				renderPartial(SaveIcon, "Drop files to start")}
+				renderPartial(<SaveIcon />, "Drop files to start")}
 			{!hasError &&
 				isEmpty &&
 				!isDragActive &&
-				renderPartial(SaveIcon, "Click or drop files to start")}
+				renderPartial(<SaveIcon />, "Click or drop files to start")}
 
 			{!hasError && loading && <Loader />}
 
 			{!hasError &&
 				!loading &&
 				success &&
-				renderPartial(SecurityIcon, "Success")}
+				renderPartial(<SecurityIcon />, "Success")}
 
 			{!hasError &&
 				!loading &&

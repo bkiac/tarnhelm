@@ -5,7 +5,7 @@ interface Response<D> {
 	error?: number
 }
 
-function parseResponse<D = any>(message: any): Response<D> {
+function parseResponse<D>(message: string): Response<D> {
 	return JSON.parse(message) as Response<D>
 }
 
@@ -14,8 +14,8 @@ export async function open(uri: string): Promise<WebSocket> {
 		try {
 			const ws = new WebSocket(uri)
 			ws.addEventListener("open", () => resolve(ws), { once: true })
-		} catch (e) {
-			reject(e)
+		} catch (error: unknown) {
+			reject(error)
 		}
 	})
 }
@@ -25,19 +25,21 @@ export async function close(ws: WebSocket): Promise<void> {
 		try {
 			ws.addEventListener("close", () => resolve(), { once: true })
 			ws.close()
-		} catch (e) {
-			reject(e)
+		} catch (error: unknown) {
+			reject(error)
 		}
 	})
 }
 
-export async function listen<T = any>(ws: WebSocket): Promise<T> {
-	return new Promise<T>((resolve, reject) => {
+export async function listen<D>(ws: WebSocket): Promise<D> {
+	return new Promise<D>((resolve, reject) => {
 		ws.addEventListener(
 			"message",
 			(event) => {
-				const res = parseResponse(event.data)
-				if (!isNil(res.error)) reject(res.error)
+				const res = parseResponse<D>(event.data)
+				if (!isNil(res.error)) {
+					reject(res.error)
+				}
 				resolve(res.data)
 			},
 			{ once: true },
@@ -45,12 +47,12 @@ export async function listen<T = any>(ws: WebSocket): Promise<T> {
 	})
 }
 
-export function addMessageListener<T = any>(
+export function addMessageListener<D>(
 	ws: WebSocket,
-	listener: (data: T, error?: number) => void,
+	listener: (data: D | undefined, error?: number) => void,
 ): void {
 	ws.addEventListener("message", (event) => {
-		const res = parseResponse(event.data)
+		const res = parseResponse<D>(event.data)
 		listener(res.data, !isNil(res.error) ? res.error : undefined)
 	})
 }

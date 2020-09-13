@@ -30,13 +30,10 @@ export default async function generateNonceBase(
 ): Promise<{ nonceBase: Buffer; generateNonce: (seq: number) => Buffer }> {
 	const nonceKey = await generateNonceKey(salt, ikm)
 	const base = await exportKey(nonceKey)
-
 	const nonceBase = Buffer.from(base.slice(0, NONCE_LENGTH))
-	const _generateNonce = (seq: number): Buffer => generateNonce(seq, nonceBase)
-
 	return {
 		nonceBase,
-		generateNonce: _generateNonce,
+		generateNonce: (seq: number): Buffer => generateNonce(seq, nonceBase),
 	}
 }
 

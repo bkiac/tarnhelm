@@ -1,5 +1,5 @@
 import { addMilliseconds, differenceInMilliseconds } from "date-fns"
-import type { Reducer} from "react";
+import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as crypto from "../lib/crypto"
 import * as stream from "../lib/stream"
@@ -8,11 +8,11 @@ import useKeyring from "./useKeyring"
 import useWebSocket from "./useWebSocket"
 
 enum Status {
-	KeyringSetup,
-	Ready,
-	Starting,
-	Uploading,
-	Stopping,
+	KeyringSetup = 0,
+	Ready = 1,
+	Starting = 2,
+	Uploading = 3,
+	Stopping = 4,
 }
 
 interface Progress {
@@ -38,10 +38,10 @@ export interface State {
 }
 
 enum ActionType {
-	Start,
-	SetProgress,
-	Stop,
-	SetReady,
+	Start = 0,
+	SetProgress = 1,
+	Stop = 2,
+	SetReady = 3,
 }
 
 type Start = ReducerAction<ActionType.Start, { file: File; options?: Options }>
@@ -143,7 +143,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const { file, status, options } = state
 
-	const upload = useCallback<Upload>(
+	const handleUpload = useCallback<Upload>(
 		(_file, _options) =>
 			dispatch({
 				type: ActionType.Start,
@@ -153,13 +153,16 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 	)
 
 	useEffect(() => {
-		if (status === Status.KeyringSetup && keyring)
+		if (status === Status.KeyringSetup && keyring) {
 			dispatch({ type: ActionType.SetReady })
+		}
 	}, [status, keyring])
 
 	/** Handle starting status */
 	useEffect(() => {
-		if (status === Status.Starting) connect()
+		if (status === Status.Starting) {
+			connect()
+		}
 	}, [status, connect])
 
 	/** Handle stopping status */
@@ -176,7 +179,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 		// TODO: add delay to wait for socket buffer
 		if (keyring && ws && file) {
 			if (status === Status.Starting) {
-				;(async () => {
+				const upload = async (): Promise<void> => {
 					const { name, size, type } = file
 					const contentMetadata = {
 						name,
@@ -202,7 +205,10 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 						const encryptedSize = crypto.ece.calculateEncryptedSize(size)
 
 						const startDate = new Date()
-						webSocket.addMessageListener<number>(ws, (uploadedBytes) => {
+						webSocket.addMessageListener<number>(ws, (uploadedBytes, error) => {
+							if (error != null || uploadedBytes == null) {
+								throw new Error("WebSocket Error")
+							}
 							dispatch({
 								type: ActionType.SetProgress,
 								payload: {
@@ -211,8 +217,9 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 									startDate,
 								},
 							})
-							if (uploadedBytes >= encryptedSize)
+							if (uploadedBytes >= encryptedSize) {
 								dispatch({ type: ActionType.Stop, payload: id })
+							}
 						})
 
 						await stream.read(encryptedFileStream, (chunk) => {
@@ -222,17 +229,18 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 						if (ws.readyState === WebSocket.OPEN) {
 							ws.send(new Uint8Array([0])) // EOF signal
 						}
-					} catch (err) {
+					} catch (err: unknown) {
 						// TODO: handle error
 					}
-				})()
+				}
+
+				void upload()
 			}
 		}
 	}, [keyring, ws, file, status, options])
 
-	return useMemo(() => [{ ...state, secretb64: keyring?.secretb64 }, upload], [
-		state,
-		keyring,
-		upload,
-	])
+	return useMemo(
+		() => [{ ...state, secretb64: keyring?.secretb64 }, handleUpload],
+		[state, keyring, handleUpload],
+	)
 }

@@ -136,12 +136,14 @@ export function transform<I, O = I>(
 ): ReadableStream<O> {
 	try {
 		return stream.pipeThrough(new TransformStream(transformer))
-	} catch (e) {
+	} catch (error: unknown) {
 		/* eslint-disable @typescript-eslint/ban-ts-comment */
 		const reader = stream.getReader()
 		return new ReadableStream({
 			start(controller) {
-				if (!transformer.start) return undefined
+				if (!transformer.start) {
+					return undefined
+				}
 				// @ts-expect-error
 				return transformer.start(controller)
 			},
@@ -160,8 +162,10 @@ export function transform<I, O = I>(
 				while (!enqueued) {
 					const data = await reader.read()
 					if (data.done) {
-						// @ts-expect-error
-						if (transformer.flush) await transformer.flush(controller)
+						if (transformer.flush) {
+							// @ts-expect-error
+							await transformer.flush(controller)
+						}
 						return controller.close()
 					}
 					// @ts-expect-error

@@ -38,7 +38,11 @@ export async function save(
 	data: Blob | ArrayBuffer | ReadableStream<Uint8Array>,
 	options: Options,
 ): Promise<void> {
-	if (data instanceof Blob) return saveBlob(data, options.name)
-	if (data instanceof ReadableStream) return saveStream(data, options)
+	if (data instanceof Blob) {
+		return saveBlob(data, options.name)
+	}
+	if (data instanceof ReadableStream) {
+		return saveStream(data, options)
+	}
 	return saveArrayBuffer(data, options)
 }

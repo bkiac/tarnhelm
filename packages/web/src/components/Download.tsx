@@ -15,7 +15,9 @@ const Download: React.FC = () => {
 		return download()
 	}, [download])
 
-	if (error) return <Redirect to="/404" />
+	if (error) {
+		return <Redirect to="/404" />
+	}
 
 	return (
 		<>

@@ -12,6 +12,7 @@ const StyledButton = styled.button<{
 	content: string
 }>((props) => {
 	const [paddingTopBottom, paddingLeftRight] = ["8px", "16px"]
+	const disabled = props.disabled ?? false
 	return css`
 		font-size: 1.5rem;
 		font-family: "Roboto Condensed", sans-serif;
@@ -32,7 +33,7 @@ const StyledButton = styled.button<{
 			background-color: ${props.theme.palette.background};
 		}
 
-		${!props.disabled &&
+		${!disabled &&
 		css`
 			span:first-child {
 				position: relative;

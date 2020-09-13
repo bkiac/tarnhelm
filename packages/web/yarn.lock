@@ -4561,10 +4561,10 @@ eslint-config-airbnb@^18.2.0:
     object.assign "^4.1.0"
     object.entries "^1.1.2"
 
-eslint-config-bkiac@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-bkiac/-/eslint-config-bkiac-6.0.1.tgz#173d8752b3dfe257b784484984d4ff18cd57fcf1"
-  integrity sha512-EGBh+ywy8pEfmWwoh0a3BuTf1+qenN0VH1OB1Mq5EeAwvuNGdBQ7mzUCxnPMsIXX+zGibix+sHsIEsxoiwDjjQ==
+eslint-config-bkiac@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-bkiac/-/eslint-config-bkiac-6.1.0.tgz#a0b4f5dbef4cf36db7854cd086701afe2479cb79"
+  integrity sha512-0Bgym8GSR90rgvToVSI35PoGy+i+zz7i76tXFNzzvx25w4qAGTaCmAQsNnCRb8WoOJwYfHil4QEYGJ2sHrOURg==
 
 eslint-config-prettier@^6.10.1:
   version "6.11.0"

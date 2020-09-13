@@ -5,10 +5,12 @@ export default function usePing(): boolean {
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
-		;(async () => {
+		async function ping(): Promise<void> {
 			await axios.get("/ping")
 			setLoading(false)
-		})()
+		}
+
+		void ping()
 	}, [])
 
 	return loading

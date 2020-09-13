@@ -1,15 +1,10 @@
-import isNil from "lodash.isnil"
 import { useEffect, useMemo, useState } from "react"
 import * as base64 from "../lib/base64"
 import * as crypto from "../lib/crypto"
 
 type Sign = (nonceb64: string) => Promise<string>
-type EncryptMetadata = <M extends Record<string, any>>(
-	metadata: M,
-) => Promise<string>
-type DecryptMetadata = <M extends Record<string, any>>(
-	metadatab64: string,
-) => Promise<M>
+type EncryptMetadata<M> = (metadata: M) => Promise<string>
+type DecryptMetadata<M> = (metadatab64: string) => Promise<M>
 type EncryptStream = (
 	stream: ReadableStream<Uint8Array>,
 ) => Promise<ReadableStream<Buffer>>
@@ -17,28 +12,28 @@ type DecryptStream = (
 	stream: ReadableStream<Uint8Array>,
 ) => ReadableStream<Buffer>
 
-interface Keyring {
+export type Keyring<M> = {
 	secretb64: string
 	authb64: string
 	sign: Sign
-	encryptMetadata: EncryptMetadata
-	decryptMetadata: DecryptMetadata
+	encryptMetadata: EncryptMetadata<M>
+	decryptMetadata: DecryptMetadata<M>
 	encryptStream: EncryptStream
 	decryptStream: DecryptStream
 }
 
-export default function useKeyring(secretb64?: string): Keyring | undefined {
+export default function useKeyring<M>(
+	secretb64?: string,
+): Keyring<M> | undefined {
 	const secret = useMemo(
 		() =>
-			isNil(secretb64) ? crypto.ece.generateIKM() : base64.toArray(secretb64),
+			secretb64 == null ? crypto.ece.generateIKM() : base64.toArray(secretb64),
 		[secretb64],
 	)
 
-	const [keyring, setKeyring] = useState<Keyring | undefined>()
+	const [keyring, setKeyring] = useState<Keyring<M> | undefined>()
 	useEffect(() => {
-		;(async () => {
-			const _secretb64 = base64.fromArray(secret)
-
+		async function init(): Promise<void> {
 			const authKey = await crypto.ece.generateAuthenticationKey(
 				new Uint8Array(),
 				secret,
@@ -59,7 +54,7 @@ export default function useKeyring(secretb64?: string): Keyring | undefined {
 			}
 
 			const iv = new Uint8Array(12)
-			const encryptMetadata: EncryptMetadata = async (metadata) => {
+			const encryptMetadata: EncryptMetadata<M> = async (metadata) => {
 				const encodedMetadata = new TextEncoder().encode(
 					JSON.stringify(metadata),
 				)
@@ -70,9 +65,7 @@ export default function useKeyring(secretb64?: string): Keyring | undefined {
 				)
 				return base64.fromArray(ciphertext)
 			}
-			async function decryptMetadata<M extends Record<string, any>>(
-				metadatab64: string,
-			): Promise<M> {
+			const decryptMetadata: DecryptMetadata<M> = async (metadatab64) => {
 				const plaintext = await crypto.ece.decrypt(
 					iv,
 					metadataKey,
@@ -89,7 +82,7 @@ export default function useKeyring(secretb64?: string): Keyring | undefined {
 				crypto.ece.decryptStream(secret, stream)
 
 			setKeyring({
-				secretb64: _secretb64,
+				secretb64: base64.fromArray(secret),
 				authb64,
 				sign,
 				encryptMetadata,
@@ -97,7 +90,9 @@ export default function useKeyring(secretb64?: string): Keyring | undefined {
 				encryptStream,
 				decryptStream,
 			})
-		})()
+		}
+
+		void init()
 	}, [secret])
 
 	return keyring

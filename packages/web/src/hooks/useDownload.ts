@@ -1,22 +1,21 @@
 import axios from "axios"
-import isNil from "lodash.isnil"
-import type { Reducer} from "react";
+import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as file from "../lib/file"
 import * as stream from "../lib/stream"
 import useKeyring from "./useKeyring"
 
 enum Status {
-	KeyringSetup,
-	Ready,
+	KeyringSetup = 0,
+	Ready = 1,
 
-	MetadataPending,
-	MetadataSuccess,
-	MetadataFailure,
+	MetadataPending = 2,
+	MetadataSuccess = 3,
+	MetadataFailure = 4,
 
-	DownloadPending,
-	DownloadSuccess,
-	DownloadFailure,
+	DownloadPending = 5,
+	DownloadSuccess = 6,
+	DownloadFailure = 7,
 }
 
 interface ContentMetadata {
@@ -39,15 +38,15 @@ const initialState = {
 }
 
 enum ActionType {
-	SetReady,
+	SetReady = 0,
 
-	SetMetadataPending,
-	SetMetadataSuccess,
-	SetMetadataFailure,
+	SetMetadataPending = 1,
+	SetMetadataSuccess = 2,
+	SetMetadataFailure = 3,
 
-	SetDownloadPending,
-	SetDownloadSuccess,
-	SetDownloadFailure,
+	SetDownloadPending = 4,
+	SetDownloadSuccess = 5,
+	SetDownloadFailure = 6,
 }
 
 type SetReady = ReducerAction<ActionType.SetReady>
@@ -136,83 +135,88 @@ export default function useDownload(
 	id: string,
 	secretb64: string,
 ): [State, DownloadFn] {
-	const keyring = useKeyring(secretb64)
+	const keyring = useKeyring<ContentMetadata>(secretb64)
 
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const { status, metadata, signature } = state
 
-	const download = useCallback<DownloadFn>(() => {
-		if (status === Status.Ready)
+	const handleDownload = useCallback<DownloadFn>(() => {
+		if (status === Status.Ready) {
 			dispatch({ type: ActionType.SetDownloadPending })
+		}
 	}, [status])
 
 	useEffect(() => {
-		if (status === Status.KeyringSetup && keyring)
+		if (status === Status.KeyringSetup && keyring) {
 			dispatch({ type: ActionType.SetMetadataPending })
+		}
 	}, [status, keyring])
 
 	useEffect(() => {
-		if (keyring) {
-			if (status === Status.MetadataPending) {
-				;(async () => {
-					try {
-						const {
-							data: { encryptedContentMetadata, nonce },
-						} = await axios.get<Metadata>(`/metadata/${id}`)
+		if (keyring && status === Status.MetadataPending) {
+			const getMetadata = async (): Promise<void> => {
+				try {
+					const {
+						data: { encryptedContentMetadata, nonce },
+					} = await axios.get<Metadata>(`/metadata/${id}`)
 
-						const _metadata = await keyring.decryptMetadata<ContentMetadata>(
-							encryptedContentMetadata,
-						)
-						const _signature = await keyring.sign(nonce)
+					const md = await keyring.decryptMetadata(encryptedContentMetadata)
+					const s = await keyring.sign(nonce)
 
-						dispatch({
-							type: ActionType.SetMetadataSuccess,
-							payload: { metadata: _metadata, signature: _signature },
-						})
-						dispatch({ type: ActionType.SetReady })
-					} catch (e) {
-						dispatch({
-							type: ActionType.SetMetadataFailure,
-							payload: e as Error,
-						})
-					}
-				})()
+					dispatch({
+						type: ActionType.SetMetadataSuccess,
+						payload: { metadata: md, signature: s },
+					})
+					dispatch({ type: ActionType.SetReady })
+				} catch (error: unknown) {
+					dispatch({
+						type: ActionType.SetMetadataFailure,
+						payload: error as Error,
+					})
+				}
 			}
+
+			void getMetadata()
 		}
 	}, [keyring, id, status])
 
 	useEffect(() => {
-		if (keyring && !isNil(signature) && metadata) {
-			if (status === Status.DownloadPending) {
-				;(async () => {
-					try {
-						const response = await axios.get(`/download/${id}`, {
-							responseType: "blob",
-							headers: {
-								Authorization: signature,
-							},
-						})
+		if (
+			keyring &&
+			signature != null &&
+			metadata &&
+			status === Status.DownloadPending
+		) {
+			const download = async (): Promise<void> => {
+				try {
+					const response = await axios.get(`/download/${id}`, {
+						responseType: "blob",
+						headers: {
+							Authorization: signature,
+						},
+					})
 
-						const blob = new Blob([response.data])
-						const blobStream = stream.createBlobStream(blob)
-						const plaintext = keyring.decryptStream(blobStream)
-						await file.save(plaintext, {
-							name: metadata.name,
-							type: metadata.type,
-						})
+					const blob = new Blob([response.data])
+					const blobStream = stream.createBlobStream(blob)
+					const plaintext = keyring.decryptStream(blobStream)
+					await file.save(plaintext, {
+						name: metadata.name,
+						type: metadata.type,
+					})
 
-						dispatch({ type: ActionType.SetDownloadSuccess })
-						dispatch({ type: ActionType.SetReady })
-					} catch (e) {
-						dispatch({
-							type: ActionType.SetDownloadFailure,
-							payload: e as Error,
-						})
-					}
-				})()
+					dispatch({ type: ActionType.SetDownloadSuccess })
+					dispatch({ type: ActionType.SetReady })
+				} catch (error: unknown) {
+					dispatch({
+						type: ActionType.SetDownloadFailure,
+						payload: error as Error,
+					})
+				}
 			}
+
+			void download()
 		}
 	}, [keyring, id, signature, metadata, status])
 
-	return useMemo(() => [state, download], [state, download])
+	return useMemo(() => [state, handleDownload], [state, handleDownload])
 }

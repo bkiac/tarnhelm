@@ -1,8 +1,7 @@
 import bytes from "bytes"
 import differenceWith from "lodash.differencewith"
-import isNil from "lodash.isnil"
 import React, { useCallback, useMemo, useState } from "react"
-import type { DropHandler} from "react-dropzone";
+import type { DropHandler } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 import { Link } from "react-router-dom"
 import styled, { css } from "styled-components"
@@ -43,7 +42,7 @@ const InfoRow = styled.div`
 
 const StyledTotalSize = styled.p<{ hasError?: boolean }>(
 	(props) => css`
-		color: ${props.hasError
+		color: ${props.hasError ?? false
 			? props.theme.palette.error
 			: props.theme.palette.foreground};
 	`,
@@ -68,7 +67,7 @@ const TotalSize: React.FC<{ hasError?: boolean }> = ({
 	children,
 }) => (
 	<StyledTotalSize hasError={hasError}>
-		{hasError && <DangerIcon />}
+		{(hasError ?? false) && <DangerIcon />}
 		{children}
 	</StyledTotalSize>
 )
@@ -189,14 +188,17 @@ const Upload: React.FC = () => {
 	})
 
 	const handleClick = useCallback(() => {
-		if (!loading && hasFiles) upload(files[0], { expiry, downloadLimit })
+		if (!loading && hasFiles) {
+			upload(files[0], { expiry, downloadLimit })
+		}
 	}, [files, hasFiles, loading, upload, expiry, downloadLimit])
 
-	const to = `/download/${id}&${secretb64}`
+	const to =
+		id != null && secretb64 != null ? `/download/${id}&${secretb64}` : ""
 	const href = config().app.origin + to
 
 	const uploading = status !== 0 && loading
-	const success = !loading && !isNil(id) && !isNil(secretb64)
+	const success = !loading && id != null && secretb64 != null
 
 	const uploadDisabled = useMemo(
 		() =>
