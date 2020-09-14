@@ -3,13 +3,13 @@ import differenceWith from "lodash.differencewith"
 import React, { useCallback, useMemo, useState } from "react"
 import type { DropHandler } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
-import { Link } from "react-router-dom"
 import styled, { css } from "styled-components"
 import { v4 as uuid } from "uuid"
 import config from "../config"
 import { useUpload } from "../hooks"
 import Button from "./Button"
 import DangerIcon from "./DangerIcon"
+import InternalLink from "./InternalLink"
 import Select from "./Select"
 import Vault from "./Vault"
 
@@ -274,7 +274,7 @@ const Upload: React.FC = () => {
 				</Button>
 			)}
 
-			{success && <Link to={to}>{href}</Link>}
+			{success && <InternalLink href={to}>{href}</InternalLink>}
 		</Container>
 	)
 }

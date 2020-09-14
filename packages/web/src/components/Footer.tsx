@@ -27,7 +27,7 @@ const Footer: React.FunctionComponent = () => {
 		<Container>
 			<Item as={AppTitle} />
 
-			<Item as={InternalLink} to="/thanks">
+			<Item as={InternalLink} href="/thanks">
 				Thanks
 			</Item>
 

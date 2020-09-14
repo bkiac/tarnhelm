@@ -1,29 +1,25 @@
 {
 	"compilerOptions": {
-		/* Shared */
 		"skipLibCheck": true,
-
 		"strict": true,
-
 		"noUnusedLocals": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
-
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-
-		"forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
-
-		/* Frontend */
-		"target": "es5",
-		"module": "esnext",
-		"lib": ["dom", "dom.iterable", "esnext"],
+		"forceConsistentCasingInFileNames": true,
+		"allowJs": true,
+		"alwaysStrict": true,
 		"isolatedModules": true,
+		"jsx": "preserve",
+		"lib": ["dom", "es2017"],
+		"module": "esnext",
 		"noEmit": true,
-		"jsx": "react",
-		"allowJs": true
+		"noUnusedParameters": true,
+		"target": "esnext"
 	},
-	"include": ["src"]
+	"include": ["src", "next-env.d.ts"],
+	"exclude": ["node_modules"]
 }

@@ -1,11 +1,19 @@
+import NextLink from "next/link"
 import React from "react"
-import { Link as RouterLink } from "react-router-dom"
 import Link from "./Link"
 
-const InternalLink: React.FC<{ to: string }> = ({ to, children }) => (
-	<Link as={RouterLink} to={to}>
-		{children}
-	</Link>
-)
+const InternalLink: React.FC<{ href: string; as?: React.FC }> = ({
+	href,
+	children,
+	as: Component,
+}) => {
+	return (
+		<NextLink href={href} passHref>
+			{/* https://nextjs.org/docs/api-reference/next/link#if-the-child-is-a-custom-component-that-wraps-an-a-tag */}
+			{/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+			{Component ? <Component>{children}</Component> : <Link>{children}</Link>}
+		</NextLink>
+	)
+}
 
 export default InternalLink
