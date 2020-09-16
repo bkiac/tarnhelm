@@ -6,7 +6,7 @@
 	"author": "Bence Knáb <benceknab@pm.me>",
 	"scripts": {
 		"build": "tsc -p .",
-		"dev": "ts-node-dev -r dotenv/config --respawn --transpileOnly src/index.ts",
+		"dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
 		"eslint": "eslint --cache src",
 		"eslint:fix": "yarn eslint --fix",
 		"fix": "run-s format:fix eslint:fix",
