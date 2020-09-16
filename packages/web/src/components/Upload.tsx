@@ -5,7 +5,6 @@ import type { DropHandler } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 import styled, { css } from "styled-components"
 import { v4 as uuid } from "uuid"
-import config from "../config"
 import { useUpload } from "../hooks"
 import Button from "./Button"
 import DangerIcon from "./DangerIcon"
@@ -195,7 +194,6 @@ const Upload: React.FC = () => {
 
 	const to =
 		id != null && secretb64 != null ? `/download/${id}&${secretb64}` : ""
-	const href = config().app.origin + to
 
 	const uploading = status !== 0 && loading
 	const success = !loading && id != null && secretb64 != null
