@@ -1,3 +1,4 @@
+export * from "./useCrypto"
 export { default as useDownload } from "./useDownload"
 export { default as useInterval } from "./useInterval"
 export { default as useKeyring } from "./useKeyring"

@@ -1,5 +1,11 @@
 import * as ece from "./ece"
+import { generateRandom } from "./utils"
 
-// export const webapi = window.crypto
-export * from "./utils"
-export { ece }
+export type Crypto = {
+	web: typeof window.crypto
+	ece: typeof ece
+	generateRandom: typeof generateRandom
+}
+
+export const web = window.crypto
+export { ece, generateRandom }
