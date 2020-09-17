@@ -7,8 +7,6 @@ node_js:
 cache: yarn
 
 env:
-  global:
-    - SKIP_PREFLIGHT_CHECK=true
   jobs:
     - TARGET=packages/web
     - TARGET=packages/api
