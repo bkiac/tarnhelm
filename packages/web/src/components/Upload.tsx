@@ -272,7 +272,7 @@ const Upload: React.FC = () => {
 				</Button>
 			)}
 
-			{success && <InternalLink href={to}>{href}</InternalLink>}
+			{success && <InternalLink href={to}>{to}</InternalLink>}
 		</Container>
 	)
 }
