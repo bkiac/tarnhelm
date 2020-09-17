@@ -138,7 +138,7 @@ export default function useWebSocket(
 					if (connection.ws) {
 						connection.ws.close()
 					}
-					const ws = await webSocket.open(config.ws)
+					const ws = await webSocket.open(config.ws + url)
 					dispatch({ type: ActionType.ConnectSuccess, payload: { ws } })
 				} catch (error: unknown) {
 					dispatch({
