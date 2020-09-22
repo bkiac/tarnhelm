@@ -193,7 +193,9 @@ const Upload: React.FC = () => {
 	}, [files, hasFiles, loading, upload, expiry, downloadLimit])
 
 	const to =
-		id != null && secretb64 != null ? `/download/${id}&${secretb64}` : ""
+		id != null && secretb64 != null
+			? `/download?id=${id}&secretb64=${secretb64}`
+			: ""
 
 	const uploading = status !== 0 && loading
 	const success = !loading && id != null && secretb64 != null
