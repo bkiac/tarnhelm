@@ -1,6 +1,6 @@
 import type { Reducer } from "react"
 import { useCallback, useEffect, useReducer } from "react"
-import config from "../config"
+import { config } from "../config"
 import * as webSocket from "../lib/web-socket"
 
 enum ConnectionStatus {
@@ -138,7 +138,7 @@ export default function useWebSocket(
 					if (connection.ws) {
 						connection.ws.close()
 					}
-					const ws = await webSocket.open(config().server.origin.ws + url)
+					const ws = await webSocket.open(config.ws + url)
 					dispatch({ type: ActionType.ConnectSuccess, payload: { ws } })
 				} catch (error: unknown) {
 					dispatch({

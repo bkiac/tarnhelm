@@ -6,6 +6,7 @@
 	"author": "Bence Knáb <benceknab@pm.me>",
 	"scripts": {
 		"build": "tsc -p .",
+		"dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
 		"eslint": "eslint --cache src",
 		"eslint:fix": "yarn eslint --fix",
 		"fix": "run-s format:fix eslint:fix",
@@ -15,8 +16,7 @@
 		"pre-commit": "lint-staged --concurrent false",
 		"start": "node -r dotenv/config dist/index.js",
 		"test": "echo TODO",
-		"type": "tsc --noEmit",
-		"watch": "ts-node-dev -r dotenv/config --respawn --transpileOnly src/index.ts"
+		"type": "tsc --noEmit"
 	},
 	"dependencies": {
 		"aws-sdk": "^2.751.0",

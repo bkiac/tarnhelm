@@ -25,21 +25,23 @@ const Item = styled.div`
 const Footer: React.FunctionComponent = () => {
 	return (
 		<Container>
-			<Item as={AppTitle} />
-
-			<Item as={InternalLink} to="/thanks">
-				Thanks
+			<Item>
+				<AppTitle />
 			</Item>
 
-			<Item
-				as={ExternalLink}
-				href="https://github.com/bkiac/tarnhelm"
-				target="_blank"
-			>
-				Code
+			<Item>
+				<InternalLink href="/thanks">Thanks</InternalLink>
 			</Item>
 
-			<Item as="p">Tips: bc1qe95pnse2q0yp7jwzu4pdjv7xz3gamzucum5nyh</Item>
+			<Item>
+				<ExternalLink href="https://github.com/bkiac/tarnhelm" target="_blank">
+					Code
+				</ExternalLink>
+			</Item>
+
+			<Item>
+				<p>Tips: bc1qe95pnse2q0yp7jwzu4pdjv7xz3gamzucum5nyh</p>
+			</Item>
 		</Container>
 	)
 }

@@ -1,14 +1,13 @@
 import { addMilliseconds, differenceInMilliseconds } from "date-fns"
 import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
-import * as crypto from "../lib/crypto"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/web-socket"
 import useKeyring from "./useKeyring"
 import useWebSocket from "./useWebSocket"
 
 enum Status {
-	KeyringSetup = 0,
+	Setup = 0,
 	Ready = 1,
 	Starting = 2,
 	Uploading = 3,
@@ -55,7 +54,7 @@ type SetReady = ReducerAction<ActionType.SetReady>
 type Action = Start | SetProgress | Stop | SetReady
 
 const initialState: State = {
-	status: Status.KeyringSetup,
+	status: Status.Setup,
 	progress: {
 		loading: true,
 		ticks: 0,
@@ -144,16 +143,16 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 	const { file, status, options } = state
 
 	const handleUpload = useCallback<Upload>(
-		(_file, _options) =>
+		(f, o) =>
 			dispatch({
 				type: ActionType.Start,
-				payload: { file: _file, options: _options },
+				payload: { file: f, options: o },
 			}),
 		[],
 	)
 
 	useEffect(() => {
-		if (status === Status.KeyringSetup && keyring) {
+		if (status === Status.Setup && keyring) {
 			dispatch({ type: ActionType.SetReady })
 		}
 	}, [status, keyring])
@@ -177,65 +176,63 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 	useEffect(() => {
 		// TODO: handle cancellation and socket failure
 		// TODO: add delay to wait for socket buffer
-		if (keyring && ws && file) {
-			if (status === Status.Starting) {
-				const upload = async (): Promise<void> => {
-					const { name, size, type } = file
-					const contentMetadata = {
-						name,
-						size,
-						type,
-					}
-					const encryptedContentMetadata = await keyring.encryptMetadata(
-						contentMetadata,
-					)
-					const uploadParams = {
-						...options,
-						authb64: keyring.authb64,
-						metadata: encryptedContentMetadata,
-					}
-					ws.send(JSON.stringify(uploadParams))
-
-					try {
-						const id = await webSocket.listen<string>(ws)
-
-						const encryptedFileStream = await keyring.encryptStream(
-							stream.createFileStream(file),
-						)
-						const encryptedSize = crypto.ece.calculateEncryptedSize(size)
-
-						const startDate = new Date()
-						webSocket.addMessageListener<number>(ws, (uploadedBytes, error) => {
-							if (error != null || uploadedBytes == null) {
-								throw new Error("WebSocket Error")
-							}
-							dispatch({
-								type: ActionType.SetProgress,
-								payload: {
-									uploadedBytes,
-									totalBytes: encryptedSize,
-									startDate,
-								},
-							})
-							if (uploadedBytes >= encryptedSize) {
-								dispatch({ type: ActionType.Stop, payload: id })
-							}
-						})
-
-						await stream.read(encryptedFileStream, (chunk) => {
-							ws.send(chunk)
-						})
-
-						if (ws.readyState === WebSocket.OPEN) {
-							ws.send(new Uint8Array([0])) // EOF signal
-						}
-					} catch (err: unknown) {
-						// TODO: handle error
-					}
+		if (keyring && ws && file && status === Status.Starting) {
+			const upload = async (): Promise<void> => {
+				const { name, size, type } = file
+				const contentMetadata = {
+					name,
+					size,
+					type,
 				}
+				const encryptedContentMetadata = await keyring.encryptMetadata(
+					contentMetadata,
+				)
+				const uploadParams = {
+					...options,
+					authb64: keyring.authb64,
+					metadata: encryptedContentMetadata,
+				}
+				ws.send(JSON.stringify(uploadParams))
 
-				void upload()
+				try {
+					const id = await webSocket.listen<string>(ws)
+
+					const encryptedFileStream = await keyring.encryptStream(
+						stream.createFileStream(file),
+					)
+					const encryptedSize = keyring.calculateEncryptedSize(size)
+
+					const startDate = new Date()
+					webSocket.addMessageListener<number>(ws, (uploadedBytes, error) => {
+						if (error != null || uploadedBytes == null) {
+							throw new Error("WebSocket Error")
+						}
+						dispatch({
+							type: ActionType.SetProgress,
+							payload: {
+								uploadedBytes,
+								totalBytes: encryptedSize,
+								startDate,
+							},
+						})
+						if (uploadedBytes >= encryptedSize) {
+							dispatch({ type: ActionType.Stop, payload: id })
+						}
+					})
+
+					await stream.read(encryptedFileStream, (chunk) => {
+						ws.send(chunk)
+					})
+
+					if (ws.readyState === WebSocket.OPEN) {
+						ws.send(new Uint8Array([0])) // EOF signal
+					}
+				} catch (err: unknown) {
+					// TODO: handle error
+				}
 			}
+
+			void upload()
 		}
 	}, [keyring, ws, file, status, options])
 

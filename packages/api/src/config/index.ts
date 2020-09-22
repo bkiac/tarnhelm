@@ -33,7 +33,7 @@ const config = convict({
 	s3: {
 		endpoint: {
 			doc: "The S3 endpoint.",
-			format: "url",
+			format: "string",
 			default: "",
 			sensitive: true,
 			env: "S3_ENDPOINT",

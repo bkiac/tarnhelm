@@ -1,22 +1,28 @@
 import bytes from "bytes"
+import { useRouter } from "next/router"
 import React, { useCallback, useState } from "react"
-import { Redirect, useParams } from "react-router-dom"
 import { useDownload } from "../hooks"
 
-const Download: React.FC = () => {
-	const { id, secretb64 } = useParams<{ id: string; secretb64: string }>()
+export type DownloadProps = {
+	id: string
+	secretb64: string
+}
 
-	const [count, setCount] = useState(0)
+const Download: React.FC<DownloadProps> = ({ id, secretb64 }) => {
+	const router = useRouter()
+
 	const [state, download] = useDownload(id, secretb64)
 	const { status, loading, metadata, error } = state
 
+	const [count, setCount] = useState(0)
 	const handleClick = useCallback(() => {
 		setCount((c) => c + 1)
-		return download()
+		download()
 	}, [download])
 
 	if (error) {
-		return <Redirect to="/404" />
+		void router.push("/404")
+		return null
 	}
 
 	return (

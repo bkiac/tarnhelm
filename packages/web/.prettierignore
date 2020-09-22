@@ -13,6 +13,7 @@ coverage
 ## compiled output
 build
 dist
+.next
 
 ## env
 *.env*

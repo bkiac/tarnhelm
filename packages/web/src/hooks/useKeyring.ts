@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import * as base64 from "../lib/base64"
-import * as crypto from "../lib/crypto"
+import type { Crypto } from "../lib/crypto"
+import { useCrypto } from "./useCrypto"
 
 type Sign = (nonceb64: string) => Promise<string>
 type EncryptMetadata<M> = (metadata: M) => Promise<string>
@@ -20,80 +21,89 @@ export type Keyring<M> = {
 	decryptMetadata: DecryptMetadata<M>
 	encryptStream: EncryptStream
 	decryptStream: DecryptStream
+	calculateEncryptedSize: Crypto["ece"]["calculateEncryptedSize"]
 }
 
 export default function useKeyring<M>(
 	secretb64?: string,
 ): Keyring<M> | undefined {
-	const secret = useMemo(
-		() =>
-			secretb64 == null ? crypto.ece.generateIKM() : base64.toArray(secretb64),
-		[secretb64],
-	)
+	const crypto = useCrypto()
 
 	const [keyring, setKeyring] = useState<Keyring<M> | undefined>()
 	useEffect(() => {
-		async function init(): Promise<void> {
-			const authKey = await crypto.ece.generateAuthenticationKey(
-				new Uint8Array(),
-				secret,
-			)
-			const authb64 = base64.fromArray(await crypto.ece.exportKey(authKey))
+		if (crypto) {
+			const secret =
+				secretb64 == null ? crypto.ece.generateIKM() : base64.toArray(secretb64)
 
-			const metadataKey = await crypto.ece.generateMetadataEncryptionKey(
-				new Uint8Array(),
-				secret,
-			)
-
-			const sign: Sign = async (nonceb64) => {
-				const signature = await crypto.ece.sign(
-					authKey,
-					base64.toArray(nonceb64),
+			const createKeyring = async (): Promise<void> => {
+				const authKey = await crypto.ece.generateAuthenticationKey(
+					new Uint8Array(),
+					secret,
 				)
-				return `tarnhelm ${base64.fromArray(signature)}`
+				const authb64 = base64.fromArray(await crypto.ece.exportKey(authKey))
+
+				const metadataKey = await crypto.ece.generateMetadataEncryptionKey(
+					new Uint8Array(),
+					secret,
+				)
+
+				const sign: Sign = async (nonceb64) => {
+					const signature = await crypto.ece.sign(
+						authKey,
+						base64.toArray(nonceb64),
+					)
+					return `tarnhelm ${base64.fromArray(signature)}`
+				}
+
+				const iv = new Uint8Array(12)
+				const encryptMetadata: EncryptMetadata<M> = async (metadata) => {
+					const encodedMetadata = new TextEncoder().encode(
+						JSON.stringify(metadata),
+					)
+					const ciphertext = await crypto.ece.encrypt(
+						iv,
+						metadataKey,
+						encodedMetadata,
+					)
+					return base64.fromArray(ciphertext)
+				}
+				const decryptMetadata: DecryptMetadata<M> = async (metadatab64) => {
+					const plaintext = await crypto.ece.decrypt(
+						iv,
+						metadataKey,
+						base64.toArray(metadatab64),
+					)
+					const decodedMetadata = new TextDecoder().decode(plaintext)
+					return JSON.parse(decodedMetadata) as M
+				}
+
+				const salt = crypto.ece.generateSalt()
+				const encryptStream: EncryptStream = async (stream) =>
+					crypto.ece.encryptStream(salt, secret, stream)
+				const decryptStream: DecryptStream = (stream) =>
+					crypto.ece.decryptStream(secret, stream)
+
+				const calculateEncryptedSize: typeof crypto.ece.calculateEncryptedSize = (
+					size,
+					recordSize,
+					tagLength,
+				) => crypto.ece.calculateEncryptedSize(size, recordSize, tagLength)
+
+				setKeyring({
+					secretb64: base64.fromArray(secret),
+					authb64,
+					sign,
+					encryptMetadata,
+					decryptMetadata,
+					encryptStream,
+					decryptStream,
+					calculateEncryptedSize,
+				})
 			}
 
-			const iv = new Uint8Array(12)
-			const encryptMetadata: EncryptMetadata<M> = async (metadata) => {
-				const encodedMetadata = new TextEncoder().encode(
-					JSON.stringify(metadata),
-				)
-				const ciphertext = await crypto.ece.encrypt(
-					iv,
-					metadataKey,
-					encodedMetadata,
-				)
-				return base64.fromArray(ciphertext)
-			}
-			const decryptMetadata: DecryptMetadata<M> = async (metadatab64) => {
-				const plaintext = await crypto.ece.decrypt(
-					iv,
-					metadataKey,
-					base64.toArray(metadatab64),
-				)
-				const decodedMetadata = new TextDecoder().decode(plaintext)
-				return JSON.parse(decodedMetadata) as M
-			}
-
-			const salt = crypto.ece.generateSalt()
-			const encryptStream: EncryptStream = async (stream) =>
-				crypto.ece.encryptStream(salt, secret, stream)
-			const decryptStream: DecryptStream = (stream) =>
-				crypto.ece.decryptStream(secret, stream)
-
-			setKeyring({
-				secretb64: base64.fromArray(secret),
-				authb64,
-				sign,
-				encryptMetadata,
-				decryptMetadata,
-				encryptStream,
-				decryptStream,
-			})
+			void createKeyring()
 		}
-
-		void init()
-	}, [secret])
+	}, [crypto, secretb64])
 
 	return keyring
 }

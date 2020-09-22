@@ -3,13 +3,12 @@ import differenceWith from "lodash.differencewith"
 import React, { useCallback, useMemo, useState } from "react"
 import type { DropHandler } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
-import { Link } from "react-router-dom"
 import styled, { css } from "styled-components"
 import { v4 as uuid } from "uuid"
-import config from "../config"
 import { useUpload } from "../hooks"
 import Button from "./Button"
 import DangerIcon from "./DangerIcon"
+import InternalLink from "./InternalLink"
 import Select from "./Select"
 import Vault from "./Vault"
 
@@ -194,8 +193,9 @@ const Upload: React.FC = () => {
 	}, [files, hasFiles, loading, upload, expiry, downloadLimit])
 
 	const to =
-		id != null && secretb64 != null ? `/download/${id}&${secretb64}` : ""
-	const href = config().app.origin + to
+		id != null && secretb64 != null
+			? `/download?id=${id}&secretb64=${secretb64}`
+			: ""
 
 	const uploading = status !== 0 && loading
 	const success = !loading && id != null && secretb64 != null
@@ -274,7 +274,7 @@ const Upload: React.FC = () => {
 				</Button>
 			)}
 
-			{success && <Link to={to}>{href}</Link>}
+			{success && <InternalLink href={to}>{to}</InternalLink>}
 		</Container>
 	)
 }

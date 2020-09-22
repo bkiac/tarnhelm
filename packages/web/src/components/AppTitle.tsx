@@ -1,9 +1,9 @@
 import React from "react"
-import { Link } from "react-router-dom"
 import type { FlattenSimpleInterpolation } from "styled-components"
 import styled, { css } from "styled-components"
 import { noise, twitch } from "../styles/animations"
 import A from "./A"
+import InternalLink from "./InternalLink"
 
 const twitchOptions = {
 	duration: 5,
@@ -67,9 +67,9 @@ const StyledAppTitle = styled.span<{
 const title = "Tarnhelm"
 
 const AppTitle: React.FC = () => (
-	<A as={Link} to="/">
+	<InternalLink href="/" as={A}>
 		<StyledAppTitle content={title}>{title}</StyledAppTitle>
-	</A>
+	</InternalLink>
 )
 
 export default AppTitle
