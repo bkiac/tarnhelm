@@ -2,10 +2,15 @@ import NextLink from "next/link"
 import React from "react"
 import Link from "./Link"
 
-const InternalLink: React.FC<{ href: string; as?: React.FC }> = ({
+export type InternalLinkProps = {
+	href: string
+	as?: React.FC
+}
+
+const InternalLink: React.FC<InternalLinkProps> = ({
 	href,
-	children,
 	as: Component,
+	children,
 }) => {
 	return (
 		<NextLink href={href} passHref>

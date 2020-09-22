@@ -1,8 +1,24 @@
-import isNil from "lodash.isnil"
 import React from "react"
 import Link from "./Link"
 
 type Target = "_blank" | "_self" | "_parent" | "_top"
+
+const noopener = "noopener"
+const noreferrer = "noreferrer"
+
+function createSafeRel(rel?: string): string {
+	if (rel == null) {
+		return `${noopener} ${noreferrer}`
+	}
+	const attrs = rel.split(" ").filter((attr) => attr === "")
+	if (!attrs.includes(noopener)) {
+		attrs.push(noopener)
+	}
+	if (!attrs.includes(noreferrer)) {
+		attrs.push(noreferrer)
+	}
+	return attrs.join(" ")
+}
 
 const ExternalLink: React.FC<{
 	href: string
@@ -12,11 +28,7 @@ const ExternalLink: React.FC<{
 	<Link
 		href={href}
 		target={target}
-		rel={
-			target === "_blank"
-				? `${!isNil(rel) ? `${rel} ` : ""}noopener noreferrer`
-				: rel
-		}
+		rel={target === "_blank" ? createSafeRel(rel) : rel}
 	>
 		{children}
 	</Link>
