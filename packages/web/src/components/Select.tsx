@@ -120,7 +120,7 @@ const Option = styled.li<{ content: string }>(
 )
 
 interface Props<V extends React.ReactText> {
-	options: Array<{ value: V; label?: string }>
+	options: { value: V; label?: string }[]
 	onChange: (newValue: V) => void
 	value: V
 }

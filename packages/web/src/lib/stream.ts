@@ -13,9 +13,7 @@ export async function read<T>(
 	}
 }
 
-export function concat<T>(
-	streams: Array<ReadableStream<T>>,
-): ReadableStream<T> {
+export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
 	type ControllerCallback = ReadableStreamDefaultControllerCallback<T>
 
 	let index = 0
