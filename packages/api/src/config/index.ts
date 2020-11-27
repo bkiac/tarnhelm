@@ -103,6 +103,30 @@ const config = convict({
 			},
 		},
 	},
+
+	lnd: {
+		socket: {
+			doc: "The LND socket to connect to.",
+			format: "string",
+			default: "",
+			sensitive: true,
+			env: "LND_SOCKET",
+		},
+		cert: {
+			doc: "The LND TLS certificate in base64.",
+			format: "string",
+			default: "",
+			sensitive: true,
+			env: "LND_CERT",
+		},
+		macaroon: {
+			doc: "The LND admin macaroon in base64.",
+			format: "string",
+			default: "",
+			sensitive: true,
+			env: "LND_MACAROON",
+		},
+	},
 })
 
 console.log("⚙️ Config has been loaded:", config.toString())
