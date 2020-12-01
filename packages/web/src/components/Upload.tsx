@@ -6,6 +6,7 @@ import { useDropzone } from "react-dropzone"
 import styled, { css } from "styled-components"
 import { v4 as uuid } from "uuid"
 import { useUpload } from "../hooks"
+import { UseUploadStatus } from "../hooks/useUpload"
 import Button from "./Button"
 import DangerIcon from "./DangerIcon"
 import InternalLink from "./InternalLink"
@@ -172,6 +173,7 @@ const Upload: React.FC = () => {
 		secretb64,
 		id,
 		status,
+		invoice,
 		progress: { loading, percent },
 	} = state
 
@@ -184,6 +186,7 @@ const Upload: React.FC = () => {
 		noClick: hasFiles,
 		noKeyboard: hasFiles,
 		disabled: areFilesTooLarge,
+		multiple: false,
 	})
 
 	const handleClick = useCallback(() => {
@@ -197,7 +200,8 @@ const Upload: React.FC = () => {
 			? `/download?id=${id}&secretb64=${secretb64}`
 			: ""
 
-	const uploading = status !== 0 && loading
+	const awaitingPayment = status === UseUploadStatus.AwaitingPayment
+	const uploading = status !== UseUploadStatus.Ready && loading
 	const success = !loading && id != null && secretb64 != null
 
 	const uploadDisabled = useMemo(
@@ -218,6 +222,8 @@ const Upload: React.FC = () => {
 				<Vault
 					files={filesInVault}
 					isDragActive={dropzone.isDragActive}
+					awaitingPayment={awaitingPayment}
+					invoice={invoice}
 					loading={loading}
 					success={success}
 				/>

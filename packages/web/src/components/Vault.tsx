@@ -58,28 +58,35 @@ interface FileObject {
 	onDelete: () => void
 }
 
+/**
+ * TODO: Replace complex conditionals in render with enumerated states
+ */
 const Vault: React.FC<{
 	files: FileObject[]
 	isDragActive: boolean
 	loading?: boolean
 	success?: boolean
 	hasError?: boolean
+	invoice?: string
+	awaitingPayment?: boolean
 }> = ({
 	files,
 	isDragActive,
+	invoice,
 	loading = false,
 	success = false,
 	hasError = false,
+	awaitingPayment = false,
 }) => {
 	const isEmpty = files.length === 0
 
 	function renderPartial(
-		icon: React.ReactNode,
+		node: React.ReactNode,
 		message: React.ReactNode,
 	): React.ReactElement {
 		return (
 			<>
-				{icon}
+				{node}
 				<Text hasError={hasError}>{message}</Text>
 			</>
 		)
@@ -87,28 +94,39 @@ const Vault: React.FC<{
 
 	return (
 		<StyledVault center={isEmpty || loading || success} hasError={hasError}>
-			{hasError && renderPartial(<DeathIcon />, "Unexpected Error")}
-
-			{!hasError &&
-				isEmpty &&
-				isDragActive &&
-				renderPartial(<SaveIcon />, "Drop files to start")}
-			{!hasError &&
-				isEmpty &&
-				!isDragActive &&
-				renderPartial(<SaveIcon />, "Click or drop files to start")}
-
-			{!hasError && loading && <Loader />}
-
-			{!hasError &&
-				!loading &&
-				success &&
-				renderPartial(<SecurityIcon />, "Success")}
-
-			{!hasError &&
-				!loading &&
-				!success &&
-				files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)}
+			{hasError ? (
+				renderPartial(<DeathIcon />, "Unexpected Error")
+			) : (
+				<>
+					{isEmpty ? (
+						<>
+							{isDragActive
+								? renderPartial(<SaveIcon />, "Drop files to start")
+								: renderPartial(<SaveIcon />, "Click or drop files to start")}
+						</>
+					) : (
+						<>
+							{awaitingPayment ? (
+								renderPartial(<></>, invoice)
+							) : (
+								<>
+									{loading ? (
+										<Loader />
+									) : (
+										<>
+											{success
+												? renderPartial(<SecurityIcon />, "Success")
+												: files.map(({ id, ...f }) => (
+														<StyledFileStick key={id} {...f} />
+												  ))}
+										</>
+									)}
+								</>
+							)}
+						</>
+					)}
+				</>
+			)}
 		</StyledVault>
 	)
 }
