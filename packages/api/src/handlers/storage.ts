@@ -1,6 +1,7 @@
 import * as crypto from "crypto"
 import type express from "express"
 import type expressWs from "express-ws"
+import Joi from "joi"
 import type { SubscribeToInvoiceInvoiceUpdatedEvent } from "ln-service"
 import { isNil } from "lodash"
 import * as stream from "stream"
@@ -41,49 +42,44 @@ function limiter(limit = storageConfig.fileSize.max): stream.Transform {
 type UploadParams = {
 	metadata: string
 	authb64: string
-	size?: number
-	downloadLimit?: number
-	expiry?: number
+	size: number
+	downloadLimit: number
+	expiry: number
 }
 
-function validateUploadParams(params: UploadParams): string[] {
-	const { metadata, authb64, size, downloadLimit, expiry } = params
+const uploadParamsSchema = Joi.object<UploadParams>({
+	metadata: Joi.string().required(),
+	authb64: Joi.string().required(),
+	size: Joi.number().required().integer().max(storageConfig.fileSize.max),
+	downloadLimit: Joi.number()
+		.required()
+		.integer()
+		.min(1)
+		.max(storageConfig.downloads.max),
+	expiry: Joi.number()
+		.required()
+		.integer()
+		.min(1)
+		.max(storageConfig.expiry.max),
+})
 
-	const errors: string[] = []
-
-	if (isNil(metadata)) {
-		errors.push("Metadata is empty.")
+function validateUploadParams(
+	stringifiedParams: string,
+): [UploadParams] | [undefined, string[]] {
+	let params: unknown
+	try {
+		params = JSON.parse(stringifiedParams) as unknown
+	} catch (err: unknown) {
+		return [undefined, [(err as Error).message]]
 	}
 
-	if (isNil(authb64)) {
-		errors.push("Authentication key is empty.")
+	const { errors } = uploadParamsSchema.validate(params)
+	if (errors) {
+		return [undefined, errors.details.map(({ message }) => message)]
 	}
 
-	if (size != null && size > storageConfig.fileSize.max) {
-		errors.push(`${size} is greater than ${storageConfig.fileSize.max}`)
-	}
-
-	if (downloadLimit != null) {
-		if (downloadLimit < 1) {
-			errors.push(`${downloadLimit} is lower than 1`)
-		}
-		if (downloadLimit > storageConfig.downloads.max) {
-			errors.push(
-				`${downloadLimit} is greater than ${storageConfig.downloads.max}`,
-			)
-		}
-	}
-
-	if (expiry != null) {
-		if (expiry < 1) {
-			errors.push(`${expiry} is lower than 1 second`)
-		}
-		if (expiry > storageConfig.expiry.max) {
-			errors.push(`${expiry} is greater than ${storageConfig.expiry.max}`)
-		}
-	}
-
-	return errors
+	// Assertion is safe after validation
+	return [params as UploadParams]
 }
 
 export const upload: expressWs.WebsocketRequestHandler = (client) => {
@@ -96,10 +92,8 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 	})
 
 	client.once("message", (msg: string) => {
-		const params = JSON.parse(msg) as UploadParams
-
-		const errors = validateUploadParams(params)
-		if (errors.length > 0) {
+		const [params, errors] = validateUploadParams(msg)
+		if (!params || errors) {
 			webSocket.send(client, { error: 400 })
 			client.close()
 			return
