@@ -284,6 +284,13 @@ const Upload: React.FC = () => {
 						/>
 					)}
 				</InfoRow>
+
+				{hasFiles && (
+					<InfoRow>
+						<p>Price</p>
+						<p>${totalSize * 2e-10}</p>
+					</InfoRow>
+				)}
 			</Info>
 
 			{hasFiles && !loading && !success && (
