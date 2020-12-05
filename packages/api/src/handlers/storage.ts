@@ -74,9 +74,11 @@ function validateUploadParams(
 		return [undefined, [(err as Error).message]]
 	}
 
-	const { errors } = uploadParamsSchema.validate(params)
-	if (errors) {
-		return [undefined, errors.details.map(({ message }) => message)]
+	// Care: `errors` is always `undefined`, use `error`
+	// See: https://github.com/sideway/joi/issues/2523
+	const { error } = uploadParamsSchema.validate(params)
+	if (error) {
+		return [undefined, error.details.map(({ message }) => message)]
 	}
 
 	// Assertion is safe after validation
