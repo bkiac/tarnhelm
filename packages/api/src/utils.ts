@@ -1,10 +1,10 @@
-/* eslint-disable no-console */
 import { memoize } from "lodash"
 import type { Server } from "ws"
 
 export const ONE_DAY_IN_SECONDS = 86400
 
 export function log(message: string, meta?: Record<string, unknown>): void {
+	// eslint-disable-next-line no-console
 	console.log(new Date(), message, meta)
 }
 
