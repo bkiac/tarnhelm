@@ -1,0 +1,10 @@
+name: tarnhelm-api
+
+services:
+  - name: api
+    environment_slug: node-js
+    github:
+      repo: bkiac/tarnhelm
+      branch: master
+      deploy_on_push: true
+    source_dir: /packages/api
