@@ -218,6 +218,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 				)
 				const uploadParams = {
 					...options,
+					size,
 					authb64: keyring.authb64,
 					metadata: encryptedContentMetadata,
 				}

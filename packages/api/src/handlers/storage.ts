@@ -9,6 +9,7 @@ import { v4 as uuid } from "uuid"
 import * as ws from "ws"
 import config from "../config"
 import * as lnd from "../lib/lnd"
+import { getPriceQuote } from "../lib/price"
 import * as storage from "../lib/storage/storage"
 import * as webSocket from "../lib/web-socket"
 import { log } from "../utils"
@@ -100,66 +101,72 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 		}
 
 		const id = uuid()
-		lnd
-			.createInvoice({
-				tokens: 500,
-			})
-			.then((invoice) => {
-				webSocket.send(client, { data: { id, invoice } })
+		getPriceQuote(params)
+			.then((sats) => {
+				lnd
+					.createInvoice({
+						tokens: sats,
+					})
+					.then((invoice) => {
+						webSocket.send(client, { data: { id, invoice } })
 
-				const { metadata, size, downloadLimit, expiry, authb64 } = params
-				const invoiceSubscription = lnd.subscribeToInvoice(invoice)
-				invoiceSubscription.on(
-					"invoice_updated",
-					(invoiceUpdate: SubscribeToInvoiceInvoiceUpdatedEvent) => {
-						if (invoiceUpdate.is_confirmed) {
-							webSocket.send(client, {
-								data: { invoicePaymentConfirmation: invoiceUpdate },
-							})
-
-							fileStream = ws
-								.createWebSocketStream(client)
-								.pipe(eof())
-								.pipe(limiter())
-
-							log("Start storage upload", { id })
-
-							storage
-								.set(
-									{ id, stream: fileStream, metadata, size },
-									{ downloadLimit, expiry, authb64 },
-									(progress) =>
-										webSocket.send(client, { data: progress.loaded }),
-								)
-								.then((data) => {
-									log("Finish storage upload", { data })
-								})
-								.catch((err: Error) => {
-									log("Storage error", { id, error: err })
-
+						const { metadata, size, downloadLimit, expiry, authb64 } = params
+						const invoiceSubscription = lnd.subscribeToInvoice(invoice)
+						invoiceSubscription.on(
+							"invoice_updated",
+							(invoiceUpdate: SubscribeToInvoiceInvoiceUpdatedEvent) => {
+								if (invoiceUpdate.is_confirmed) {
 									webSocket.send(client, {
-										error: err.message === "limit" ? 413 : 500,
+										data: { invoicePaymentConfirmation: invoiceUpdate },
 									})
 
-									fileStream?.destroy()
+									fileStream = ws
+										.createWebSocketStream(client)
+										.pipe(eof())
+										.pipe(limiter())
+
+									log("Start storage upload", { id })
+
 									storage
-										.del(id)
-										.then(() => {
-											log("Temporary file deleted", { id })
+										.set(
+											{ id, stream: fileStream, metadata, size },
+											{ downloadLimit, expiry, authb64 },
+											(progress) =>
+												webSocket.send(client, { data: progress.loaded }),
+										)
+										.then((data) => {
+											log("Finish storage upload", { data })
 										})
-										.catch((err2: Error) => {
-											log("Storage error", { id, error: err2 })
+										.catch((err: Error) => {
+											log("Storage error", { id, error: err })
+
+											webSocket.send(client, {
+												error: err.message === "limit" ? 413 : 500,
+											})
+
+											fileStream?.destroy()
+											storage
+												.del(id)
+												.then(() => {
+													log("Temporary file deleted", { id })
+												})
+												.catch((err2: Error) => {
+													log("Storage error", { id, error: err2 })
+												})
 										})
-								})
-								.finally(() => {
-									client.close()
-								})
-						}
-					},
-				)
+										.finally(() => {
+											client.close()
+										})
+								}
+							},
+						)
+					})
+					.catch((err3) => {
+						log("LND Invoice Error", { id, error: err3 })
+					})
 			})
-			.catch((err3) => {
-				log("LND Invoice Error", { id, error: err3 })
+			.catch((err4) => {
+				log("Price Quote Error", { id, error: err4 })
 			})
 	})
 }
