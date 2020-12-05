@@ -207,8 +207,14 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 		// TODO: add delay to wait for socket buffer
 		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
-				const encryptedContentMetadata = await keyring.encryptMetadata(file)
-				const encryptedSize = keyring.calculateEncryptedSize(file.size)
+				// Properties need to be cloned here, passing `file` to `encryptMetadata` won't work, `name` and `type` will be `undefined` on upload
+				const { name, size, type } = file
+				const encryptedContentMetadata = await keyring.encryptMetadata({
+					name,
+					size,
+					type,
+				})
+				const encryptedSize = keyring.calculateEncryptedSize(size)
 				const uploadParams = {
 					...options,
 					size: encryptedSize,
