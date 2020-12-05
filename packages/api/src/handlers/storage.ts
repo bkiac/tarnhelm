@@ -105,21 +105,41 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 		const id = uuid()
 		getPriceQuote(params)
 			.then((sats) => {
+				const { metadata, size, downloadLimit, expiry, authb64 } = params
 				lnd
 					.createInvoice({
 						tokens: sats,
+						description: `Size: ${size}B, Download Limit: ${downloadLimit}, Expiry: ${expiry}s`,
 					})
 					.then((invoice) => {
-						webSocket.send(client, { data: { id, invoice } })
+						webSocket.send(client, {
+							data: {
+								id,
+								invoice: {
+									createdAt: invoice.created_at,
+									request: invoice.request,
+									tokens: invoice.tokens,
+									description: invoice.description,
+								},
+							},
+						})
 
-						const { metadata, size, downloadLimit, expiry, authb64 } = params
 						const invoiceSubscription = lnd.subscribeToInvoice(invoice)
 						invoiceSubscription.on(
 							"invoice_updated",
 							(invoiceUpdate: SubscribeToInvoiceInvoiceUpdatedEvent) => {
 								if (invoiceUpdate.is_confirmed) {
 									webSocket.send(client, {
-										data: { invoicePaymentConfirmation: invoiceUpdate },
+										data: {
+											invoicePaymentConfirmation: {
+												createdAt: invoiceUpdate.created_at,
+												description: invoiceUpdate.description,
+												expiresAt: invoiceUpdate.expires_at,
+												received: invoiceUpdate.received,
+												request: invoiceUpdate.request,
+												tokens: invoiceUpdate.tokens,
+											},
+										},
 									})
 
 									fileStream = ws
