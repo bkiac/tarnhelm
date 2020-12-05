@@ -125,7 +125,7 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 									fileStream = ws
 										.createWebSocketStream(client)
 										.pipe(eof())
-										.pipe(limiter())
+										.pipe(limiter(size))
 
 									log("Start storage upload", { id })
 

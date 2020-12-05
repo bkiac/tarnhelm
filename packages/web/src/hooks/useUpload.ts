@@ -207,18 +207,11 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 		// TODO: add delay to wait for socket buffer
 		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
-				const { name, size, type } = file
-				const contentMetadata = {
-					name,
-					size,
-					type,
-				}
-				const encryptedContentMetadata = await keyring.encryptMetadata(
-					contentMetadata,
-				)
+				const encryptedContentMetadata = await keyring.encryptMetadata(file)
+				const encryptedSize = keyring.calculateEncryptedSize(file.size)
 				const uploadParams = {
 					...options,
-					size,
+					size: encryptedSize,
 					authb64: keyring.authb64,
 					metadata: encryptedContentMetadata,
 				}
@@ -250,7 +243,6 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 					const encryptedFileStream = await keyring.encryptStream(
 						stream.createFileStream(file),
 					)
-					const encryptedSize = keyring.calculateEncryptedSize(size)
 
 					const startDate = new Date()
 					webSocket.addMessageListener<number>(ws, (uploadedBytes, error) => {
