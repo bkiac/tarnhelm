@@ -2,9 +2,7 @@ import React from "react"
 import styled, { css } from "styled-components"
 import DeathIcon from "./DeathIcon"
 import FileStick from "./FileStick"
-import Loader from "./Loader"
 import SaveIcon from "./SaveIcon"
-import SecurityIcon from "./SecurityIcon"
 
 const StyledVault = styled.div<{
 	center: boolean
@@ -58,25 +56,18 @@ interface FileObject {
 	onDelete: () => void
 }
 
-/**
- * TODO: Replace complex conditionals in render with enumerated states
- */
 const Vault: React.FC<{
 	files: FileObject[]
 	isDragActive: boolean
 	loading?: boolean
 	success?: boolean
 	hasError?: boolean
-	invoice?: string
-	awaitingPayment?: boolean
 }> = ({
 	files,
 	isDragActive,
-	invoice,
 	loading = false,
 	success = false,
 	hasError = false,
-	awaitingPayment = false,
 }) => {
 	const isEmpty = files.length === 0
 
@@ -105,25 +96,7 @@ const Vault: React.FC<{
 								: renderPartial(<SaveIcon />, "Click or drop files to start")}
 						</>
 					) : (
-						<>
-							{awaitingPayment ? (
-								renderPartial(<></>, invoice)
-							) : (
-								<>
-									{loading ? (
-										<Loader />
-									) : (
-										<>
-											{success
-												? renderPartial(<SecurityIcon />, "Success")
-												: files.map(({ id, ...f }) => (
-														<StyledFileStick key={id} {...f} />
-												  ))}
-										</>
-									)}
-								</>
-							)}
-						</>
+						files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)
 					)}
 				</>
 			)}

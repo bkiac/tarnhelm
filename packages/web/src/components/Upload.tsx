@@ -1,5 +1,6 @@
 import bytes from "bytes"
 import differenceWith from "lodash.differencewith"
+import QRCode from "qrcode.react"
 import React, { useCallback, useMemo, useState } from "react"
 import type { DropHandler } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
@@ -9,7 +10,7 @@ import { useUpload } from "../hooks"
 import { UseUploadStatus } from "../hooks/useUpload"
 import Button from "./Button"
 import DangerIcon from "./DangerIcon"
-import InternalLink from "./InternalLink"
+import Loader from "./Loader"
 import Select from "./Select"
 import Vault from "./Vault"
 
@@ -218,17 +219,37 @@ const Upload: React.FC = () => {
 
 	return (
 		<Container>
-			<Dropzone {...dropzone.getRootProps()}>
-				<Vault
-					files={filesInVault}
-					isDragActive={dropzone.isDragActive}
-					awaitingPayment={awaitingPayment}
-					invoice={invoice}
-					loading={loading}
-					success={success}
-				/>
-				<input {...dropzone.getInputProps()} />
-			</Dropzone>
+			{awaitingPayment && invoice != null ? (
+				<>
+					<QRCode value={invoice} size={256} />
+					<p style={{ width: 300, wordWrap: "break-word" }}>{invoice}</p>
+				</>
+			) : (
+				<>
+					{loading ? (
+						<>
+							<Loader />
+							<p>{Math.floor(percent * 100)}%</p>
+						</>
+					) : (
+						<>
+							{success ? (
+								<p>{window.location.hostname + to}</p>
+							) : (
+								<Dropzone {...dropzone.getRootProps()}>
+									<Vault
+										files={filesInVault}
+										isDragActive={dropzone.isDragActive}
+										loading={loading}
+										success={success}
+									/>
+									<input {...dropzone.getInputProps()} />
+								</Dropzone>
+							)}
+						</>
+					)}
+				</>
+			)}
 
 			<Info>
 				<InfoRow>
@@ -263,24 +284,13 @@ const Upload: React.FC = () => {
 						/>
 					)}
 				</InfoRow>
-
-				{uploading && (
-					<>
-						<InfoRow>
-							<p>Progress</p>
-							<p>{Math.floor(percent * 100)}%</p>
-						</InfoRow>
-					</>
-				)}
 			</Info>
 
 			{hasFiles && !loading && !success && (
 				<Button onClick={handleClick} disabled={uploadDisabled}>
-					Upload
+					Pay & Upload
 				</Button>
 			)}
-
-			{success && <InternalLink href={to}>{to}</InternalLink>}
 		</Container>
 	)
 }
