@@ -35,6 +35,8 @@
 		"@types/react-dom": "^17.0.0",
 		"@types/styled-components": "^5.1.4",
 		"@types/uuid": "^8.3.0",
+		"@typescript-eslint/eslint-plugin": "^4.8.2",
+		"@typescript-eslint/parser": "^4.8.2",
 		"axios": "^0.21.0",
 		"base64-js": "^1.5.1",
 		"bytes": "^3.1.0",
