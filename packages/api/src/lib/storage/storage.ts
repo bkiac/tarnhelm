@@ -133,9 +133,9 @@ export async function setNonce(
 export async function clean(): Promise<void> {
 	// TODO: handle more than 1000 files
 	const files = await s3.list()
-	const keys = files.Contents?.map((fileObject) => fileObject.Key).filter<
-		string
-	>((key): key is string => !isNil(key))
+	const keys = files.Contents?.map(
+		(fileObject) => fileObject.Key,
+	).filter<string>((key): key is string => !isNil(key))
 	if (keys) {
 		log(`There are ${keys.length} files in S3.`)
 		const ttls = await Promise.all(keys.map(async (key) => redis.ttl(key)))
