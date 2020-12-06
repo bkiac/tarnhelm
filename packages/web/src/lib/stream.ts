@@ -1,4 +1,5 @@
 import isNil from "lodash.isnil"
+import type { RequiredBy } from "../types/utils"
 
 /* eslint-disable no-await-in-loop */
 export async function read<T>(
@@ -13,9 +14,7 @@ export async function read<T>(
 	}
 }
 
-export function concat<T>(
-	streams: Array<ReadableStream<T>>,
-): ReadableStream<T> {
+export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
 	type ControllerCallback = ReadableStreamDefaultControllerCallback<T>
 
 	let index = 0
@@ -51,8 +50,8 @@ export function createBlobStream(
 
 	let index = 0
 
-	const pull: ControllerCallback = async (controller) => {
-		return new Promise<void>((resolve, reject) => {
+	const pull: ControllerCallback = async (controller) =>
+		new Promise<void>((resolve, reject) => {
 			const bytesLeft = blob.size - index
 
 			if (bytesLeft > 0) {
@@ -74,7 +73,6 @@ export function createBlobStream(
 				resolve()
 			}
 		})
-	}
 
 	return new ReadableStream({ pull })
 }

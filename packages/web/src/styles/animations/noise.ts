@@ -4,7 +4,7 @@ import { css, keyframes } from "styled-components"
 function createNoiseKeyframePartials(
 	steps: number,
 	fraction: number,
-): Array<FlattenSimpleInterpolation | string> {
+): (FlattenSimpleInterpolation | string)[] {
 	return Array.from(Array(steps)).map((_, i) => {
 		const top = Math.random()
 		const bottom = 1.01 - top

@@ -3,6 +3,7 @@ import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/web-socket"
+import type { ReducerAction } from "../types/reducer"
 import useKeyring from "./useKeyring"
 import useWebSocket from "./useWebSocket"
 

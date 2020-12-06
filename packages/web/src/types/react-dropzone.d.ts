@@ -1,7 +1,7 @@
 import "react-dropzone"
 
 declare module "react-dropzone" {
-	type DropHandler = <T extends File>(
+	export type DropHandler = <T extends File>(
 		acceptedFiles: T[],
 		fileRejections: FileRejection[],
 		event: DropEvent,

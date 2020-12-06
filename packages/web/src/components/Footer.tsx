@@ -22,28 +22,26 @@ const Item = styled.div`
 	}
 `
 
-const Footer: React.FunctionComponent = () => {
-	return (
-		<Container>
-			<Item>
-				<AppTitle />
-			</Item>
+const Footer: React.FunctionComponent = () => (
+	<Container>
+		<Item>
+			<AppTitle />
+		</Item>
 
-			<Item>
-				<InternalLink href="/thanks">Thanks</InternalLink>
-			</Item>
+		<Item>
+			<InternalLink href="/thanks">Thanks</InternalLink>
+		</Item>
 
-			<Item>
-				<ExternalLink href="https://github.com/bkiac/tarnhelm" target="_blank">
-					Code
-				</ExternalLink>
-			</Item>
+		<Item>
+			<ExternalLink href="https://github.com/bkiac/tarnhelm" target="_blank">
+				Code
+			</ExternalLink>
+		</Item>
 
-			<Item>
-				<p>Tips: bc1qe95pnse2q0yp7jwzu4pdjv7xz3gamzucum5nyh</p>
-			</Item>
-		</Container>
-	)
-}
+		<Item>
+			<p>Tips: bc1qe95pnse2q0yp7jwzu4pdjv7xz3gamzucum5nyh</p>
+		</Item>
+	</Container>
+)
 
 export default Footer
