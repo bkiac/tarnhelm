@@ -3,6 +3,7 @@ import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as file from "../lib/file"
 import * as stream from "../lib/stream"
+import type { ReducerAction } from "../types/reducer"
 import useKeyring from "./useKeyring"
 
 enum Status {

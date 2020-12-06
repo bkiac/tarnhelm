@@ -11,8 +11,8 @@ const glitchOptions: { size: number; unit: "px"; duration: number } = {
 	duration: 0.3,
 }
 
-const StyledLink = styled.a((props) => {
-	return css`
+const StyledLink = styled.a(
+	(props) => css`
 		color: ${props.theme.palette.foreground};
 		text-decoration: none;
 		padding: 0 0.5rem 0.25rem;
@@ -55,7 +55,7 @@ const StyledLink = styled.a((props) => {
 				animation: ${glitch({ ...glitchOptions, direction: "reverse" })};
 			}
 		}
-	`
-})
+	`,
+)
 
 export default StyledLink

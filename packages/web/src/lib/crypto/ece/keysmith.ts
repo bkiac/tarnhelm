@@ -50,7 +50,8 @@ type DeriveKey = (
 export const deriveEncryptionKey: DeriveKey = async (
 	algorithmParams,
 	masterKey,
-) => deriveKey(
+) =>
+	deriveKey(
 		algorithmParams,
 		masterKey,
 		{
@@ -63,7 +64,8 @@ export const deriveEncryptionKey: DeriveKey = async (
 export const deriveAuthenticationKey: DeriveKey = async (
 	algorithmParams,
 	masterKey,
-) => deriveKey(
+) =>
+	deriveKey(
 		algorithmParams,
 		masterKey,
 		{
@@ -88,7 +90,8 @@ export async function generateKey(
 	return keyDerivationFn(algorithmParams, masterKey)
 }
 
-export const generateAuthenticationKey: GenerateKey = async (salt, keyData) => generateKey(
+export const generateAuthenticationKey: GenerateKey = async (salt, keyData) =>
+	generateKey(
 		{ salt, info: "Authentication" },
 		keyData,
 		deriveAuthenticationKey,
@@ -102,13 +105,15 @@ export const generateMetadataEncryptionKey: GenerateKey = async (
 export const generateContentEncryptionKey: GenerateKey = async (
 	salt,
 	keyData,
-) => generateKey(
+) =>
+	generateKey(
 		{ salt, info: "Content-Encoding: aes128gcm\0" },
 		keyData,
 		deriveEncryptionKey,
 	)
 
-export const generateNonceKey: GenerateKey = async (salt, keyData) => generateKey(
+export const generateNonceKey: GenerateKey = async (salt, keyData) =>
+	generateKey(
 		{ salt, info: "Content-Encoding: nonce\0" },
 		keyData,
 		deriveEncryptionKey,
