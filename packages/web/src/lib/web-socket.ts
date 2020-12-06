@@ -1,9 +1,9 @@
-import isNil from "lodash.isnil"
-
-interface Response<D> {
-	data?: D
-	error?: number
-}
+type Response<D> =
+	| {
+			data: undefined
+			error: number
+	  }
+	| { data: D; error: undefined }
 
 function parseResponse<D>(message: string): Response<D> {
 	return JSON.parse(message) as Response<D>
@@ -36,11 +36,11 @@ export async function listen<D>(ws: WebSocket): Promise<D> {
 		ws.addEventListener(
 			"message",
 			(event) => {
-				const res = parseResponse<D>(event.data)
-				if (!isNil(res.error)) {
-					reject(res.error)
+				const r = parseResponse<D>(event.data)
+				if (r.error != null) {
+					return reject(r.error)
 				}
-				resolve(res.data)
+				return resolve(r.data)
 			},
 			{ once: true },
 		)
@@ -52,7 +52,7 @@ export function addMessageListener<D>(
 	listener: (data: D | undefined, error?: number) => void,
 ): void {
 	ws.addEventListener("message", (event) => {
-		const res = parseResponse<D>(event.data)
-		listener(res.data, !isNil(res.error) ? res.error : undefined)
+		const { data, error } = parseResponse<D | undefined>(event.data)
+		listener(data, error)
 	})
 }
