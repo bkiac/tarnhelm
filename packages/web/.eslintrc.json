@@ -2,5 +2,6 @@
 	"extends": ["bkiac"],
 	"parserOptions": {
 		"project": "./tsconfig.json"
-	}
+	},
+	"ignorePatterns": ["**/*rc.*"]
 }
