@@ -23,17 +23,15 @@ export async function deriveKey(
 		| AesDerivedKeyParams
 		| HmacImportParams
 		| ConcatParams
-		| HkdfCtrParams
+		| HkdfParams
 		| Pbkdf2Params,
-	keyUsages: string[],
+	keyUsages: KeyUsage[],
 ): Promise<CryptoKey> {
-	/* eslint-disable @typescript-eslint/ban-ts-comment */
 	const { salt, info } = algorithmParams
 	return crypto.subtle.deriveKey(
 		{
 			name: "HKDF",
 			salt,
-			// @ts-expect-error
 			info: new TextEncoder().encode(info),
 			hash: "SHA-256",
 		},
@@ -42,7 +40,6 @@ export async function deriveKey(
 		true,
 		keyUsages,
 	)
-	/* eslint-enable */
 }
 
 type DeriveKey = (
