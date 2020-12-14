@@ -4,16 +4,14 @@ import config from "./config"
 import * as storage from "./lib/storage/storage"
 import express from "./lib/wexpress"
 import routes from "./routes"
-import { createStatsLogger, log } from "./utils"
+import { asAsyncListener, createStatsLogger, log } from "./utils"
 
 export async function start(): Promise<void> {
 	await storage.clean()
-	const storageCleaningJob = new cron.CronJob("0 0 * * *", () => {
-		storage.clean().then(
-			() => {},
-			() => {},
-		)
-	})
+	const storageCleaningJob = new cron.CronJob(
+		"0 0 * * *",
+		asAsyncListener(storage.clean),
+	)
 	storageCleaningJob.start()
 
 	const { app, wss } = express
