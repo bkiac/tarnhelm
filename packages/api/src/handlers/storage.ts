@@ -12,7 +12,7 @@ import * as lnd from "../lib/lnd"
 import { getPriceQuote } from "../lib/price"
 import * as storage from "../lib/storage/storage"
 import * as webSocket from "../lib/web-socket"
-import { log } from "../utils"
+import { asAsyncListener, log } from "../utils"
 
 const storageConfig = config.get("storage")
 
@@ -94,103 +94,88 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 		}
 	})
 
-	client.once("message", (msg: string) => {
-		const [params, errors] = validateUploadParams(msg)
-		if (!params || errors) {
-			webSocket.send(client, { error: 400 })
-			client.close()
-			return
-		}
+	client.once(
+		"message",
+		asAsyncListener(async (msg: string) => {
+			const [params, errors] = validateUploadParams(msg)
+			if (!params || errors) {
+				webSocket.send(client, { error: 400 })
+				client.close()
+				return
+			}
 
-		const id = uuid()
-		getPriceQuote(params)
-			.then((sats) => {
-				const { metadata, size, downloadLimit, expiry, authb64 } = params
-				lnd
-					.createInvoice({
-						tokens: sats,
-						description: `Size: ${size}B, Download Limit: ${downloadLimit}, Expiry: ${expiry}s`,
-					})
-					.then((invoice) => {
-						webSocket.send(client, {
-							data: {
-								id,
-								invoice: {
-									createdAt: invoice.created_at,
-									request: invoice.request,
-									tokens: invoice.tokens,
-									description: invoice.description,
+			const id = uuid()
+			const sats = await getPriceQuote(params)
+			const { metadata, size, downloadLimit, expiry, authb64 } = params
+			const invoice = await lnd.createInvoice({
+				tokens: sats,
+				description: `Size: ${size}B, Download Limit: ${downloadLimit}, Expiry: ${expiry}s`,
+			})
+			webSocket.send(client, {
+				data: {
+					id,
+					invoice: {
+						createdAt: invoice.created_at,
+						request: invoice.request,
+						tokens: invoice.tokens,
+						description: invoice.description,
+					},
+				},
+			})
+
+			const invoiceSubscription = lnd.subscribeToInvoice(invoice)
+			invoiceSubscription.on(
+				"invoice_updated",
+				asAsyncListener(
+					async (invoiceUpdate: SubscribeToInvoiceInvoiceUpdatedEvent) => {
+						if (invoiceUpdate.is_confirmed) {
+							webSocket.send(client, {
+								data: {
+									invoicePaymentConfirmation: {
+										createdAt: invoiceUpdate.created_at,
+										description: invoiceUpdate.description,
+										expiresAt: invoiceUpdate.expires_at,
+										received: invoiceUpdate.received,
+										request: invoiceUpdate.request,
+										tokens: invoiceUpdate.tokens,
+									},
 								},
-							},
-						})
+							})
 
-						const invoiceSubscription = lnd.subscribeToInvoice(invoice)
-						invoiceSubscription.on(
-							"invoice_updated",
-							(invoiceUpdate: SubscribeToInvoiceInvoiceUpdatedEvent) => {
-								if (invoiceUpdate.is_confirmed) {
-									webSocket.send(client, {
-										data: {
-											invoicePaymentConfirmation: {
-												createdAt: invoiceUpdate.created_at,
-												description: invoiceUpdate.description,
-												expiresAt: invoiceUpdate.expires_at,
-												received: invoiceUpdate.received,
-												request: invoiceUpdate.request,
-												tokens: invoiceUpdate.tokens,
-											},
-										},
-									})
+							fileStream = ws
+								.createWebSocketStream(client)
+								.pipe(eof())
+								.pipe(limiter(size))
 
-									fileStream = ws
-										.createWebSocketStream(client)
-										.pipe(eof())
-										.pipe(limiter(size))
+							log("Start storage upload", { id })
 
-									log("Start storage upload", { id })
+							try {
+								const data = await storage.set(
+									{ id, stream: fileStream, metadata, size },
+									{ downloadLimit, expiry, authb64 },
+									(progress) =>
+										webSocket.send(client, { data: progress.loaded }),
+								)
+								log("Finish storage upload", { data })
+							} catch (e: unknown) {
+								const err = e as Error
+								log("Storage error", { id, error: err })
 
-									storage
-										.set(
-											{ id, stream: fileStream, metadata, size },
-											{ downloadLimit, expiry, authb64 },
-											(progress) =>
-												webSocket.send(client, { data: progress.loaded }),
-										)
-										.then((data) => {
-											log("Finish storage upload", { data })
-										})
-										.catch((err: Error) => {
-											log("Storage error", { id, error: err })
+								fileStream.destroy()
 
-											webSocket.send(client, {
-												error: err.message === "limit" ? 413 : 500,
-											})
+								webSocket.send(client, {
+									error: err.message === "limit" ? 413 : 500,
+								})
 
-											fileStream?.destroy()
-											storage
-												.del(id)
-												.then(() => {
-													log("Temporary file deleted", { id })
-												})
-												.catch((err2: Error) => {
-													log("Storage error", { id, error: err2 })
-												})
-										})
-										.finally(() => {
-											client.close()
-										})
-								}
-							},
-						)
-					})
-					.catch((err3) => {
-						log("LND Invoice Error", { id, error: err3 })
-					})
-			})
-			.catch((err4) => {
-				log("Price Quote Error", { id, error: err4 })
-			})
-	})
+								await storage.del(id)
+								log("Temporary file deleted", { id })
+							}
+						}
+					},
+				),
+			)
+		}),
+	)
 }
 
 export const download: express.RequestHandler<{ id: string }> = async (
@@ -249,26 +234,21 @@ export const download: express.RequestHandler<{ id: string }> = async (
 		log("Start storage download", { id })
 		fileStream
 			.pipe(res)
-			.on("finish", () => {
-				if (!cancelled) {
-					finished = true
-					storage.bumpDownloads(id).then(
-						(newDownloads) => {
-							if (newDownloads >= downloadLimit) {
-								storage.del(id).then(
-									() => {
-										log("Finish storage download and delete file", { id })
-									},
-									() => {},
-								)
-							} else {
-								log("Finish storage download", { id })
-							}
-						},
-						() => {},
-					)
-				}
-			})
+			.on(
+				"finish",
+				asAsyncListener(async () => {
+					if (!cancelled) {
+						finished = true
+						const newDownloads = await storage.bumpDownloads(id)
+						if (newDownloads >= downloadLimit) {
+							await storage.del(id)
+							log("Finish storage download and delete file", { id })
+						} else {
+							log("Finish storage download", { id })
+						}
+					}
+				}),
+			)
 			.on("close", () => {
 				if (!finished) {
 					cancelled = true

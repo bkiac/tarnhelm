@@ -18,3 +18,20 @@ export const createStatsLogger = memoize(() => {
 		log(message, { current, max })
 	}
 })
+
+export function asAsyncListener<
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	TFunction extends (...args: any[]) => Promise<void>
+>(
+	asyncListener: TFunction,
+	errorFn: (err: unknown) => void = (err) =>
+		log("Unhandled Error in async listener", { error: err }),
+	cleanupFn?: () => void,
+): (...args: Parameters<TFunction>) => void {
+	return function listener(...args: Parameters<TFunction>): void {
+		async function asyncWorker(): Promise<void> {
+			await asyncListener(...args)
+		}
+		asyncWorker().catch(errorFn).finally(cleanupFn)
+	}
+}

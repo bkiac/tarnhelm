@@ -80,7 +80,10 @@ export async function set(
 		downloadLimit = storageConfig.downloads.def,
 		authb64,
 	} = options
-
+	const uploadData = await s3.set(
+		{ key: id, body: file.stream, length: size },
+		listener,
+	)
 	await redis
 		.multi()
 		.hmset(id, {
@@ -92,8 +95,7 @@ export async function set(
 		})
 		.expire(id, expiry)
 		.exec()
-
-	return s3.set({ key: id, body: file.stream, length: size }, listener)
+	return uploadData
 }
 
 export async function isAvailable(id: string): Promise<boolean> {
