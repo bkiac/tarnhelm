@@ -8,7 +8,7 @@ import * as ws from "ws"
 import config from "../config"
 import * as storage from "../lib/storage/storage"
 import * as webSocket from "../lib/web-socket"
-import { log } from "../utils"
+import { asAsyncListener, log } from "../utils"
 
 const storageConfig = config.get("storage")
 
@@ -93,57 +93,57 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 		}
 	})
 
-	client.once("message", (msg: string) => {
-		async function asyncWorker(): Promise<void> {
-			const params = JSON.parse(msg) as UploadParams
+	client.once(
+		"message",
+		asAsyncListener(
+			async (msg: string) => {
+				const params = JSON.parse(msg) as UploadParams
 
-			const errors = validateUploadParams(params)
-			if (errors.length > 0) {
-				webSocket.send(client, { error: 400 })
-				client.close()
-				return
-			}
+				const errors = validateUploadParams(params)
+				if (errors.length > 0) {
+					webSocket.send(client, { error: 400 })
+					client.close()
+					return
+				}
 
-			const id = uuid()
-			webSocket.send(client, { data: id })
+				const id = uuid()
+				webSocket.send(client, { data: id })
 
-			const { metadata, size, downloadLimit, expiry, authb64 } = params
+				const { metadata, size, downloadLimit, expiry, authb64 } = params
 
-			fileStream = ws.createWebSocketStream(client).pipe(eof()).pipe(limiter())
+				fileStream = ws
+					.createWebSocketStream(client)
+					.pipe(eof())
+					.pipe(limiter())
 
-			log("Start storage upload", { id })
+				log("Start storage upload", { id })
 
-			try {
-				const data = await storage.set(
-					{ id, stream: fileStream, metadata, size },
-					{ downloadLimit, expiry, authb64 },
-					(progress) => webSocket.send(client, { data: progress.loaded }),
-				)
-				log("Finish storage upload", { data })
-			} catch (e: unknown) {
-				const err = e as Error
+				try {
+					const data = await storage.set(
+						{ id, stream: fileStream, metadata, size },
+						{ downloadLimit, expiry, authb64 },
+						(progress) => webSocket.send(client, { data: progress.loaded }),
+					)
+					log("Finish storage upload", { data })
+				} catch (e: unknown) {
+					const err = e as Error
 
-				log("Storage error", { id, error: err })
+					log("Storage error", { id, error: err })
 
-				webSocket.send(client, {
-					error: err.message === "limit" ? 413 : 500,
-				})
+					webSocket.send(client, {
+						error: err.message === "limit" ? 413 : 500,
+					})
 
-				fileStream.destroy()
+					fileStream.destroy()
 
-				await storage.del(id)
-				log("Temporary file deleted", { id })
-			}
-		}
-
-		asyncWorker()
-			.catch((err: Error) => {
-				log("Unexpected Error", { err })
-			})
-			.finally(() => {
-				client.close()
-			})
-	})
+					await storage.del(id)
+					log("Temporary file deleted", { id })
+				}
+			},
+			undefined,
+			() => client.close(),
+		),
+	)
 }
 
 export const download: express.RequestHandler<{ id: string }> = async (
@@ -202,8 +202,9 @@ export const download: express.RequestHandler<{ id: string }> = async (
 		log("Start storage download", { id })
 		fileStream
 			.pipe(res)
-			.on("finish", () => {
-				async function asyncWorker(): Promise<void> {
+			.on(
+				"finish",
+				asAsyncListener(async () => {
 					if (!cancelled) {
 						finished = true
 						const newDownloads = await storage.bumpDownloads(id)
@@ -214,10 +215,8 @@ export const download: express.RequestHandler<{ id: string }> = async (
 							log("Finish storage download", { id })
 						}
 					}
-				}
-
-				asyncWorker().catch((err: Error) => log("Unexpected Error", { err }))
-			})
+				}),
+			)
 			.on("close", () => {
 				if (!finished) {
 					cancelled = true
