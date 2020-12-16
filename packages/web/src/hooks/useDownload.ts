@@ -3,6 +3,7 @@ import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as file from "../lib/file"
 import * as stream from "../lib/stream"
+import type { ReducerAction } from "../types/reducer"
 import useKeyring from "./useKeyring"
 
 enum Status {
@@ -18,13 +19,13 @@ enum Status {
 	DownloadFailure = 7,
 }
 
-interface ContentMetadata {
+type ContentMetadata = {
 	name: string
 	size: string
 	type: string
 }
 
-interface State {
+export type UseDownloadState = {
 	loading: boolean
 	status: Status
 	metadata?: ContentMetadata
@@ -32,7 +33,7 @@ interface State {
 	error?: Error
 }
 
-const initialState = {
+const initialUseDownloadState = {
 	loading: false,
 	status: Status.KeyringSetup,
 }
@@ -69,7 +70,7 @@ type Action =
 	| SetDownloadSuccess
 	| SetDownloadFailure
 
-const reducer: Reducer<State, Action> = (state, action) => {
+const reducer: Reducer<UseDownloadState, Action> = (state, action) => {
 	switch (action.type) {
 		case ActionType.SetReady:
 			return {
@@ -124,7 +125,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 	}
 }
 
-interface Metadata {
+type Metadata = {
 	nonce: string
 	encryptedContentMetadata: string
 }
@@ -134,10 +135,10 @@ type DownloadFn = () => void
 export default function useDownload(
 	id: string,
 	secretb64: string,
-): [State, DownloadFn] {
+): [UseDownloadState, DownloadFn] {
 	const keyring = useKeyring<ContentMetadata>(secretb64)
 
-	const [state, dispatch] = useReducer(reducer, initialState)
+	const [state, dispatch] = useReducer(reducer, initialUseDownloadState)
 	const { status, metadata, signature } = state
 
 	const handleDownload = useCallback<DownloadFn>(() => {

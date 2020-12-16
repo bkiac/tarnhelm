@@ -83,12 +83,6 @@ export default function useKeyring<M>(
 				const decryptStream: DecryptStream = (stream) =>
 					crypto.ece.decryptStream(secret, stream)
 
-				const calculateEncryptedSize: typeof crypto.ece.calculateEncryptedSize = (
-					size,
-					recordSize,
-					tagLength,
-				) => crypto.ece.calculateEncryptedSize(size, recordSize, tagLength)
-
 				setKeyring({
 					secretb64: base64.fromArray(secret),
 					authb64,
@@ -97,7 +91,7 @@ export default function useKeyring<M>(
 					decryptMetadata,
 					encryptStream,
 					decryptStream,
-					calculateEncryptedSize,
+					calculateEncryptedSize: crypto.ece.calculateEncryptedSize,
 				})
 			}
 

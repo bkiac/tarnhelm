@@ -1,9 +1,12 @@
 import type { FlattenSimpleInterpolation, Keyframes } from "styled-components"
 import { css, keyframes } from "styled-components"
 
-type Unit = "em" | "px"
+export type GlitchAnimationUnit = "em" | "px"
 
-function createGlitchKeyframes(size: number, unit: Unit): Keyframes {
+function createGlitchKeyframes(
+	size: number,
+	unit: GlitchAnimationUnit,
+): Keyframes {
 	const value = `${size}${unit}`
 	return keyframes`
     0% {
@@ -27,13 +30,17 @@ function createGlitchKeyframes(size: number, unit: Unit): Keyframes {
 `
 }
 
-export default function glitch(opts: {
+export default function glitch({
+	size,
+	unit = "em",
+	duration,
+	direction = "normal",
+}: {
 	size: number
-	unit?: Unit
+	unit?: GlitchAnimationUnit
 	duration: number
 	direction?: "normal" | "reverse"
 }): FlattenSimpleInterpolation {
-	const { size, unit = "em", duration, direction = "normal" } = opts
 	const gkfs = createGlitchKeyframes(size, unit)
 	return css`
 		${gkfs} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite;

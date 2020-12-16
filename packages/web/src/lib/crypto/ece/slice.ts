@@ -1,10 +1,11 @@
+import type { SetRequired } from "type-fest"
 import * as stream from "../../stream"
 import { Mode, RECORD_SIZE } from "./constants"
 
 function createSlicer(
 	mode: Mode,
 	recordSize: number,
-): RequiredBy<Transformer<Uint8Array, Uint8Array>, "transform"> {
+): SetRequired<Transformer<Uint8Array, Uint8Array>, "transform"> {
 	let chunkSize = mode === Mode.Encrypt ? recordSize - 17 : 21
 	let partialChunk = new Uint8Array(chunkSize)
 	let offset = 0

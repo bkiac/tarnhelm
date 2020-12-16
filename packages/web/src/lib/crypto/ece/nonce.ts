@@ -1,3 +1,4 @@
+import type { ByteArray } from "../utils"
 import { MAX_INT32 } from "../utils"
 import { NONCE_LENGTH } from "./constants"
 import { exportKey, generateNonceKey } from "./keysmith"
@@ -25,7 +26,7 @@ export function generateNonce(seq: number, nb: Buffer): Buffer {
 }
 
 export default async function generateNonceBase(
-	salt: ArrayBuffer,
+	salt: ByteArray,
 	ikm: Uint8Array,
 ): Promise<{ nonceBase: Buffer; generateNonce: (seq: number) => Buffer }> {
 	const nonceKey = await generateNonceKey(salt, ikm)

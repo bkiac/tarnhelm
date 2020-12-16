@@ -3,10 +3,11 @@ import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/web-socket"
+import type { ReducerAction } from "../types/reducer"
 import useKeyring from "./useKeyring"
 import useWebSocket from "./useWebSocket"
 
-enum Status {
+export enum UseUploadStatus {
 	Setup = 0,
 	Ready = 1,
 	Starting = 2,
@@ -14,7 +15,7 @@ enum Status {
 	Stopping = 4,
 }
 
-interface Progress {
+export type UseUploadProgress = {
 	loading: boolean
 	ticks: number
 	uploadedBytes: number
@@ -22,14 +23,14 @@ interface Progress {
 	estimate?: Date
 }
 
-interface Options {
+type Options = {
 	downloadLimit?: number
 	expiry?: number
 }
 
-export interface State {
-	status: Status
-	progress: Progress
+export type UseUploadState = {
+	status: UseUploadStatus
+	progress: UseUploadProgress
 	file?: File
 	options?: Options
 	secret?: string
@@ -53,8 +54,8 @@ type SetReady = ReducerAction<ActionType.SetReady>
 
 type Action = Start | SetProgress | Stop | SetReady
 
-const initialState: State = {
-	status: Status.Setup,
+const initialState: UseUploadState = {
+	status: UseUploadStatus.Setup,
 	progress: {
 		loading: true,
 		ticks: 0,
@@ -64,12 +65,12 @@ const initialState: State = {
 	},
 }
 
-const reducer: Reducer<State, Action> = (state, action) => {
+const reducer: Reducer<UseUploadState, Action> = (state, action) => {
 	switch (action.type) {
 		case ActionType.SetReady:
 			return {
 				...state,
-				status: Status.Ready,
+				status: UseUploadStatus.Ready,
 				progress: {
 					...state.progress,
 					loading: false,
@@ -78,7 +79,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 		case ActionType.Start:
 			return {
-				status: Status.Starting,
+				status: UseUploadStatus.Starting,
 				file: action.payload.file,
 				options: action.payload.options,
 				progress: {
@@ -115,7 +116,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 			return {
 				...state,
-				status: Status.Uploading,
+				status: UseUploadStatus.Uploading,
 				progress,
 			}
 		}
@@ -123,7 +124,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 		case ActionType.Stop:
 			return {
 				...state,
-				status: Status.Stopping,
+				status: UseUploadStatus.Stopping,
 				id: action.payload,
 			}
 
@@ -134,7 +135,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 type Upload = (file: File, options?: Options) => void
 
-export default function useUpload(): [State & { secretb64?: string }, Upload] {
+export default function useUpload(): [
+	UseUploadState & { secretb64?: string },
+	Upload,
+] {
 	const keyring = useKeyring()
 
 	const [{ ws }, connect, disconnect] = useWebSocket("/upload", { lazy: true })
@@ -152,21 +156,21 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 	)
 
 	useEffect(() => {
-		if (status === Status.Setup && keyring) {
+		if (status === UseUploadStatus.Setup && keyring) {
 			dispatch({ type: ActionType.SetReady })
 		}
 	}, [status, keyring])
 
 	/** Handle starting status */
 	useEffect(() => {
-		if (status === Status.Starting) {
+		if (status === UseUploadStatus.Starting) {
 			connect()
 		}
 	}, [status, connect])
 
 	/** Handle stopping status */
 	useEffect(() => {
-		if (status === Status.Stopping) {
+		if (status === UseUploadStatus.Stopping) {
 			dispatch({ type: ActionType.SetReady })
 			disconnect()
 		}
@@ -174,7 +178,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 
 	// Handle upload
 	useEffect(() => {
-		if (keyring && ws && file && status === Status.Starting) {
+		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
 				const { name, size, type } = file
 				const contentMetadata = {

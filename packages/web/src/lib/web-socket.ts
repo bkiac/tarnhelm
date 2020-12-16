@@ -1,12 +1,12 @@
-type Response<D> =
+export type WebSocketResponse<D> =
 	| {
 			data: undefined
 			error: number
 	  }
 	| { data: D; error: undefined }
 
-function parseResponse<D>(message: string): Response<D> {
-	return JSON.parse(message) as Response<D>
+function parseResponse<D>(message: string): WebSocketResponse<D> {
+	return JSON.parse(message) as WebSocketResponse<D>
 }
 
 export async function open(uri: string): Promise<WebSocket> {
