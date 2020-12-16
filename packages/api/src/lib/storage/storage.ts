@@ -133,7 +133,7 @@ export async function setNonce(
 }
 
 export async function clean(): Promise<void> {
-	// TODO: handle more than 1000 files
+	// Note: no pagination yet, deletes only the first 1000 files
 	const files = await s3.list()
 	const keys = files.Contents?.map(
 		(fileObject) => fileObject.Key,
