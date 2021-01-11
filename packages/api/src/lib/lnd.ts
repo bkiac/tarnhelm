@@ -1,7 +1,7 @@
 import * as lns from "ln-service"
 import config from "../config"
 
-const { lnd } = lns.authenticatedLndGrpc(config.get("lnd"))
+export const { lnd } = lns.authenticatedLndGrpc(config.get("lnd"))
 
 export async function createInvoice(
 	args: lns.CreateInvoiceArgs,
