@@ -2,6 +2,7 @@ import type { Reducer } from "react"
 import { useCallback, useEffect, useReducer } from "react"
 import { config } from "../config"
 import * as webSocket from "../lib/web-socket"
+import type { ReducerAction } from "../types/reducer"
 
 enum ConnectionStatus {
 	Opening = 0,
@@ -174,13 +175,14 @@ export default function useWebSocket(
 	}, [connection.ws, connection.status])
 
 	/** Handle unmount */
-	useEffect(() => {
-		return () => {
+	useEffect(
+		() => () => {
 			if (connection.ws) {
 				connection.ws.close()
 			}
-		}
-	}, [connection.ws])
+		},
+		[connection.ws],
+	)
 
 	return [connection, handleConnect, handleDisconnect]
 }

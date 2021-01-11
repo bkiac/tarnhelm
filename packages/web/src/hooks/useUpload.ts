@@ -3,15 +3,17 @@ import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/web-socket"
+import type { ReducerAction } from "../types/reducer"
 import useKeyring from "./useKeyring"
 import useWebSocket from "./useWebSocket"
 
-enum Status {
+export enum UseUploadStatus {
 	Setup = 0,
 	Ready = 1,
 	Starting = 2,
-	Uploading = 3,
-	Stopping = 4,
+	AwaitingPayment = 3,
+	Uploading = 4,
+	Stopping = 5,
 }
 
 interface Progress {
@@ -28,19 +30,22 @@ interface Options {
 }
 
 export interface State {
-	status: Status
+	status: UseUploadStatus
 	progress: Progress
 	file?: File
 	options?: Options
 	secret?: string
 	id?: string
+	invoice?: string
 }
 
 enum ActionType {
 	Start = 0,
-	SetProgress = 1,
-	Stop = 2,
-	SetReady = 3,
+	AwaitPayment = 1,
+	ConfirmPayment = 2,
+	SetProgress = 3,
+	Stop = 4,
+	SetReady = 5,
 }
 
 type Start = ReducerAction<ActionType.Start, { file: File; options?: Options }>
@@ -48,13 +53,21 @@ type SetProgress = ReducerAction<
 	ActionType.SetProgress,
 	{ startDate: Date; totalBytes: number; uploadedBytes: number }
 >
-type Stop = ReducerAction<ActionType.Stop, string>
+type Stop = ReducerAction<ActionType.Stop, { id: string }>
 type SetReady = ReducerAction<ActionType.SetReady>
+type AwaitPayment = ReducerAction<ActionType.AwaitPayment, { invoice: string }>
+type ConfirmPayment = ReducerAction<ActionType.ConfirmPayment>
 
-type Action = Start | SetProgress | Stop | SetReady
+type Action =
+	| Start
+	| SetProgress
+	| Stop
+	| SetReady
+	| AwaitPayment
+	| ConfirmPayment
 
 const initialState: State = {
-	status: Status.Setup,
+	status: UseUploadStatus.Setup,
 	progress: {
 		loading: true,
 		ticks: 0,
@@ -69,20 +82,37 @@ const reducer: Reducer<State, Action> = (state, action) => {
 		case ActionType.SetReady:
 			return {
 				...state,
-				status: Status.Ready,
+				status: UseUploadStatus.Ready,
 				progress: {
 					...state.progress,
 					loading: false,
 				},
 			}
 
+		case ActionType.AwaitPayment:
+			return {
+				...state,
+				status: UseUploadStatus.AwaitingPayment,
+				invoice: action.payload.invoice,
+			}
+
+		case ActionType.ConfirmPayment:
+			return {
+				...state,
+				status: UseUploadStatus.Uploading,
+				progress: {
+					...state.progress,
+					loading: true,
+				},
+			}
+
 		case ActionType.Start:
 			return {
-				status: Status.Starting,
+				status: UseUploadStatus.Starting,
 				file: action.payload.file,
 				options: action.payload.options,
 				progress: {
-					loading: true,
+					...state.progress,
 					ticks: 0,
 					uploadedBytes: 0,
 					percent: 0,
@@ -115,7 +145,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 			return {
 				...state,
-				status: Status.Uploading,
+				status: UseUploadStatus.Uploading,
 				progress,
 			}
 		}
@@ -123,8 +153,8 @@ const reducer: Reducer<State, Action> = (state, action) => {
 		case ActionType.Stop:
 			return {
 				...state,
-				status: Status.Stopping,
-				id: action.payload,
+				status: UseUploadStatus.Stopping,
+				id: action.payload.id,
 			}
 
 		default:
@@ -152,21 +182,21 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 	)
 
 	useEffect(() => {
-		if (status === Status.Setup && keyring) {
+		if (status === UseUploadStatus.Setup && keyring) {
 			dispatch({ type: ActionType.SetReady })
 		}
 	}, [status, keyring])
 
 	/** Handle starting status */
 	useEffect(() => {
-		if (status === Status.Starting) {
+		if (status === UseUploadStatus.Starting) {
 			connect()
 		}
 	}, [status, connect])
 
 	/** Handle stopping status */
 	useEffect(() => {
-		if (status === Status.Stopping) {
+		if (status === UseUploadStatus.Stopping) {
 			dispatch({ type: ActionType.SetReady })
 			disconnect()
 		}
@@ -174,31 +204,50 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 
 	// Handle upload
 	useEffect(() => {
-		if (keyring && ws && file && status === Status.Starting) {
+		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
+				// Properties need to be cloned here, passing `file` to `encryptMetadata` won't work, `name` and `type` will be `undefined` on upload
 				const { name, size, type } = file
-				const contentMetadata = {
+				const encryptedContentMetadata = await keyring.encryptMetadata({
 					name,
 					size,
 					type,
-				}
-				const encryptedContentMetadata = await keyring.encryptMetadata(
-					contentMetadata,
-				)
+				})
+				const encryptedSize = keyring.calculateEncryptedSize(size)
 				const uploadParams = {
 					...options,
+					size: encryptedSize,
 					authb64: keyring.authb64,
 					metadata: encryptedContentMetadata,
 				}
 				ws.send(JSON.stringify(uploadParams))
 
 				try {
-					const id = await webSocket.listen<string>(ws)
+					const { id, invoice } = await webSocket.listen<{
+						id: string
+						invoice: {
+							request: string
+						}
+					}>(ws)
+					dispatch({
+						type: ActionType.AwaitPayment,
+						payload: {
+							invoice: invoice.request,
+						},
+					})
+
+					await webSocket.listen<{
+						invoicePaymentConfirmation: {
+							request: string
+						}
+					}>(ws)
+					dispatch({
+						type: ActionType.ConfirmPayment,
+					})
 
 					const encryptedFileStream = await keyring.encryptStream(
 						stream.createFileStream(file),
 					)
-					const encryptedSize = keyring.calculateEncryptedSize(size)
 
 					const startDate = new Date()
 					webSocket.addMessageListener<number>(ws, (uploadedBytes, error) => {
@@ -214,7 +263,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 							},
 						})
 						if (uploadedBytes >= encryptedSize) {
-							dispatch({ type: ActionType.Stop, payload: id })
+							dispatch({ type: ActionType.Stop, payload: { id } })
 						}
 					})
 

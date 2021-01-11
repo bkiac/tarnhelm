@@ -55,6 +55,7 @@ const StyledButton = styled.button<{
 					content: "${props.content}";
 					position: absolute;
 					top: 0;
+					white-space: nowrap;
 				}
 
 				&:before {

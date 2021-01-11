@@ -1,3 +1,4 @@
+import type { RequiredBy } from "../../../types/utils"
 import * as stream from "../../stream"
 import { Mode, RECORD_SIZE } from "./constants"
 

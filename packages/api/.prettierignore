@@ -30,6 +30,7 @@ lerna-debug.log*
 
 ## tools
 .eslintcache
+*.patch
 
 ## IDE
 *.*workspace*

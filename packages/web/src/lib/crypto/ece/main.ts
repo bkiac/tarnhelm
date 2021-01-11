@@ -1,3 +1,4 @@
+import type { RequiredBy } from "../../../types/utils"
 import * as stream from "../../stream"
 import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./constants"
 import { generateContentEncryptionKey } from "./keysmith"
