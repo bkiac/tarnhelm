@@ -204,8 +204,6 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 
 	// Handle upload
 	useEffect(() => {
-		// TODO: handle cancellation and socket failure
-		// TODO: add delay to wait for socket buffer
 		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
 				// Properties need to be cloned here, passing `file` to `encryptMetadata` won't work, `name` and `type` will be `undefined` on upload
@@ -277,7 +275,7 @@ export default function useUpload(): [State & { secretb64?: string }, Upload] {
 						ws.send(new Uint8Array([0])) // EOF signal
 					}
 				} catch (err: unknown) {
-					// TODO: handle error
+					// Do nothing for now
 				}
 			}
 

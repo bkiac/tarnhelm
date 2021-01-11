@@ -99,7 +99,6 @@ interface Props {
 	children: string
 }
 
-// TODO: Allow only string children
 const Button: React.FC<Props> = ({ children, ...rest }) => (
 	<StyledButton {...rest} content={children} type="button">
 		<span>{children}</span>
