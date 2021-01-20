@@ -1,5 +1,5 @@
 import bytes from "bytes"
-import differenceWith from "lodash.differencewith"
+import differenceWith from "lodash/differenceWith"
 import QRCode from "qrcode.react"
 import React, { useCallback, useMemo, useState } from "react"
 import type { DropHandler } from "react-dropzone"

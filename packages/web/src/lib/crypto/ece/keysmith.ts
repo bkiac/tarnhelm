@@ -1,5 +1,5 @@
 /** Utility functions to be used for authorization and AES-128-GCM content encryption. */
-import isString from "lodash.isstring"
+import isString from "lodash/isString"
 import type { ByteArray } from "../utils"
 
 /** Imports a key from external, portable material. */

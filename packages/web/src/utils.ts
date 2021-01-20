@@ -1,5 +1,5 @@
-import random from "lodash.random"
-import sampleSize from "lodash.samplesize"
+import random from "lodash/random"
+import sampleSize from "lodash/sampleSize"
 
 export function isAnyLoading(...bools: boolean[]): boolean {
 	return bools.some((loading) => loading)

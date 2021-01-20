@@ -1,4 +1,4 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import React from "react"
 import styled from "styled-components"
 

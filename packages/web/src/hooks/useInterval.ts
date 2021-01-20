@@ -1,4 +1,4 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import { useEffect, useMemo, useRef } from "react"
 
 export default function useInterval(

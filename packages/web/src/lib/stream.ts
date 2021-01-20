@@ -1,4 +1,4 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import type { SetRequired } from "type-fest"
 
 /* eslint-disable no-await-in-loop */

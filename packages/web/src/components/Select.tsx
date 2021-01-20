@@ -1,4 +1,4 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import React, { useCallback, useMemo, useState } from "react"
 import styled, { css } from "styled-components"
 import { glitch } from "../styles/animations"
