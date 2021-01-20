@@ -11,7 +11,7 @@ import config from "../config"
 import * as lnd from "../lib/lnd"
 import { getPriceQuote } from "../lib/price"
 import * as storage from "../lib/storage/storage"
-import * as webSocket from "../lib/web-socket"
+import * as webSocket from "../lib/webSocket"
 import { asAsyncListener, log } from "../utils"
 
 const storageConfig = config.get("storage")

@@ -1,7 +1,7 @@
 import type { Reducer } from "react"
 import { useCallback, useEffect, useReducer } from "react"
 import { config } from "../config"
-import * as webSocket from "../lib/web-socket"
+import * as webSocket from "../lib/webSocket"
 import type { ReducerAction } from "../types/reducer"
 
 export enum UseWebSocketConnectionStatus {
