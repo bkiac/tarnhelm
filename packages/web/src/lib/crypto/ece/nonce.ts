@@ -25,7 +25,7 @@ export function generateNonce(seq: number, nb: Buffer): Buffer {
 	return nonce
 }
 
-export default async function generateNonceBase(
+export async function generateNonceBase(
 	salt: ByteArray,
 	ikm: Uint8Array,
 ): Promise<{ nonceBase: Buffer; generateNonce: (seq: number) => Buffer }> {

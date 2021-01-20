@@ -32,10 +32,8 @@ const palette: DefaultThemePalette = {
 	error: colors.sangria,
 }
 
-const theme: DefaultTheme = {
+export const theme: DefaultTheme = {
 	iconContentCodes,
 	colors,
 	palette,
 }
-
-export default theme

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/webSocket"
 import type { ReducerAction } from "../types/reducer"
-import useKeyring from "./useKeyring"
-import useWebSocket from "./useWebSocket"
+import { useKeyring } from "./useKeyring"
+import { useWebSocket } from "./useWebSocket"
 
 export enum UseUploadStatus {
 	Setup = 0,
@@ -164,10 +164,7 @@ const reducer: Reducer<UseUploadState, Action> = (state, action) => {
 
 type Upload = (file: File, options?: Options) => void
 
-export default function useUpload(): [
-	UseUploadState & { secretb64?: string },
-	Upload,
-] {
+export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 	const keyring = useKeyring()
 
 	const [{ ws }, connect, disconnect] = useWebSocket("/upload", { lazy: true })

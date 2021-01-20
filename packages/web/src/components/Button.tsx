@@ -99,11 +99,9 @@ interface Props {
 	children: string
 }
 
-const Button: React.FC<Props> = ({ children, ...rest }) => (
+export const Button: React.FC<Props> = ({ children, ...rest }) => (
 	<StyledButton {...rest} content={children} type="button">
 		<span>{children}</span>
 		<span />
 	</StyledButton>
 )
-
-export default Button

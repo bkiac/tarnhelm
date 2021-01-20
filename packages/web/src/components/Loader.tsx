@@ -44,6 +44,4 @@ const StyledLoader = styled.div(
 	`,
 )
 
-const Loader: React.FC = () => <StyledLoader />
-
-export default Loader
+export const Loader: React.FC = () => <StyledLoader />

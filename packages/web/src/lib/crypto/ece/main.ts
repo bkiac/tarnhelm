@@ -3,8 +3,8 @@ import * as stream from "../../stream"
 import type { ByteArray } from "../utils"
 import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./constants"
 import { generateContentEncryptionKey } from "./keysmith"
-import generateNonceBase from "./nonce"
-import slice from "./slice"
+import { generateNonceBase } from "./nonce"
+import { slice } from "./slice"
 
 export async function sign(
 	key: CryptoKey,

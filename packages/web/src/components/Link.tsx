@@ -11,7 +11,7 @@ const glitchOptions: { size: number; unit: "px"; duration: number } = {
 	duration: 0.3,
 }
 
-const StyledLink = styled.a(
+export const Link = styled.a(
 	(props) => css`
 		color: ${props.theme.palette.foreground};
 		text-decoration: none;
@@ -57,5 +57,3 @@ const StyledLink = styled.a(
 		}
 	`,
 )
-
-export default StyledLink

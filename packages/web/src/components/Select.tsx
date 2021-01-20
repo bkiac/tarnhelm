@@ -125,7 +125,7 @@ interface Props<V extends React.ReactText> {
 	value: V
 }
 
-function Select<V extends React.ReactText>({
+export function Select<V extends React.ReactText>({
 	options: rawOptions,
 	onChange,
 	value,
@@ -224,5 +224,3 @@ function Select<V extends React.ReactText>({
 		</Root>
 	)
 }
-
-export default Select

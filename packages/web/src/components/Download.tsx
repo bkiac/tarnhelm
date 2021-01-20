@@ -8,7 +8,7 @@ export type DownloadProps = {
 	secretb64: string
 }
 
-const Download: React.FC<DownloadProps> = ({ id, secretb64 }) => {
+export const Download: React.FC<DownloadProps> = ({ id, secretb64 }) => {
 	const router = useRouter()
 
 	const [state, download] = useDownload(id, secretb64)
@@ -50,5 +50,3 @@ const Download: React.FC<DownloadProps> = ({ id, secretb64 }) => {
 		</>
 	)
 }
-
-export default Download

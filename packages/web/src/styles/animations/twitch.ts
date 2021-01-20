@@ -10,7 +10,7 @@ const twitchKeyframes = keyframes`
   }
 `
 
-export default function twitch(opts: {
+export function twitch(opts: {
 	duration: number
 	delay: number
 }): FlattenSimpleInterpolation {

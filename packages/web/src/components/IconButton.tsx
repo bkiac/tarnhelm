@@ -15,8 +15,9 @@ const StyledIconButton = styled.button`
 	outline: inherit;
 `
 
-const IconButton: React.FC<{ onClick?: () => void; disabled?: true }> = ({
-	children,
-	...props
-}) => <StyledIconButton {...props}>{children}</StyledIconButton>
-export default IconButton
+export const IconButton: React.FC<{
+	onClick?: () => void
+	disabled?: true
+}> = ({ children, ...props }) => (
+	<StyledIconButton {...props}>{children}</StyledIconButton>
+)

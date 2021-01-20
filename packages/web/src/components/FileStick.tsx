@@ -3,8 +3,8 @@ import React, { useEffect } from "react"
 import styled, { css } from "styled-components"
 import { useTextObfuscate } from "../hooks"
 import { noise } from "../styles/animations"
-import DeleteIcon from "./DeleteIcon"
-import IconButton from "./IconButton"
+import { DeleteIcon } from "./DeleteIcon"
+import { IconButton } from "./IconButton"
 
 const noiseOptions = {
 	duration: 3,
@@ -87,7 +87,7 @@ const FileInfoTop = styled(FileInfo)`
 	font-size: 1rem;
 `
 
-const FileStick: React.FC<{
+export const FileStick: React.FC<{
 	name: string
 	size: number
 	className?: string
@@ -117,5 +117,3 @@ const FileStick: React.FC<{
 		</StyledFileStick>
 	)
 }
-
-export default FileStick

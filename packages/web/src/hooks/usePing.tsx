@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-export default function usePing(): boolean {
+export function usePing(): boolean {
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {

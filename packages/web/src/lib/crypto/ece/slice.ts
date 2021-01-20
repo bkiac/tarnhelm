@@ -65,7 +65,7 @@ function createSlicer(
 	return { transform, flush }
 }
 
-export default function slice(
+export function slice(
 	mode: Mode,
 	input: ReadableStream<Uint8Array>,
 	recordSize = RECORD_SIZE,

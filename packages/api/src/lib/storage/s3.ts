@@ -1,7 +1,7 @@
 import AWS from "aws-sdk"
 import type * as AWSRequest from "aws-sdk/lib/request"
 import type * as stream from "stream"
-import config from "../../config"
+import { config } from "../../config"
 
 const { accessKey, endpoint, bucket } = config.get("s3")
 const s3 = new AWS.S3({

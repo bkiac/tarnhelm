@@ -24,9 +24,7 @@ export type Keyring<M> = {
 	calculateEncryptedSize: Crypto["ece"]["calculateEncryptedSize"]
 }
 
-export default function useKeyring<M>(
-	secretb64?: string,
-): Keyring<M> | undefined {
+export function useKeyring<M>(secretb64?: string): Keyring<M> | undefined {
 	const crypto = useCrypto()
 
 	const [keyring, setKeyring] = useState<Keyring<M> | undefined>()

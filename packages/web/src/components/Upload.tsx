@@ -8,11 +8,11 @@ import styled, { css } from "styled-components"
 import { v4 as uuid } from "uuid"
 import { useUpload } from "../hooks"
 import { UseUploadStatus } from "../hooks/useUpload"
-import Button from "./Button"
-import DangerIcon from "./DangerIcon"
-import Loader from "./Loader"
-import Select from "./Select"
-import Vault from "./Vault"
+import { Button } from "./Button"
+import { DangerIcon } from "./DangerIcon"
+import { Loader } from "./Loader"
+import { Select } from "./Select"
+import { Vault } from "./Vault"
 
 const Container = styled.div`
 	width: 30vw;
@@ -126,7 +126,7 @@ const DOWNLOAD_LIMIT_OPTIONS = [
 	},
 ]
 
-const Upload: React.FC = () => {
+export const Upload: React.FC = () => {
 	const [fileObjects, setFileObjects] = useState<FileObject[]>([])
 	const files = useMemo(() => fileObjects.map((fo) => fo.file), [fileObjects])
 	const totalSize = useMemo(
@@ -301,5 +301,3 @@ const Upload: React.FC = () => {
 		</Container>
 	)
 }
-
-export default Upload

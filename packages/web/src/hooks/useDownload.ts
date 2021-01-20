@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as file from "../lib/file"
 import * as stream from "../lib/stream"
 import type { ReducerAction } from "../types/reducer"
-import useKeyring from "./useKeyring"
+import { useKeyring } from "./useKeyring"
 
 enum Status {
 	KeyringSetup = 0,
@@ -132,7 +132,7 @@ type Metadata = {
 
 type DownloadFn = () => void
 
-export default function useDownload(
+export function useDownload(
 	id: string,
 	secretb64: string,
 ): [UseDownloadState, DownloadFn] {

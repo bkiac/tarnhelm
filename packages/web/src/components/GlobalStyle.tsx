@@ -1,6 +1,6 @@
 import { createGlobalStyle } from "styled-components"
 
-const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
   html, body, #root {
     height: 100%;
     margin: 0;
@@ -16,5 +16,3 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${(props) => props.theme.palette.background};
   }
 `
-
-export default GlobalStyle

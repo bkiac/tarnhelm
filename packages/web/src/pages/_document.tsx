@@ -3,7 +3,7 @@ import NextDocument from "next/document"
 import React from "react"
 import { ServerStyleSheet } from "styled-components"
 
-class Document extends NextDocument {
+export default class Document extends NextDocument {
 	static async getInitialProps(
 		ctx: DocumentContext,
 	): Promise<DocumentInitialProps> {
@@ -32,5 +32,3 @@ class Document extends NextDocument {
 		}
 	}
 }
-
-export default Document

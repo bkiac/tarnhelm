@@ -30,7 +30,7 @@ function createGlitchKeyframes(
 `
 }
 
-export default function glitch({
+export function glitch({
 	size,
 	unit = "em",
 	duration,

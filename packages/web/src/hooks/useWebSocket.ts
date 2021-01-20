@@ -118,7 +118,7 @@ function init(options: UseWebSocketOptions): UseWebSocketState {
 	}
 }
 
-export default function useWebSocket(
+export function useWebSocket(
 	url = "",
 	options: UseWebSocketOptions = { lazy: false },
 ): [UseWebSocketState, () => void, () => void] {
