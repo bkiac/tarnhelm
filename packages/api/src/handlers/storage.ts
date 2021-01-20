@@ -1,11 +1,15 @@
 import * as crypto from "crypto"
 import type express from "express"
 import type expressWs from "express-ws"
+import Joi from "joi"
+import type { SubscribeToInvoiceInvoiceUpdatedEvent } from "ln-service"
 import { isNil } from "lodash"
 import * as stream from "stream"
 import { v4 as uuid } from "uuid"
 import * as ws from "ws"
 import config from "../config"
+import * as lnd from "../lib/lnd"
+import { getPriceQuote } from "../lib/price"
 import * as storage from "../lib/storage/storage"
 import * as webSocket from "../lib/web-socket"
 import { asAsyncListener, log } from "../utils"
@@ -39,49 +43,46 @@ function limiter(limit = storageConfig.fileSize.max): stream.Transform {
 type UploadParams = {
 	metadata: string
 	authb64: string
-	size?: number
-	downloadLimit?: number
-	expiry?: number
+	size: number
+	downloadLimit: number
+	expiry: number
 }
 
-function validateUploadParams(params: UploadParams): string[] {
-	const { metadata, authb64, size, downloadLimit, expiry } = params
+const uploadParamsSchema = Joi.object<UploadParams>({
+	metadata: Joi.string().required(),
+	authb64: Joi.string().required(),
+	size: Joi.number().required().integer().max(storageConfig.fileSize.max),
+	downloadLimit: Joi.number()
+		.required()
+		.integer()
+		.min(1)
+		.max(storageConfig.downloads.max),
+	expiry: Joi.number()
+		.required()
+		.integer()
+		.min(1)
+		.max(storageConfig.expiry.max),
+})
 
-	const errors: string[] = []
-
-	if (isNil(metadata)) {
-		errors.push("Metadata is empty.")
+function validateUploadParams(
+	stringifiedParams: string,
+): [UploadParams] | [undefined, string[]] {
+	let params: unknown
+	try {
+		params = JSON.parse(stringifiedParams) as unknown
+	} catch (err: unknown) {
+		return [undefined, [(err as Error).message]]
 	}
 
-	if (isNil(authb64)) {
-		errors.push("Authentication key is empty.")
+	// Care: `errors` is always `undefined`, use `error`
+	// See: https://github.com/sideway/joi/issues/2523
+	const { error } = uploadParamsSchema.validate(params)
+	if (error) {
+		return [undefined, error.details.map(({ message }) => message)]
 	}
 
-	if (size != null && size > storageConfig.fileSize.max) {
-		errors.push(`${size} is greater than ${storageConfig.fileSize.max}`)
-	}
-
-	if (downloadLimit != null) {
-		if (downloadLimit < 1) {
-			errors.push(`${downloadLimit} is lower than 1`)
-		}
-		if (downloadLimit > storageConfig.downloads.max) {
-			errors.push(
-				`${downloadLimit} is greater than ${storageConfig.downloads.max}`,
-			)
-		}
-	}
-
-	if (expiry != null) {
-		if (expiry < 1) {
-			errors.push(`${expiry} is lower than 1 second`)
-		}
-		if (expiry > storageConfig.expiry.max) {
-			errors.push(`${expiry} is greater than ${storageConfig.expiry.max}`)
-		}
-	}
-
-	return errors
+	// Assertion is safe after validation
+	return [params as UploadParams]
 }
 
 export const upload: expressWs.WebsocketRequestHandler = (client) => {
@@ -95,54 +96,85 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 
 	client.once(
 		"message",
-		asAsyncListener(
-			async (msg: string) => {
-				const params = JSON.parse(msg) as UploadParams
+		asAsyncListener(async (msg: string) => {
+			const [params, errors] = validateUploadParams(msg)
+			if (!params || errors) {
+				webSocket.send(client, { error: 400 })
+				client.close()
+				return
+			}
 
-				const errors = validateUploadParams(params)
-				if (errors.length > 0) {
-					webSocket.send(client, { error: 400 })
-					client.close()
-					return
-				}
+			const id = uuid()
+			const sats = await getPriceQuote(params)
+			const { metadata, size, downloadLimit, expiry, authb64 } = params
+			const invoice = await lnd.createInvoice({
+				tokens: sats,
+				description: `Size: ${size}B, Download Limit: ${downloadLimit}, Expiry: ${expiry}s`,
+			})
+			webSocket.send(client, {
+				data: {
+					id,
+					invoice: {
+						createdAt: invoice.created_at,
+						request: invoice.request,
+						tokens: invoice.tokens,
+						description: invoice.description,
+					},
+				},
+			})
 
-				const id = uuid()
-				webSocket.send(client, { data: id })
+			const invoiceSubscription = lnd.subscribeToInvoice(invoice)
+			invoiceSubscription.on(
+				"invoice_updated",
+				asAsyncListener(
+					async (invoiceUpdate: SubscribeToInvoiceInvoiceUpdatedEvent) => {
+						if (invoiceUpdate.is_confirmed) {
+							webSocket.send(client, {
+								data: {
+									invoicePaymentConfirmation: {
+										createdAt: invoiceUpdate.created_at,
+										description: invoiceUpdate.description,
+										expiresAt: invoiceUpdate.expires_at,
+										received: invoiceUpdate.received,
+										request: invoiceUpdate.request,
+										tokens: invoiceUpdate.tokens,
+									},
+								},
+							})
 
-				const { metadata, size, downloadLimit, expiry, authb64 } = params
+							fileStream = ws
+								.createWebSocketStream(client)
+								.pipe(eof())
+								.pipe(limiter(size))
 
-				fileStream = ws
-					.createWebSocketStream(client)
-					.pipe(eof())
-					.pipe(limiter())
+							log("Start storage upload", { id })
 
-				log("Start storage upload", { id })
+							try {
+								const data = await storage.set(
+									{ id, stream: fileStream, metadata, size },
+									{ downloadLimit, expiry, authb64 },
+									(progress) =>
+										webSocket.send(client, { data: progress.loaded }),
+								)
+								log("Finish storage upload", { data })
+							} catch (e: unknown) {
+								const err = e as Error
+								log("Storage error", { id, error: err })
 
-				try {
-					const data = await storage.set(
-						{ id, stream: fileStream, metadata, size },
-						{ downloadLimit, expiry, authb64 },
-						(progress) => webSocket.send(client, { data: progress.loaded }),
-					)
-					log("Finish storage upload", { data })
-				} catch (e: unknown) {
-					const err = e as Error
+								fileStream.destroy()
 
-					log("Storage error", { id, error: err })
+								webSocket.send(client, {
+									error: err.message === "limit" ? 413 : 500,
+								})
 
-					webSocket.send(client, {
-						error: err.message === "limit" ? 413 : 500,
-					})
-
-					fileStream.destroy()
-
-					await storage.del(id)
-					log("Temporary file deleted", { id })
-				}
-			},
-			undefined,
-			() => client.close(),
-		),
+								await storage.del(id)
+								log("Temporary file deleted", { id })
+							}
+						}
+					},
+				),
+			)
+		}),
 	)
 }
 

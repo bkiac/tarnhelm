@@ -46,8 +46,8 @@ export type DeriveKey = (
 	masterKey: CryptoKey,
 ) => Promise<CryptoKey>
 
-export const deriveEncryptionKey: DeriveKey = async (algorithm, masterKey) => {
-	return deriveKey(
+export const deriveEncryptionKey: DeriveKey = async (algorithm, masterKey) =>
+	deriveKey(
 		algorithm,
 		masterKey,
 		{
@@ -56,13 +56,12 @@ export const deriveEncryptionKey: DeriveKey = async (algorithm, masterKey) => {
 		},
 		["encrypt", "decrypt"],
 	)
-}
 
 export const deriveAuthenticationKey: DeriveKey = async (
 	algorithm,
 	masterKey,
-) => {
-	return deriveKey(
+) =>
+	deriveKey(
 		algorithm,
 		masterKey,
 		{
@@ -71,7 +70,6 @@ export const deriveAuthenticationKey: DeriveKey = async (
 		},
 		["sign"],
 	)
-}
 
 export type GenerateKey = (
 	salt: ByteArray,
@@ -88,39 +86,34 @@ export async function generateKey(
 	return keyDerivationFn(algorithm, masterKey)
 }
 
-export const generateAuthenticationKey: GenerateKey = async (salt, keyData) => {
-	return generateKey(
+export const generateAuthenticationKey: GenerateKey = async (salt, keyData) =>
+	generateKey(
 		{ salt, info: "Authentication" },
 		keyData,
 		deriveAuthenticationKey,
 	)
-}
 
 export const generateMetadataEncryptionKey: GenerateKey = async (
 	salt,
 	keyData,
-) => {
-	return generateKey({ salt, info: "Metadata" }, keyData, deriveEncryptionKey)
-}
+) => generateKey({ salt, info: "Metadata" }, keyData, deriveEncryptionKey)
 
 export const generateContentEncryptionKey: GenerateKey = async (
 	salt,
 	keyData,
-) => {
-	return generateKey(
+) =>
+	generateKey(
 		{ salt, info: "Content-Encoding: aes128gcm\0" },
 		keyData,
 		deriveEncryptionKey,
 	)
-}
 
-export const generateNonceKey: GenerateKey = async (salt, keyData) => {
-	return generateKey(
+export const generateNonceKey: GenerateKey = async (salt, keyData) =>
+	generateKey(
 		{ salt, info: "Content-Encoding: nonce\0" },
 		keyData,
 		deriveEncryptionKey,
 	)
-}
 
 export async function exportKey(key: CryptoKey): Promise<ArrayBuffer> {
 	return crypto.subtle.exportKey("raw", key)

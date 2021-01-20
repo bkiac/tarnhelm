@@ -178,13 +178,14 @@ export default function useWebSocket(
 	}, [connection.ws, connection.status])
 
 	/** Handle unmount */
-	useEffect(() => {
-		return () => {
+	useEffect(
+		() => () => {
 			if (connection.ws) {
 				connection.ws.close()
 			}
-		}
-	}, [connection.ws])
+		},
+		[connection.ws],
+	)
 
 	return [connection, handleConnect, handleDisconnect]
 }

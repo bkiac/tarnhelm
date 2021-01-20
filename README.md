@@ -1,10 +1,13 @@
-# Tarnhelm
-
 :construction: Work in Progress :construction:
 
-End-to-end encrypted temporary file sharing for Bitcoin.
+# Tarnhelm
 
-Inspired by and based on Firefox Send, check out the [free app](https://send.firefox.com/) and the [repo](https://github.com/mozilla/send).
+End-to-end encrypted temporary file sharing for bitcoin.
+
+The alpha app is live at https://www.tarnhelm.app.
+
+I'm still working on my inbound liquidity, sorry if the routing of your payment fails!
+If you'd like to help me with this, you can open a channel to [my node](https://1ml.com/node/0254aece594745b70a0ee6729c649eef57c0b5020be8cab2f4d46ff175d9333200), thanks in advance!
 
 ## TODO
 
@@ -16,6 +19,12 @@ Inspired by and based on Firefox Send, check out the [free app](https://send.fir
   - [ ] Stream
 - [x] Encryption / Decryption
 - [x] Authentication
-- [ ] Payment
-  - [ ] Bitcoin
-  - [ ] Lightning Network
+- [x] Payment
+  - [x] Lightning Network
+
+## Acknowledgements
+
+Inspired by [Firefox Send](https://github.com/mozilla/send).
+
+- [ ] animations
+- [ ] icons
