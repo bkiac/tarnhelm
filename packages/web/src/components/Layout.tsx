@@ -1,4 +1,4 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import React from "react"
 import styled from "styled-components"
 
@@ -20,7 +20,7 @@ const Footer = styled.footer`
 	margin-top: auto;
 `
 
-const Layout: React.FC<{
+export const Layout: React.FC<{
 	footer?: React.ReactNode
 }> = ({ children: main, footer }) => (
 	<Container>
@@ -28,5 +28,3 @@ const Layout: React.FC<{
 		{!isNil(footer) && <Footer>{footer}</Footer>}
 	</Container>
 )
-
-export default Layout

@@ -1,7 +1,7 @@
 /** iOS and IO not supported yet. */
 import * as streamUtil from "./stream"
 
-interface Options {
+export type FileOptions = {
 	name: string
 	type: string
 }
@@ -19,7 +19,7 @@ function saveBlob(blob: Blob, name: string): void {
 	URL.revokeObjectURL(href)
 }
 
-function saveArrayBuffer(buffer: ArrayBuffer, options: Options): void {
+function saveArrayBuffer(buffer: ArrayBuffer, options: FileOptions): void {
 	const { name, type } = options
 	const view = new DataView(buffer)
 	const blob = new Blob([view], { type })
@@ -28,7 +28,7 @@ function saveArrayBuffer(buffer: ArrayBuffer, options: Options): void {
 
 async function saveStream(
 	stream: ReadableStream<Uint8Array>,
-	options: Options,
+	options: FileOptions,
 ): Promise<void> {
 	const ab = await streamUtil.toArrayBuffer(stream)
 	return saveArrayBuffer(ab, options)
@@ -36,7 +36,7 @@ async function saveStream(
 
 export async function save(
 	data: Blob | ArrayBuffer | ReadableStream<Uint8Array>,
-	options: Options,
+	options: FileOptions,
 ): Promise<void> {
 	if (data instanceof Blob) {
 		return saveBlob(data, options.name)

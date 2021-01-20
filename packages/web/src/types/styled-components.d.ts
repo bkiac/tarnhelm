@@ -1,7 +1,7 @@
 import "styled-components"
 
 declare module "styled-components" {
-	export interface DefaultThemeIconContentCodes {
+	export type DefaultThemeIconContentCodes = {
 		delete: "\\e900"
 		save: "\\e901"
 		death: "\\e902"
@@ -9,7 +9,7 @@ declare module "styled-components" {
 		security: "\\e904"
 	}
 
-	export interface DefaultThemeColors {
+	export type DefaultThemeColors = {
 		black: string
 		white: string
 		broom: string
@@ -19,7 +19,7 @@ declare module "styled-components" {
 		mediumPurple: string
 	}
 
-	export interface DefaultThemePalette {
+	export type DefaultThemePalette = {
 		background: string
 		foreground: string
 		primary: string
@@ -28,6 +28,7 @@ declare module "styled-components" {
 		error: string
 	}
 
+	// Must be an interface to extend `styled-components` theme
 	export interface DefaultTheme {
 		iconContentCodes: DefaultThemeIconContentCodes
 		colors: DefaultThemeColors

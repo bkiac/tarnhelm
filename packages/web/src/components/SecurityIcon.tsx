@@ -1,6 +1,4 @@
 import React from "react"
-import Icon from "./Icon"
+import { Icon } from "./Icon"
 
-const SecurityIcon: React.FC = () => <Icon glyph="security" />
-
-export default SecurityIcon
+export const SecurityIcon: React.FC = () => <Icon glyph="security" />

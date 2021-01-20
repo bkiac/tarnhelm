@@ -1,47 +1,22 @@
-import type { RequiredBy } from "../../../types/utils"
+import type { SetRequired } from "type-fest"
 import * as stream from "../../stream"
+import type { ByteArray } from "../utils"
 import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./constants"
 import { generateContentEncryptionKey } from "./keysmith"
-import generateNonceBase from "./nonce"
-import slice from "./slice"
-
-type IV =
-	| Int8Array
-	| Int16Array
-	| Int32Array
-	| Uint8Array
-	| Uint16Array
-	| Uint32Array
-	| Uint8ClampedArray
-	| Float32Array
-	| Float64Array
-	| DataView
-	| ArrayBuffer
-
-type Data =
-	| Int8Array
-	| Int16Array
-	| Int32Array
-	| Uint8Array
-	| Uint16Array
-	| Uint32Array
-	| Uint8ClampedArray
-	| Float32Array
-	| Float64Array
-	| DataView
-	| ArrayBuffer
+import { generateNonceBase } from "./nonce"
+import { slice } from "./slice"
 
 export async function sign(
 	key: CryptoKey,
-	data: ArrayBuffer,
+	data: ByteArray,
 ): Promise<ArrayBuffer> {
 	return crypto.subtle.sign("HMAC", key, data)
 }
 
 export async function encrypt(
-	iv: IV,
+	iv: ByteArray,
 	key: CryptoKey,
-	plaintext: Data,
+	plaintext: ByteArray,
 ): Promise<ArrayBuffer> {
 	return crypto.subtle.encrypt(
 		{ name: "AES-GCM", iv, tagLength: 128 },
@@ -51,9 +26,9 @@ export async function encrypt(
 }
 
 export async function decrypt(
-	iv: IV,
+	iv: ByteArray,
 	key: CryptoKey,
-	ciphertext: Data,
+	ciphertext: ByteArray,
 ): Promise<ArrayBuffer> {
 	return crypto.subtle.decrypt(
 		{
@@ -67,19 +42,19 @@ export async function decrypt(
 }
 
 /** Encrypted Content-Encoding Transformer */
-type ECETransformer<I, O> = RequiredBy<Transformer<I, O>, "transform">
+export type EceTransformer<I, O> = SetRequired<Transformer<I, O>, "transform">
 
-interface ECEHeader {
-	salt: ArrayBuffer
+export type EceHeader = {
+	salt: ByteArray
 	recordSize: number
 	length: number
 }
 
 async function createCipher(
-	salt: ArrayBuffer,
+	salt: ByteArray,
 	ikm: Uint8Array,
 	recordSize = RECORD_SIZE,
-): Promise<ECETransformer<Uint8Array, Buffer>> {
+): Promise<EceTransformer<Uint8Array, Buffer>> {
 	type Controller = TransformStreamDefaultController<Buffer>
 	type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>
 	type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
@@ -169,7 +144,7 @@ async function createCipher(
 	return { start, transform, flush }
 }
 
-function createDecipher(ikm: Uint8Array): ECETransformer<Uint8Array, Buffer> {
+function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 	type Controller = TransformStreamDefaultController<Buffer>
 	type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>
 	type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
@@ -203,7 +178,7 @@ function createDecipher(ikm: Uint8Array): ECETransformer<Uint8Array, Buffer> {
 		throw new Error("No delimiter found.")
 	}
 
-	function readHeader(header: Buffer): ECEHeader {
+	function readHeader(header: Buffer): EceHeader {
 		if (header.length < 21) {
 			throw new Error("Chunk too small for reading header.")
 		}
@@ -258,7 +233,7 @@ function createDecipher(ikm: Uint8Array): ECETransformer<Uint8Array, Buffer> {
 }
 
 export async function encryptStream(
-	salt: ArrayBuffer,
+	salt: ByteArray,
 	ikm: Uint8Array,
 	plaintext: ReadableStream<Uint8Array>,
 ): Promise<ReadableStream<Buffer>> {

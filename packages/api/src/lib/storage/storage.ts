@@ -1,7 +1,7 @@
 import * as crypto from "crypto"
 import { isNil } from "lodash"
 import type * as stream from "stream"
-import config from "../../config"
+import { config } from "../../config"
 import { log } from "../../utils"
 import { redis } from "./redis"
 import * as s3 from "./s3"

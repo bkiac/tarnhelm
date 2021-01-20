@@ -1,13 +1,13 @@
 import NextLink from "next/link"
 import React from "react"
-import Link from "./Link"
+import { Link } from "./Link"
 
 export type InternalLinkProps = {
 	href: string
 	as?: React.FC
 }
 
-const InternalLink: React.FC<InternalLinkProps> = ({
+export const InternalLink: React.FC<InternalLinkProps> = ({
 	href,
 	as: Component,
 	children,
@@ -18,5 +18,3 @@ const InternalLink: React.FC<InternalLinkProps> = ({
 		{Component ? <Component>{children}</Component> : <Link>{children}</Link>}
 	</NextLink>
 )
-
-export default InternalLink

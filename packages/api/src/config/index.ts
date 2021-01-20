@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import convict from "convict"
 import { ONE_DAY_IN_SECONDS } from "../utils"
-import addCustomFormats from "./formats"
+import { addCustomFormats } from "./formats"
 
 addCustomFormats()
 
-const config = convict({
+export const config = convict({
 	env: {
 		doc: "The application environment.",
 		format: ["production", "development", "test"],
@@ -127,9 +127,6 @@ const config = convict({
 			env: "LND_MACAROON",
 		},
 	},
-})
+}).validate({ allowed: "strict" })
 
 console.log("⚙️ Config has been loaded:", config.toString())
-config.validate({ allowed: "strict" })
-
-export default config

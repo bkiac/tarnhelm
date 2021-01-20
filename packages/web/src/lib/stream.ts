@@ -1,5 +1,5 @@
-import isNil from "lodash.isnil"
-import type { RequiredBy } from "../types/utils"
+import isNil from "lodash/isNil"
+import type { SetRequired } from "type-fest"
 
 /* eslint-disable no-await-in-loop */
 export async function read<T>(
@@ -129,7 +129,7 @@ export async function toArrayBuffer(
  */
 export function transform<I, O = I>(
 	stream: ReadableStream<I>,
-	transformer: RequiredBy<Transformer<I, O>, "transform">,
+	transformer: SetRequired<Transformer<I, O>, "transform">,
 	onCancel?: ReadableStreamErrorCallback,
 ): ReadableStream<O> {
 	try {

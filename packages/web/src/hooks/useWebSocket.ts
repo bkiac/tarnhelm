@@ -1,19 +1,19 @@
 import type { Reducer } from "react"
 import { useCallback, useEffect, useReducer } from "react"
 import { config } from "../config"
-import * as webSocket from "../lib/web-socket"
+import * as webSocket from "../lib/webSocket"
 import type { ReducerAction } from "../types/reducer"
 
-enum ConnectionStatus {
+export enum UseWebSocketConnectionStatus {
 	Opening = 0,
 	Open = 1,
 	Closing = 2,
 	Closed = 3,
 }
 
-interface Connection {
+export type UseWebSocketState = {
 	loading: boolean
-	status: ConnectionStatus
+	status: UseWebSocketConnectionStatus
 	ws?: WebSocket
 	error?: Error
 }
@@ -48,20 +48,23 @@ type ConnectionAction =
 	| DisconnectSuccess
 	| DisconnectFailure
 
-const reducer: Reducer<Connection, ConnectionAction> = (state, action) => {
+const reducer: Reducer<UseWebSocketState, ConnectionAction> = (
+	state,
+	action,
+) => {
 	switch (action.type) {
 		case ActionType.ConnectPending: {
 			return {
 				...state,
 				loading: true,
-				status: ConnectionStatus.Opening,
+				status: UseWebSocketConnectionStatus.Opening,
 			}
 		}
 		case ActionType.ConnectSuccess: {
 			const { ws } = action.payload
 			return {
 				loading: false,
-				status: ConnectionStatus.Open,
+				status: UseWebSocketConnectionStatus.Open,
 				ws,
 			}
 		}
@@ -69,7 +72,7 @@ const reducer: Reducer<Connection, ConnectionAction> = (state, action) => {
 			const { error } = action.payload
 			return {
 				loading: false,
-				status: ConnectionStatus.Closed,
+				status: UseWebSocketConnectionStatus.Closed,
 				error,
 			}
 		}
@@ -78,20 +81,20 @@ const reducer: Reducer<Connection, ConnectionAction> = (state, action) => {
 			return {
 				...state,
 				loading: true,
-				status: ConnectionStatus.Closing,
+				status: UseWebSocketConnectionStatus.Closing,
 			}
 		}
 		case ActionType.DisconnectSuccess: {
 			return {
 				loading: false,
-				status: ConnectionStatus.Closed,
+				status: UseWebSocketConnectionStatus.Closed,
 			}
 		}
 		case ActionType.DisconnectFailure: {
 			const { error } = action.payload
 			return {
 				loading: false,
-				status: ConnectionStatus.Open,
+				status: UseWebSocketConnectionStatus.Open,
 				error,
 			}
 		}
@@ -101,24 +104,24 @@ const reducer: Reducer<Connection, ConnectionAction> = (state, action) => {
 	}
 }
 
-interface Options {
+export type UseWebSocketOptions = {
 	lazy: boolean
 }
 
-function init(options: Options): Connection {
+function init(options: UseWebSocketOptions): UseWebSocketState {
 	if (options.lazy) {
-		return { status: ConnectionStatus.Closed, loading: false }
+		return { status: UseWebSocketConnectionStatus.Closed, loading: false }
 	}
 	return {
-		status: ConnectionStatus.Opening,
+		status: UseWebSocketConnectionStatus.Opening,
 		loading: true,
 	}
 }
 
-export default function useWebSocket(
+export function useWebSocket(
 	url = "",
-	options: Options = { lazy: false },
-): [Connection, () => void, () => void] {
+	options: UseWebSocketOptions = { lazy: false },
+): [UseWebSocketState, () => void, () => void] {
 	const [connection, dispatch] = useReducer(reducer, init(options))
 
 	const handleConnect = useCallback(
@@ -133,7 +136,7 @@ export default function useWebSocket(
 
 	/** Handle mount, URL change and manual reconnect */
 	useEffect(() => {
-		if (connection.status === ConnectionStatus.Opening) {
+		if (connection.status === UseWebSocketConnectionStatus.Opening) {
 			const connect = async (): Promise<void> => {
 				try {
 					if (connection.ws) {
@@ -155,7 +158,7 @@ export default function useWebSocket(
 
 	/** Handle manual disconnect */
 	useEffect(() => {
-		if (connection.status === ConnectionStatus.Closing) {
+		if (connection.status === UseWebSocketConnectionStatus.Closing) {
 			const disconnect = async (): Promise<void> => {
 				try {
 					if (connection.ws) {

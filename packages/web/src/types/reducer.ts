@@ -1,8 +1,8 @@
-export interface ReducerActionWithoutPayload<T> {
+export type ReducerActionWithoutPayload<T> = {
 	type: T
 }
 
-export interface ReducerActionWithPayload<T, P> {
+export type ReducerActionWithPayload<T, P> = {
 	type: T
 	payload: P
 }

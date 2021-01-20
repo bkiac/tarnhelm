@@ -1,5 +1,5 @@
 import * as lns from "ln-service"
-import config from "../config"
+import { config } from "../config"
 
 export const { lnd } = lns.authenticatedLndGrpc(config.get("lnd"))
 

@@ -27,7 +27,7 @@ function createNoiseKeyframes(steps: number, fraction: number): Keyframes {
   `
 }
 
-export default function noise(opts: {
+export function noise(opts: {
 	duration: number
 	steps: number
 	fraction?: number

@@ -1,4 +1,4 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import React, { useCallback, useMemo, useState } from "react"
 import styled, { css } from "styled-components"
 import { glitch } from "../styles/animations"
@@ -125,7 +125,7 @@ interface Props<V extends React.ReactText> {
 	value: V
 }
 
-function Select<V extends React.ReactText>({
+export function Select<V extends React.ReactText>({
 	options: rawOptions,
 	onChange,
 	value,
@@ -224,5 +224,3 @@ function Select<V extends React.ReactText>({
 		</Root>
 	)
 }
-
-export default Select

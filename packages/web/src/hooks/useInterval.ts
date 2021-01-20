@@ -1,10 +1,7 @@
-import isNil from "lodash.isnil"
+import isNil from "lodash/isNil"
 import { useEffect, useMemo, useRef } from "react"
 
-export default function useInterval(
-	callback: () => void,
-	delay?: number,
-): void {
+export function useInterval(callback: () => void, delay?: number): void {
 	const savedCallback = useRef<() => void>(callback)
 	const isRunning = useMemo(() => !isNil(delay), [delay])
 

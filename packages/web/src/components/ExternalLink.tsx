@@ -1,5 +1,5 @@
 import React from "react"
-import Link from "./Link"
+import { Link } from "./Link"
 
 type Target = "_blank" | "_self" | "_parent" | "_top"
 
@@ -20,7 +20,7 @@ function createSafeRel(rel?: string): string {
 	return attrs.join(" ")
 }
 
-const ExternalLink: React.FC<{
+export const ExternalLink: React.FC<{
 	href: string
 	target?: Target
 	rel?: string
@@ -33,5 +33,3 @@ const ExternalLink: React.FC<{
 		{children}
 	</Link>
 )
-
-export default ExternalLink

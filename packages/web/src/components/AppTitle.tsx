@@ -2,8 +2,8 @@ import React from "react"
 import type { FlattenSimpleInterpolation } from "styled-components"
 import styled, { css } from "styled-components"
 import { noise, twitch } from "../styles/animations"
-import A from "./A"
-import InternalLink from "./InternalLink"
+import { A } from "./A"
+import { InternalLink } from "./InternalLink"
 
 const twitchOptions = {
 	duration: 5,
@@ -66,10 +66,8 @@ const StyledAppTitle = styled.span<{
 
 const title = "Tarnhelm"
 
-const AppTitle: React.FC = () => (
+export const AppTitle: React.FC = () => (
 	<InternalLink href="/" as={A}>
 		<StyledAppTitle content={title}>{title}</StyledAppTitle>
 	</InternalLink>
 )
-
-export default AppTitle

@@ -2,10 +2,10 @@ import { addMilliseconds, differenceInMilliseconds } from "date-fns"
 import type { Reducer } from "react"
 import { useCallback, useEffect, useMemo, useReducer } from "react"
 import * as stream from "../lib/stream"
-import * as webSocket from "../lib/web-socket"
+import * as webSocket from "../lib/webSocket"
 import type { ReducerAction } from "../types/reducer"
-import useKeyring from "./useKeyring"
-import useWebSocket from "./useWebSocket"
+import { useKeyring } from "./useKeyring"
+import { useWebSocket } from "./useWebSocket"
 
 export enum UseUploadStatus {
 	Setup = 0,
@@ -16,7 +16,7 @@ export enum UseUploadStatus {
 	Stopping = 5,
 }
 
-interface Progress {
+export type UseUploadProgress = {
 	loading: boolean
 	ticks: number
 	uploadedBytes: number
@@ -24,14 +24,14 @@ interface Progress {
 	estimate?: Date
 }
 
-interface Options {
+type Options = {
 	downloadLimit?: number
 	expiry?: number
 }
 
-export interface State {
+export type UseUploadState = {
 	status: UseUploadStatus
-	progress: Progress
+	progress: UseUploadProgress
 	file?: File
 	options?: Options
 	secret?: string
@@ -66,7 +66,7 @@ type Action =
 	| AwaitPayment
 	| ConfirmPayment
 
-const initialState: State = {
+const initialState: UseUploadState = {
 	status: UseUploadStatus.Setup,
 	progress: {
 		loading: true,
@@ -77,7 +77,7 @@ const initialState: State = {
 	},
 }
 
-const reducer: Reducer<State, Action> = (state, action) => {
+const reducer: Reducer<UseUploadState, Action> = (state, action) => {
 	switch (action.type) {
 		case ActionType.SetReady:
 			return {
@@ -164,7 +164,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 type Upload = (file: File, options?: Options) => void
 
-export default function useUpload(): [State & { secretb64?: string }, Upload] {
+export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 	const keyring = useKeyring()
 
 	const [{ ws }, connect, disconnect] = useWebSocket("/upload", { lazy: true })

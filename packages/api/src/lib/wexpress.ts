@@ -9,9 +9,7 @@ import expressWs from "express-ws"
 // Augment Express app with a WebSocket server
 const instance = expressWs(express())
 
-const wexpress = {
+export const wexpress = {
 	app: instance.app,
 	wss: instance.getWss(),
 }
-
-export default wexpress

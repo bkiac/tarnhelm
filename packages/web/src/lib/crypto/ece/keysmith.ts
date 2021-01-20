@@ -1,22 +1,22 @@
 /** Utility functions to be used for authorization and AES-128-GCM content encryption. */
-
-interface HKDFAlgorithmParams {
-	salt: ArrayBuffer
-	info: string
-}
+import isString from "lodash/isString"
+import type { ByteArray } from "../utils"
 
 /** Imports a key from external, portable material. */
 export async function importKey(ikm: Uint8Array): Promise<CryptoKey> {
 	return crypto.subtle.importKey("raw", ikm, "HKDF", false, ["deriveKey"])
 }
 
+export type KeysmithAlgorithmParams = {
+	salt: ByteArray
+	info: ByteArray | string
+}
+
 /**
  * Derive a key from a master key.
- * Compiler errors are suppressed because TypeScript doesn't recognize the HKDF algorithm.
- * https://developer.mozilla.org/en-US/docs/Web/API/HkdfParams
  */
 export async function deriveKey(
-	algorithmParams: HKDFAlgorithmParams,
+	{ salt, info }: KeysmithAlgorithmParams,
 	masterKey: CryptoKey,
 	derivedKeyType:
 		| string
@@ -27,12 +27,11 @@ export async function deriveKey(
 		| Pbkdf2Params,
 	keyUsages: KeyUsage[],
 ): Promise<CryptoKey> {
-	const { salt, info } = algorithmParams
 	return crypto.subtle.deriveKey(
 		{
 			name: "HKDF",
 			salt,
-			info: new TextEncoder().encode(info),
+			info: isString(info) ? new TextEncoder().encode(info) : info,
 			hash: "SHA-256",
 		},
 		masterKey,
@@ -42,17 +41,14 @@ export async function deriveKey(
 	)
 }
 
-type DeriveKey = (
-	algorithmParams: HKDFAlgorithmParams,
+export type DeriveKey = (
+	algorithm: KeysmithAlgorithmParams,
 	masterKey: CryptoKey,
 ) => Promise<CryptoKey>
 
-export const deriveEncryptionKey: DeriveKey = async (
-	algorithmParams,
-	masterKey,
-) =>
+export const deriveEncryptionKey: DeriveKey = async (algorithm, masterKey) =>
 	deriveKey(
-		algorithmParams,
+		algorithm,
 		masterKey,
 		{
 			name: "AES-GCM",
@@ -62,11 +58,11 @@ export const deriveEncryptionKey: DeriveKey = async (
 	)
 
 export const deriveAuthenticationKey: DeriveKey = async (
-	algorithmParams,
+	algorithm,
 	masterKey,
 ) =>
 	deriveKey(
-		algorithmParams,
+		algorithm,
 		masterKey,
 		{
 			name: "HMAC",
@@ -75,19 +71,19 @@ export const deriveAuthenticationKey: DeriveKey = async (
 		["sign"],
 	)
 
-type GenerateKey = (
-	salt: ArrayBuffer,
+export type GenerateKey = (
+	salt: ByteArray,
 	keyData: Uint8Array | CryptoKey,
 ) => Promise<CryptoKey>
 
 export async function generateKey(
-	algorithmParams: HKDFAlgorithmParams,
+	algorithm: KeysmithAlgorithmParams,
 	keyData: Uint8Array | CryptoKey,
 	keyDerivationFn: DeriveKey,
 ): Promise<CryptoKey> {
 	const masterKey =
 		keyData instanceof Uint8Array ? await importKey(keyData) : keyData
-	return keyDerivationFn(algorithmParams, masterKey)
+	return keyDerivationFn(algorithm, masterKey)
 }
 
 export const generateAuthenticationKey: GenerateKey = async (salt, keyData) =>

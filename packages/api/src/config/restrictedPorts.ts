@@ -137,4 +137,4 @@ export const firefox = [
 	6000, // X11
 ]
 
-export default uniq([...chrome, ...firefox])
+export const restrictedPorts = uniq([...chrome, ...firefox])

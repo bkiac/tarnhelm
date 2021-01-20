@@ -1,8 +1,8 @@
 import React from "react"
 import styled, { css } from "styled-components"
-import DeathIcon from "./DeathIcon"
-import FileStick from "./FileStick"
-import SaveIcon from "./SaveIcon"
+import { DeathIcon } from "./DeathIcon"
+import { FileStick } from "./FileStick"
+import { SaveIcon } from "./SaveIcon"
 
 const StyledVault = styled.div<{
 	center: boolean
@@ -49,14 +49,14 @@ const Text = styled.p<{
 	`,
 )
 
-interface FileObject {
+type FileObject = {
 	id: string
 	name: string
 	size: number
 	onDelete: () => void
 }
 
-const Vault: React.FC<{
+export const Vault: React.FC<{
 	files: FileObject[]
 	isDragActive: boolean
 	loading?: boolean
@@ -103,5 +103,3 @@ const Vault: React.FC<{
 		</StyledVault>
 	)
 }
-
-export default Vault

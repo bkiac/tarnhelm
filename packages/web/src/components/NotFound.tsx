@@ -31,11 +31,9 @@ const ErrorMessage = styled.h1`
 	font-size: ${fontSize}rem;
 `
 
-const NotFound: React.FC = () => (
+export const NotFound: React.FC = () => (
 	<Container>
 		<ErrorMessage>Not Found</ErrorMessage>
 		<Code>404</Code>
 	</Container>
 )
-
-export default NotFound
