@@ -39,6 +39,15 @@ export const Footer: React.FunctionComponent = () => (
 		</Item>
 
 		<Item>
+			<ExternalLink
+				href="https://1ml.com/node/0254aece594745b70a0ee6729c649eef57c0b5020be8cab2f4d46ff175d9333200"
+				target="_blank"
+			>
+				Node
+			</ExternalLink>
+		</Item>
+
+		<Item>
 			<p>Tips: bc1qe95pnse2q0yp7jwzu4pdjv7xz3gamzucum5nyh</p>
 		</Item>
 	</Container>
