@@ -5,6 +5,6 @@ export function generateSalt(): ArrayBuffer {
 	return generateRandom(KEY_LENGTH).buffer
 }
 
-export function generateIKM(): Uint8Array {
+export function generateIkm(): Uint8Array {
 	return generateRandom(KEY_LENGTH)
 }
