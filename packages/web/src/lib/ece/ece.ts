@@ -1,10 +1,10 @@
 import type { SetRequired } from "type-fest"
-import * as stream from "../../stream"
-import type { ByteArray } from "../utils"
-import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./constants"
-import { generateContentEncryptionKey } from "./keysmith"
+import * as stream from "../stream"
+import { generateContentEncryptionKey } from "./keys"
 import { generateNonceBase } from "./nonce"
 import { slice } from "./slice"
+import type { ByteArray } from "./util"
+import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./util"
 
 export async function sign(
 	key: CryptoKey,

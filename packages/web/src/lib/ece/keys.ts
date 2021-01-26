@@ -1,6 +1,6 @@
 /** Utility functions to be used for authorization and AES-128-GCM content encryption. */
 import isString from "lodash/isString"
-import type { ByteArray } from "../utils"
+import type { ByteArray } from "./util"
 
 /** Imports a key from external, portable material. */
 export async function importKey(ikm: Uint8Array): Promise<CryptoKey> {
