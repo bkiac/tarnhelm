@@ -3,5 +3,5 @@
 	"parserOptions": {
 		"project": "./tsconfig.json"
 	},
-	"ignorePatterns": ["**/*rc.*"]
+	"ignorePatterns": ["**/*rc.*", "jest.config.js"]
 }
