@@ -3,7 +3,6 @@ import styled from "styled-components"
 import { AppTitle } from "./AppTitle"
 import { ExternalLink } from "./ExternalLink"
 import { InternalLink } from "./InternalLink"
-import { TippinButton } from "./TippinButton"
 
 const Container = styled.div`
 	display: flex;
@@ -46,10 +45,6 @@ export const Footer: React.FunctionComponent = () => (
 			>
 				Node
 			</ExternalLink>
-		</Item>
-
-		<Item>
-			<TippinButton />
 		</Item>
 	</Container>
 )
