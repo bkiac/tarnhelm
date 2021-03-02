@@ -1,5 +1,7 @@
 :construction: Work in Progress :construction:
 
+**Tarnhelm lightning node is temporarily offline, because I've recently moved apartments and I don't have reliable internet connection yet.**
+
 # Tarnhelm
 
 End-to-end encrypted temporary file sharing for bitcoin.
