@@ -114,7 +114,7 @@ export const config = convict({
 		},
 		cert: {
 			doc: "The LND TLS certificate in base64.",
-			format: "string",
+			format: String,
 			default: "",
 			sensitive: true,
 			env: "LND_CERT",
