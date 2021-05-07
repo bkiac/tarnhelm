@@ -1,5 +1,5 @@
 import isNil from "lodash/isNil"
-import type { SetRequired } from "type-fest"
+import type {SetRequired} from "type-fest"
 
 /* eslint-disable no-await-in-loop */
 export async function read<T>(
@@ -39,7 +39,7 @@ export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
 		return controller.close()
 	}
 
-	return new ReadableStream<T>({ pull })
+	return new ReadableStream<T>({pull})
 }
 
 export function createBlobStream(
@@ -74,7 +74,7 @@ export function createBlobStream(
 			}
 		})
 
-	return new ReadableStream({ pull })
+	return new ReadableStream({pull})
 }
 
 export function createFileStream(

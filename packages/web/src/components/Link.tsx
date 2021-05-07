@@ -1,11 +1,11 @@
-import styled, { css } from "styled-components"
-import { glitch } from "../styles/animations"
+import styled, {css} from "styled-components"
+import {glitch} from "../styles/animations"
 
 const borderSize = 1
 const borderUnit = "px"
 const borderSizeWithUnit = `${borderSize}${borderUnit}`
 
-const glitchOptions: { size: number; unit: "px"; duration: number } = {
+const glitchOptions: {size: number; unit: "px"; duration: number} = {
 	size: borderSize,
 	unit: borderUnit,
 	duration: 0.3,
@@ -52,7 +52,7 @@ export const Link = styled.a(
 
 			&:after {
 				visibility: visible;
-				animation: ${glitch({ ...glitchOptions, direction: "reverse" })};
+				animation: ${glitch({...glitchOptions, direction: "reverse"})};
 			}
 		}
 	`,

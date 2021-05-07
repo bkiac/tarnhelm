@@ -1,10 +1,10 @@
 import bytes from "bytes"
-import React, { useEffect } from "react"
-import styled, { css } from "styled-components"
-import { useTextObfuscate } from "../hooks"
-import { noise } from "../styles/animations"
-import { DeleteIcon } from "./DeleteIcon"
-import { IconButton } from "./IconButton"
+import React, {useEffect} from "react"
+import styled, {css} from "styled-components"
+import {useTextObfuscate} from "../hooks"
+import {noise} from "../styles/animations"
+import {DeleteIcon} from "./DeleteIcon"
+import {IconButton} from "./IconButton"
 
 const noiseOptions = {
 	duration: 3,
@@ -93,7 +93,7 @@ export const FileStick: React.FC<{
 	className?: string
 	obfuscate?: boolean
 	onDelete: () => void
-}> = ({ className, name, size, obfuscate = false, onDelete }) => {
+}> = ({className, name, size, obfuscate = false, onDelete}) => {
 	const [obfuscatedName, obfuscateName] = useTextObfuscate(name, 100)
 	const [obfuscatedSize, obfuscateSize] = useTextObfuscate(bytes(size), 100)
 

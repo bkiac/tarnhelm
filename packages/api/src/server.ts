@@ -1,10 +1,10 @@
 import cors from "cors"
 import cron from "cron"
-import { config } from "./config"
+import {config} from "./config"
 import * as storage from "./lib/storage/storage"
-import { wexpress } from "./lib/wexpress"
-import { router } from "./routes"
-import { asAsyncListener, createStatsLogger, log } from "./utils"
+import {wexpress} from "./lib/wexpress"
+import {router} from "./routes"
+import {asAsyncListener, createStatsLogger, log} from "./utils"
 
 export async function start(): Promise<void> {
 	await storage.clean()
@@ -14,7 +14,7 @@ export async function start(): Promise<void> {
 	)
 	storageCleaningJob.start()
 
-	const { app, wss } = wexpress
+	const {app, wss} = wexpress
 
 	app.use(cors())
 	app.use(router)

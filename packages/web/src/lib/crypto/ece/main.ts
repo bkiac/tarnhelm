@@ -1,10 +1,10 @@
-import type { SetRequired } from "type-fest"
+import type {SetRequired} from "type-fest"
 import * as stream from "../../stream"
-import type { ByteArray } from "../utils"
-import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./constants"
-import { generateContentEncryptionKey } from "./keysmith"
-import { generateNonceBase } from "./nonce"
-import { slice } from "./slice"
+import type {ByteArray} from "../utils"
+import {KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH} from "./constants"
+import {generateContentEncryptionKey} from "./keysmith"
+import {generateNonceBase} from "./nonce"
+import {slice} from "./slice"
 
 export async function sign(
 	key: CryptoKey,
@@ -19,7 +19,7 @@ export async function encrypt(
 	plaintext: ByteArray,
 ): Promise<ArrayBuffer> {
 	return crypto.subtle.encrypt(
-		{ name: "AES-GCM", iv, tagLength: 128 },
+		{name: "AES-GCM", iv, tagLength: 128},
 		key,
 		plaintext,
 	)
@@ -67,13 +67,13 @@ async function createCipher(
 	let isFirstChunk = true
 
 	const key = await generateContentEncryptionKey(salt, ikm)
-	const { generateNonce } = await generateNonceBase(salt, ikm)
+	const {generateNonce} = await generateNonceBase(salt, ikm)
 
 	/**
 	 * Pad records so all of them will have the same length.
 	 */
 	function pad(record: Buffer, isFinal: boolean): Buffer {
-		const { length } = record
+		const {length} = record
 		if (length + TAG_LENGTH >= recordSize) {
 			throw new Error(
 				`Buffer too large for record size: ${
@@ -141,7 +141,7 @@ async function createCipher(
 		}
 	}
 
-	return { start, transform, flush }
+	return {start, transform, flush}
 }
 
 function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
@@ -185,7 +185,7 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 		const salt = header.buffer.slice(0, KEY_LENGTH)
 		const rs = header.readUIntBE(KEY_LENGTH, 4)
 		const length = header.readUInt8(KEY_LENGTH + 4) + KEY_LENGTH + 5
-		return { salt, recordSize: rs, length }
+		return {salt, recordSize: rs, length}
 	}
 
 	async function decryptRecord(
@@ -206,7 +206,7 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 			// The first chunk during decryption contains only the header
 			const header = readHeader(chunk)
 			key = await generateContentEncryptionKey(header.salt, ikm)
-			;({ generateNonce } = await generateNonceBase(header.salt, ikm))
+			;({generateNonce} = await generateNonceBase(header.salt, ikm))
 		} else {
 			controller.enqueue(await decryptRecord(chunk, isFinal))
 		}
@@ -229,7 +229,7 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 		}
 	}
 
-	return { start, transform, flush }
+	return {start, transform, flush}
 }
 
 export async function encryptStream(

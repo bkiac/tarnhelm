@@ -1,8 +1,8 @@
 import React from "react"
-import styled, { css } from "styled-components"
-import { DeathIcon } from "./DeathIcon"
-import { FileStick } from "./FileStick"
-import { SaveIcon } from "./SaveIcon"
+import styled, {css} from "styled-components"
+import {DeathIcon} from "./DeathIcon"
+import {FileStick} from "./FileStick"
+import {SaveIcon} from "./SaveIcon"
 
 const StyledVault = styled.div<{
 	center: boolean
@@ -96,7 +96,7 @@ export const Vault: React.FC<{
 								: renderPartial(<SaveIcon />, "Click or drop files to start")}
 						</>
 					) : (
-						files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)
+						files.map(({id, ...f}) => <StyledFileStick key={id} {...f} />)
 					)}
 				</>
 			)}

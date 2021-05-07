@@ -1,4 +1,4 @@
-import { RECORD_SIZE, TAG_LENGTH } from "./constants"
+import {RECORD_SIZE, TAG_LENGTH} from "./constants"
 
 export type ByteArray =
 	| Int8Array

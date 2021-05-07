@@ -1,10 +1,10 @@
 import axios from "axios"
-import type { Reducer } from "react"
-import { useCallback, useEffect, useMemo, useReducer } from "react"
+import type {Reducer} from "react"
+import {useCallback, useEffect, useMemo, useReducer} from "react"
 import * as file from "../lib/file"
 import * as stream from "../lib/stream"
-import type { ReducerAction } from "../types/reducer"
-import { useKeyring } from "./useKeyring"
+import type {ReducerAction} from "../types/reducer"
+import {useKeyring} from "./useKeyring"
 
 enum Status {
 	KeyringSetup = 0,
@@ -54,7 +54,7 @@ type SetReady = ReducerAction<ActionType.SetReady>
 type SetMetadataPending = ReducerAction<ActionType.SetMetadataPending>
 type SetMetadataSuccess = ReducerAction<
 	ActionType.SetMetadataSuccess,
-	{ metadata: ContentMetadata; signature: string }
+	{metadata: ContentMetadata; signature: string}
 >
 type SetMetadataFailure = ReducerAction<ActionType.SetMetadataFailure, Error>
 type SetDownloadPending = ReducerAction<ActionType.SetDownloadPending>
@@ -139,17 +139,17 @@ export function useDownload(
 	const keyring = useKeyring<ContentMetadata>(secretb64)
 
 	const [state, dispatch] = useReducer(reducer, initialUseDownloadState)
-	const { status, metadata, signature } = state
+	const {status, metadata, signature} = state
 
 	const handleDownload = useCallback<DownloadFn>(() => {
 		if (status === Status.Ready) {
-			dispatch({ type: ActionType.SetDownloadPending })
+			dispatch({type: ActionType.SetDownloadPending})
 		}
 	}, [status])
 
 	useEffect(() => {
 		if (status === Status.KeyringSetup && keyring) {
-			dispatch({ type: ActionType.SetMetadataPending })
+			dispatch({type: ActionType.SetMetadataPending})
 		}
 	}, [status, keyring])
 
@@ -158,7 +158,7 @@ export function useDownload(
 			const getMetadata = async (): Promise<void> => {
 				try {
 					const {
-						data: { encryptedContentMetadata, nonce },
+						data: {encryptedContentMetadata, nonce},
 					} = await axios.get<Metadata>(`/metadata/${id}`)
 
 					const md = await keyring.decryptMetadata(encryptedContentMetadata)
@@ -166,9 +166,9 @@ export function useDownload(
 
 					dispatch({
 						type: ActionType.SetMetadataSuccess,
-						payload: { metadata: md, signature: s },
+						payload: {metadata: md, signature: s},
 					})
-					dispatch({ type: ActionType.SetReady })
+					dispatch({type: ActionType.SetReady})
 				} catch (error: unknown) {
 					dispatch({
 						type: ActionType.SetMetadataFailure,
@@ -205,8 +205,8 @@ export function useDownload(
 						type: metadata.type,
 					})
 
-					dispatch({ type: ActionType.SetDownloadSuccess })
-					dispatch({ type: ActionType.SetReady })
+					dispatch({type: ActionType.SetDownloadSuccess})
+					dispatch({type: ActionType.SetReady})
 				} catch (error: unknown) {
 					dispatch({
 						type: ActionType.SetDownloadFailure,

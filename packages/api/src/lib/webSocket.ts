@@ -1,4 +1,4 @@
-import { pickBy } from "lodash"
+import {pickBy} from "lodash"
 import type * as WebSocket from "ws"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

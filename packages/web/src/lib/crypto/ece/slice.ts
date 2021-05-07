@@ -1,6 +1,6 @@
-import type { SetRequired } from "type-fest"
+import type {SetRequired} from "type-fest"
 import * as stream from "../../stream"
-import { Mode, RECORD_SIZE } from "./constants"
+import {Mode, RECORD_SIZE} from "./constants"
 
 function createSlicer(
 	mode: Mode,
@@ -62,7 +62,7 @@ function createSlicer(
 		}
 	}
 
-	return { transform, flush }
+	return {transform, flush}
 }
 
 export function slice(

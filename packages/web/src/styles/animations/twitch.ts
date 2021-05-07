@@ -1,5 +1,5 @@
-import type { FlattenSimpleInterpolation } from "styled-components"
-import { css, keyframes } from "styled-components"
+import type {FlattenSimpleInterpolation} from "styled-components"
+import {css, keyframes} from "styled-components"
 
 const twitchKeyframes = keyframes`
   1% {
@@ -14,7 +14,7 @@ export function twitch(opts: {
 	duration: number
 	delay: number
 }): FlattenSimpleInterpolation {
-	const { duration, delay } = opts
+	const {duration, delay} = opts
 	return css`
 		${twitchKeyframes} ${duration}s ${delay}s infinite
 	`

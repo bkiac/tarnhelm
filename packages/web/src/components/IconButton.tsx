@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { iconFont } from "../styles/mixins"
+import {iconFont} from "../styles/mixins"
 
 const StyledIconButton = styled.button`
 	/* Allow icon content codes to be used inside the button, useful for pseudo-elements */
@@ -18,6 +18,6 @@ const StyledIconButton = styled.button`
 export const IconButton: React.FC<{
 	onClick?: () => void
 	disabled?: true
-}> = ({ children, ...props }) => (
+}> = ({children, ...props}) => (
 	<StyledIconButton {...props}>{children}</StyledIconButton>
 )

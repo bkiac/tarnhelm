@@ -1,18 +1,18 @@
 import bytes from "bytes"
 import differenceWith from "lodash/differenceWith"
 import QRCode from "qrcode.react"
-import React, { useCallback, useMemo, useState } from "react"
-import type { DropHandler } from "react-dropzone"
-import { useDropzone } from "react-dropzone"
-import styled, { css } from "styled-components"
-import { v4 as uuid } from "uuid"
-import { useUpload } from "../hooks"
-import { UseUploadStatus } from "../hooks/useUpload"
-import { Button } from "./Button"
-import { DangerIcon } from "./DangerIcon"
-import { Loader } from "./Loader"
-import { Select } from "./Select"
-import { Vault } from "./Vault"
+import React, {useCallback, useMemo, useState} from "react"
+import type {DropHandler} from "react-dropzone"
+import {useDropzone} from "react-dropzone"
+import styled, {css} from "styled-components"
+import {v4 as uuid} from "uuid"
+import {useUpload} from "../hooks"
+import {UseUploadStatus} from "../hooks/useUpload"
+import {Button} from "./Button"
+import {DangerIcon} from "./DangerIcon"
+import {Loader} from "./Loader"
+import {Select} from "./Select"
+import {Vault} from "./Vault"
 
 const Container = styled.div`
 	width: 30vw;
@@ -41,7 +41,7 @@ const InfoRow = styled.div`
 	}
 `
 
-const StyledTotalSize = styled.p<{ hasError?: boolean }>(
+const StyledTotalSize = styled.p<{hasError?: boolean}>(
 	(props) => css`
 		color: ${props.hasError ?? false
 			? props.theme.palette.error
@@ -63,10 +63,7 @@ interface FileObject {
 	file: File
 }
 
-const TotalSize: React.FC<{ hasError?: boolean }> = ({
-	hasError,
-	children,
-}) => (
+const TotalSize: React.FC<{hasError?: boolean}> = ({hasError, children}) => (
 	<StyledTotalSize hasError={hasError}>
 		{(hasError ?? false) && <DangerIcon />}
 		{children}
@@ -139,7 +136,7 @@ export const Upload: React.FC = () => {
 	const addFiles = useCallback((newFiles: File[]) => {
 		setFileObjects((oldFileObjects) => [
 			...oldFileObjects,
-			...newFiles.map((f) => ({ id: uuid(), file: f })),
+			...newFiles.map((f) => ({id: uuid(), file: f})),
 		])
 	}, [])
 	const deleteFile = useCallback((id: string) => {
@@ -175,7 +172,7 @@ export const Upload: React.FC = () => {
 		id,
 		status,
 		invoice,
-		progress: { loading, percent },
+		progress: {loading, percent},
 	} = state
 
 	const handleDrop = useCallback<DropHandler>(
@@ -192,7 +189,7 @@ export const Upload: React.FC = () => {
 
 	const handleClick = useCallback(() => {
 		if (!loading && hasFiles) {
-			upload(files[0], { expiry, downloadLimit })
+			upload(files[0], {expiry, downloadLimit})
 		}
 	}, [files, hasFiles, loading, upload, expiry, downloadLimit])
 
@@ -222,7 +219,7 @@ export const Upload: React.FC = () => {
 			{awaitingPayment && invoice != null ? (
 				<>
 					<QRCode value={invoice} size={256} />
-					<p style={{ width: 300, wordWrap: "break-word" }}>{invoice}</p>
+					<p style={{width: 300, wordWrap: "break-word"}}>{invoice}</p>
 				</>
 			) : (
 				<>

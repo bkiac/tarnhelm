@@ -1,5 +1,5 @@
-import type { FlattenSimpleInterpolation, Keyframes } from "styled-components"
-import { css, keyframes } from "styled-components"
+import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
+import {css, keyframes} from "styled-components"
 
 function createNoiseKeyframePartials(
 	steps: number,
@@ -32,7 +32,7 @@ export function noise(opts: {
 	steps: number
 	fraction?: number
 }): FlattenSimpleInterpolation {
-	const { duration, steps, fraction = 1 } = opts
+	const {duration, steps, fraction = 1} = opts
 	return css`
 		${createNoiseKeyframes(
 			steps,

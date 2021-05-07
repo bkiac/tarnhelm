@@ -1,5 +1,5 @@
 import express from "express"
-import { storageRouter } from "./storage"
+import {storageRouter} from "./storage"
 
 export const router = express
 	.Router()
