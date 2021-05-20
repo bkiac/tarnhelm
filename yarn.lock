@@ -1097,9 +1097,9 @@ ajv@^6.10.0, ajv@^6.12.3, ajv@^6.12.4:
     uri-js "^4.2.2"
 
 ajv@^8.0.1:
-  version "8.4.0"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.4.0.tgz#48984fdb2ce225cab15795f0772a8d85669075e4"
-  integrity sha512-7QD2l6+KBSLwf+7MuYocbWvRPdOu63/trReTLu2KFwkgctnub1auoF+Y1WYcm09CTM7quuscrzqmASaLHC/K4Q==
+  version "8.5.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.5.0.tgz#695528274bcb5afc865446aa275484049a18ae4b"
+  integrity sha512-Y2l399Tt1AguU3BPRP9Fn4eN+Or+StUGWCUpbnFyXSo8NZ9S4uj+AG2pjs5apK+ZMOwYOz1+a+VKvKH7CudXgQ==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
@@ -2035,10 +2035,10 @@ eslint-config-airbnb@^18.2.0:
     object.assign "^4.1.2"
     object.entries "^1.1.2"
 
-eslint-config-bkiac@8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-bkiac/-/eslint-config-bkiac-8.1.0.tgz#162159baa2c1334425b30ee8a8c2936e2ac086f8"
-  integrity sha512-8NCQpMkI2b55I65yYyQNymdUO4gdcmscxpmd9nfqa0+6GHwUoSvPLjhB9BS7CiDMWmDdYD+2ZKHrwZrmKP4+SA==
+eslint-config-bkiac@8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-bkiac/-/eslint-config-bkiac-8.1.1.tgz#d107889aba935c5b973de5f31ad980aa805cfab9"
+  integrity sha512-oZNtHQH+z5q57jPf1tCm3RwMgAAChYp8WVTK7a3NysXqAWFxlMtMtEOqZQhLHdvHIyntW1QkoU2X5iKYKtibvw==
   dependencies:
     eslint-config-airbnb-typescript "^12.3.1"
     eslint-config-prettier "^8.3.0"
