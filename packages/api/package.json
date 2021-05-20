@@ -6,14 +6,9 @@
 	"author": "Bence Knáb <benceknab@pm.me>",
 	"scripts": {
 		"build": "tsc -p .",
-		"check:lint": "eslint --cache src",
 		"check:types": "tsc --noEmit",
-		"checks": "run-p --aggregate-output --continue-on-error check:*",
 		"dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
-		"fix": "run-s --continue-on-error fix:*",
-		"fix:lint": "yarn check:lint --fix",
 		"postinstall": "patch-package",
-		"pre-commit": "lint-staged --concurrent false",
 		"start": "node -r dotenv/config dist/index.js",
 		"test": "echo TODO",
 		"type": "tsc --noEmit"
@@ -54,7 +49,5 @@
 		"uuid": "^8.3.0",
 		"ws": "^7.3.1"
 	},
-	"devDependencies": {
-		"lint-staged": "^10.5.3"
-	}
+	"devDependencies": {}
 }

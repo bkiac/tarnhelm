@@ -7,17 +7,13 @@
 	"scripts": {
 		"check:format": "prettier --check .",
 		"check:lint": "eslint --cache --ext js,ts,tsx .",
-		"checks": "run-s --continue-on-error check:* packages:checks",
+		"checks": "run-s --continue-on-error check:*",
 		"fix": "run-s fix:* packages:fix",
 		"fix:format": "prettier --write \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"fix:lint": "yarn check:lint --fix",
 		"postinstall": "lerna bootstrap",
-		"lint-staged": "lint-staged --concurrent false",
-		"packages:checks": "lerna run checks --no-bail",
-		"packages:fix": "lerna run fix --no-bail",
-		"packages:pre-commit": "lerna run pre-commit --concurrency 1 --stream --no-bail",
 		"packages:test": "lerna run test --no-bail",
-		"pre-commit": "run-s lint-staged packages:pre-commit",
+		"pre-commit": "lint-staged --concurrent false",
 		"test": "yarn packages:test"
 	},
 	"devDependencies": {

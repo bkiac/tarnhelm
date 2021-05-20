@@ -6,16 +6,11 @@
 	"author": "Bence Knáb <benceknab@pm.me>",
 	"scripts": {
 		"build": "run-s next:build next:export",
-		"check:lint": "eslint --cache src",
 		"check:types": "tsc --noEmit",
-		"checks": "run-p --aggregate-output --continue-on-error check:*",
 		"dev": "next dev",
-		"fix": "run-s --continue-on-error fix:*",
-		"fix:lint": "yarn check:lint --fix",
 		"next:build": "next build",
 		"next:export": "next export -o _static",
 		"next:start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
-		"pre-commit": "lint-staged --concurrent false",
 		"start": "yarn next:start",
 		"test": "echo TODO"
 	},
@@ -47,7 +42,5 @@
 		"typescript": "~4.1.2",
 		"uuid": "^8.3.0"
 	},
-	"devDependencies": {
-		"lint-staged": "^10.5.2"
-	}
+	"devDependencies": {}
 }
