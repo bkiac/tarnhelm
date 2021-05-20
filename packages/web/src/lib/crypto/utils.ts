@@ -10,7 +10,6 @@ export type ByteArray =
 	| Uint8ClampedArray
 	| Float32Array
 	| Float64Array
-	| DataView
 	| ArrayBuffer
 
 export function generateRandom(length: number): Uint8Array {

@@ -50,18 +50,15 @@ export type EceHeader = {
 	length: number
 }
 
+type Controller = TransformStreamDefaultController<Buffer>
+type StartCallback = TransformerStartCallback<Buffer>
+type TransformerCallback = TransformerTransformCallback<Uint8Array, Buffer>
+
 async function createCipher(
 	salt: ByteArray,
 	ikm: Uint8Array,
 	recordSize = RECORD_SIZE,
 ): Promise<EceTransformer<Uint8Array, Buffer>> {
-	type Controller = TransformStreamDefaultController<Buffer>
-	type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>
-	type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
-		Uint8Array,
-		Buffer
-	>
-
 	let i = 0
 	let prevChunk: Buffer | undefined
 	let isFirstChunk = true
@@ -123,11 +120,11 @@ async function createCipher(
 		i += 1
 	}
 
-	const start: ControllerCallback = (controller) => {
+	const start: StartCallback = (controller) => {
 		controller.enqueue(writeHeader())
 	}
 
-	const transform: ControllerTransformCallback = async (chunk, controller) => {
+	const transform: TransformerCallback = async (chunk, controller) => {
 		if (!isFirstChunk && prevChunk) {
 			await transformPrevChunk(prevChunk, false, controller)
 		}
@@ -135,7 +132,7 @@ async function createCipher(
 		prevChunk = Buffer.from(chunk.buffer)
 	}
 
-	const flush: ControllerCallback = async (controller) => {
+	const flush: StartCallback = async (controller) => {
 		if (prevChunk) {
 			await transformPrevChunk(prevChunk, true, controller)
 		}
@@ -145,13 +142,6 @@ async function createCipher(
 }
 
 function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
-	type Controller = TransformStreamDefaultController<Buffer>
-	type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>
-	type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
-		Uint8Array,
-		Buffer
-	>
-
 	let i = 0
 	let prevChunk: Buffer | undefined
 	let isFirstChunk = true
@@ -213,9 +203,9 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 		i += 1
 	}
 
-	const start: ControllerCallback = () => {}
+	const start: StartCallback = () => {}
 
-	const transform: ControllerTransformCallback = async (chunk, controller) => {
+	const transform: TransformerCallback = async (chunk, controller) => {
 		if (!isFirstChunk && prevChunk) {
 			await transformPrevChunk(prevChunk, false, controller)
 		}
@@ -223,7 +213,7 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 		prevChunk = Buffer.from(chunk.buffer)
 	}
 
-	const flush: ControllerCallback = async (controller) => {
+	const flush: StartCallback = async (controller) => {
 		if (prevChunk) {
 			await transformPrevChunk(prevChunk, true, controller)
 		}

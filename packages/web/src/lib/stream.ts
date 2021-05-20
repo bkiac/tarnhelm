@@ -15,7 +15,7 @@ export async function read<T>(
 }
 
 export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
-	type ControllerCallback = ReadableStreamDefaultControllerCallback<T>
+	type ControllerCallback = UnderlyingSourcePullCallback<T>
 
 	let index = 0
 	let reader: ReadableStreamReader<T> | undefined
@@ -46,7 +46,7 @@ export function createBlobStream(
 	blob: Blob,
 	chunkSize = 1024 * 64,
 ): ReadableStream<Uint8Array> {
-	type ControllerCallback = ReadableStreamDefaultControllerCallback<Uint8Array>
+	type ControllerCallback = UnderlyingSourcePullCallback<Uint8Array>
 
 	let index = 0
 
@@ -130,7 +130,7 @@ export async function toArrayBuffer(
 export function transform<I, O = I>(
 	stream: ReadableStream<I>,
 	transformer: SetRequired<Transformer<I, O>, "transform">,
-	onCancel?: ReadableStreamErrorCallback,
+	onCancel?: UnderlyingSourceCancelCallback,
 ): ReadableStream<O> {
 	try {
 		return stream.pipeThrough(new TransformStream(transformer))
