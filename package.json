@@ -13,8 +13,8 @@
 		"fix:lint": "yarn check:lint --fix",
 		"postinstall": "lerna bootstrap",
 		"packages:test": "lerna run test --no-bail",
-		"pre-commit": "lint-staged --concurrent false",
-		"test": "yarn packages:test"
+		"test": "yarn packages:test",
+		"prepare": "husky install"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^4.22.1",
@@ -25,9 +25,9 @@
 		"eslint-plugin-jsx-a11y": "^6.4.1",
 		"eslint-plugin-react": "^7.23.2",
 		"eslint-plugin-react-hooks": "^4.2.0",
-		"husky": "^4.3.0",
+		"husky": ">=6",
 		"lerna": "^3.22.1",
-		"lint-staged": "^10.5.2",
+		"lint-staged": ">=10",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^2.2.1",
 		"prettier-config-bkiac": "^1.1.0",
