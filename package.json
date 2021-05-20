@@ -5,15 +5,15 @@
 	"author": "Ben Knáb <benknab@pm.me>",
 	"scripts": {
 		"build": "lerna run build --no-bail",
-		"check:format": "prettier --check \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
-		"check:lint": "eslint --cache --ext js,ts,tsx .",
-		"check:types": "lerna run check:types --no-bail",
-		"checks": "run-s --continue-on-error check:*",
-		"fix": "run-s fix:* packages:fix",
-		"fix:format": "prettier --write \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
-		"fix:lint": "yarn check:lint --fix",
+		"checks": "run-s --continue-on-error *:check",
+		"fix": "run-s lint:fix format",
+		"format": "yarn format:check --write",
+		"format:check": "prettier \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
+		"lint": "eslint --cache --ext js,ts,tsx .",
+		"lint:fix": "yarn lint --fix",
 		"postinstall": "lerna bootstrap",
 		"test": "lerna run test --no-bail",
+		"type": "lerna run type --no-bail",
 		"prepare": "husky install"
 	},
 	"devDependencies": {

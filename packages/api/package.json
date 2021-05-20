@@ -4,7 +4,6 @@
 	"private": true,
 	"scripts": {
 		"build": "tsc -p .",
-		"check:types": "tsc --noEmit",
 		"dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
 		"postinstall": "patch-package",
 		"start": "node -r dotenv/config dist/index.js",
