@@ -10,7 +10,7 @@
 		"check:types": "lerna run check:types --no-bail",
 		"checks": "run-s --continue-on-error check:*",
 		"fix": "run-s fix:* packages:fix",
-		"fix:format": "yarn prettier --write \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
+		"fix:format": "prettier --write \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"fix:lint": "yarn check:lint --fix",
 		"postinstall": "lerna bootstrap",
 		"test": "lerna run test --no-bail",
