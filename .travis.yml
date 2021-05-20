@@ -6,13 +6,6 @@ node_js:
 
 cache: yarn
 
-env:
-  jobs:
-    - TARGET=packages/web
-    - TARGET=packages/api
-
-before_install:
-  - cd $TARGET
 install:
   - yarn install
 

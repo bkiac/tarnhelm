@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
-import { AppTitle } from "./AppTitle"
-import { ExternalLink } from "./ExternalLink"
-import { InternalLink } from "./InternalLink"
+import {AppTitle} from "./AppTitle"
+import {ExternalLink} from "./ExternalLink"
+import {InternalLink} from "./InternalLink"
 
 const Container = styled.div`
 	display: flex;

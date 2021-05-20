@@ -1,7 +1,7 @@
 import isNil from "lodash/isNil"
-import React, { useCallback, useMemo, useState } from "react"
-import styled, { css } from "styled-components"
-import { glitch } from "../styles/animations"
+import React, {useCallback, useMemo, useState} from "react"
+import styled, {css} from "styled-components"
+import {glitch} from "../styles/animations"
 
 const glitchSize = 0.06
 const glitchOptions = {
@@ -33,7 +33,7 @@ const Control = styled.div(
 	`,
 )
 
-const Arrow = styled.span<{ isOpen: boolean }>(
+const Arrow = styled.span<{isOpen: boolean}>(
 	(props) => css`
 		margin-right: 8px;
 		border-color: ${props.isOpen
@@ -66,7 +66,7 @@ const Menu = styled.ul(
 	`,
 )
 
-const Option = styled.li<{ content: string }>(
+const Option = styled.li<{content: string}>(
 	(props) => css`
 		box-sizing: border-box;
 		cursor: pointer;
@@ -108,7 +108,7 @@ const Option = styled.li<{ content: string }>(
 					animation: ${glitch(glitchOptions)};
 				}
 				&:after {
-					animation: ${glitch({ ...glitchOptions, direction: "reverse" })};
+					animation: ${glitch({...glitchOptions, direction: "reverse"})};
 				}
 			}
 		}
@@ -120,7 +120,7 @@ const Option = styled.li<{ content: string }>(
 )
 
 interface Props<V extends React.ReactText> {
-	options: { value: V; label?: string }[]
+	options: {value: V; label?: string}[]
 	onChange: (newValue: V) => void
 	value: V
 }
@@ -155,7 +155,7 @@ export function Select<V extends React.ReactText>({
 	const close = useCallback(() => setIsOpen(false), [])
 	const handleKeyDown = useCallback(
 		(event: React.KeyboardEvent) => {
-			const { key } = event
+			const {key} = event
 			if (key === "Enter") {
 				toggle()
 			} else if (

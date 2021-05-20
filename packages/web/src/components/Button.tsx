@@ -1,6 +1,6 @@
 import React from "react"
-import styled, { css } from "styled-components"
-import { glitch } from "../styles/animations"
+import styled, {css} from "styled-components"
+import {glitch} from "../styles/animations"
 
 const glitchSize = 0.06
 const glitchOptions = {
@@ -81,7 +81,7 @@ const StyledButton = styled.button<{
 						animation: ${glitch(glitchOptions)};
 					}
 					&:after {
-						animation: ${glitch({ ...glitchOptions, direction: "reverse" })};
+						animation: ${glitch({...glitchOptions, direction: "reverse"})};
 					}
 				}
 			}
@@ -99,7 +99,7 @@ interface Props {
 	children: string
 }
 
-export const Button: React.FC<Props> = ({ children, ...rest }) => (
+export const Button: React.FC<Props> = ({children, ...rest}) => (
 	<StyledButton {...rest} content={children} type="button">
 		<span>{children}</span>
 		<span />

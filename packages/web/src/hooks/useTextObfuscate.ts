@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react"
+import {useCallback, useEffect, useState} from "react"
 import * as utils from "../utils"
-import { useInterval } from "./useInterval"
+import {useInterval} from "./useInterval"
 
 export function useTextObfuscate(
 	defaultText: string,

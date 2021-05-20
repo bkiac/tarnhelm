@@ -1,6 +1,6 @@
 /** Utility functions to be used for authorization and AES-128-GCM content encryption. */
 import isString from "lodash/isString"
-import type { ByteArray } from "../utils"
+import type {ByteArray} from "../utils"
 
 /** Imports a key from external, portable material. */
 export async function importKey(ikm: Uint8Array): Promise<CryptoKey> {
@@ -16,7 +16,7 @@ export type KeysmithAlgorithmParams = {
  * Derive a key from a master key.
  */
 export async function deriveKey(
-	{ salt, info }: KeysmithAlgorithmParams,
+	{salt, info}: KeysmithAlgorithmParams,
 	masterKey: CryptoKey,
 	derivedKeyType:
 		| string
@@ -66,7 +66,7 @@ export const deriveAuthenticationKey: DeriveKey = async (
 		masterKey,
 		{
 			name: "HMAC",
-			hash: { name: "SHA-256" },
+			hash: {name: "SHA-256"},
 		},
 		["sign"],
 	)
@@ -87,30 +87,26 @@ export async function generateKey(
 }
 
 export const generateAuthenticationKey: GenerateKey = async (salt, keyData) =>
-	generateKey(
-		{ salt, info: "Authentication" },
-		keyData,
-		deriveAuthenticationKey,
-	)
+	generateKey({salt, info: "Authentication"}, keyData, deriveAuthenticationKey)
 
 export const generateMetadataEncryptionKey: GenerateKey = async (
 	salt,
 	keyData,
-) => generateKey({ salt, info: "Metadata" }, keyData, deriveEncryptionKey)
+) => generateKey({salt, info: "Metadata"}, keyData, deriveEncryptionKey)
 
 export const generateContentEncryptionKey: GenerateKey = async (
 	salt,
 	keyData,
 ) =>
 	generateKey(
-		{ salt, info: "Content-Encoding: aes128gcm\0" },
+		{salt, info: "Content-Encoding: aes128gcm\0"},
 		keyData,
 		deriveEncryptionKey,
 	)
 
 export const generateNonceKey: GenerateKey = async (salt, keyData) =>
 	generateKey(
-		{ salt, info: "Content-Encoding: nonce\0" },
+		{salt, info: "Content-Encoding: nonce\0"},
 		keyData,
 		deriveEncryptionKey,
 	)

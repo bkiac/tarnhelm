@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import type { Crypto } from "../lib/crypto"
+import {useEffect, useState} from "react"
+import type {Crypto} from "../lib/crypto"
 
 export function useCrypto(): Crypto | undefined {
 	const [crypto, setCrypto] = useState<Crypto>()

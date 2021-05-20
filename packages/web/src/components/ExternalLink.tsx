@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "./Link"
+import {Link} from "./Link"
 
 type Target = "_blank" | "_self" | "_parent" | "_top"
 
@@ -24,7 +24,7 @@ export const ExternalLink: React.FC<{
 	href: string
 	target?: Target
 	rel?: string
-}> = ({ href, target, rel, children }) => (
+}> = ({href, target, rel, children}) => (
 	<Link
 		href={href}
 		target={target}

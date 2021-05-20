@@ -19,7 +19,7 @@ export function obfuscate(
 	symbols = "*+-_/@$%!XO1&<>[]{}",
 ): string[] {
 	const obfuscatedStrings: string[] = [str]
-	let availablePositions = Array.from(str, (v, i) => i)
+	let availablePositions = Array.from(str, (_, i) => i)
 	const numOfPlucksPerIteration = Math.floor(str.length / rounds)
 	const numOfPlucksOnFirstIteration =
 		numOfPlucksPerIteration + (str.length % rounds)

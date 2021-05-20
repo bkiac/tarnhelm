@@ -20,9 +20,9 @@ function saveBlob(blob: Blob, name: string): void {
 }
 
 function saveArrayBuffer(buffer: ArrayBuffer, options: FileOptions): void {
-	const { name, type } = options
+	const {name, type} = options
 	const view = new DataView(buffer)
-	const blob = new Blob([view], { type })
+	const blob = new Blob([view], {type})
 	saveBlob(blob, name)
 }
 

@@ -22,7 +22,7 @@ const Footer = styled.footer`
 
 export const Layout: React.FC<{
 	footer?: React.ReactNode
-}> = ({ children: main, footer }) => (
+}> = ({children: main, footer}) => (
 	<Container>
 		<Main>{main}</Main>
 		{!isNil(footer) && <Footer>{footer}</Footer>}

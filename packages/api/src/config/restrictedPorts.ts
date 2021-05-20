@@ -1,5 +1,5 @@
 /** https://stackoverflow.com/questions/4313403/why-do-browsers-block-some-ports */
-import { uniq } from "lodash"
+import {uniq} from "lodash"
 
 /**
  * https://code.google.com/archive/p/browsersec/wikis/Part2.wiki#Port_access_restrictions

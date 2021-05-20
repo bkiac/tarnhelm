@@ -1,6 +1,6 @@
-import type { SetRequired } from "type-fest"
+import type {SetRequired} from "type-fest"
 import * as stream from "../../stream"
-import { Mode, RECORD_SIZE } from "./constants"
+import {Mode, RECORD_SIZE} from "./constants"
 
 function createSlicer(
 	mode: Mode,
@@ -22,10 +22,10 @@ function createSlicer(
 		offset = 0
 	}
 
-	const transform: TransformStreamDefaultControllerTransformCallback<
-		Uint8Array,
-		Uint8Array
-	> = (chunk, controller) => {
+	const transform: TransformerTransformCallback<Uint8Array, Uint8Array> = (
+		chunk,
+		controller,
+	) => {
 		let i = 0
 
 		if (offset > 0) {
@@ -54,15 +54,13 @@ function createSlicer(
 		}
 	}
 
-	const flush: TransformStreamDefaultControllerCallback<Uint8Array> = (
-		controller,
-	) => {
+	const flush: TransformerFlushCallback<Uint8Array> = (controller) => {
 		if (offset > 0) {
 			controller.enqueue(partialChunk.slice(0, offset))
 		}
 	}
 
-	return { transform, flush }
+	return {transform, flush}
 }
 
 export function slice(

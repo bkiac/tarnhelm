@@ -1,63 +1,6 @@
-# .gitignore
-
-## dependencies
-node_modules
-.pnp
-.pnp.js
-
-## Tests
-test-files/
-coverage
-.nyc_output
-
-## compiled output
-build
-dist
-
-## env
-*.env*
-
-## OS
-.DS_Store
-
-## Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-## tools
-.eslintcache
-
-## IDE
-*.*workspace*
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
 .vscode
 
-# .prettierignore
-## database
-*.prisma
+packages/api/dist
 
-## lock files
-*.lock
-package-lock.json
-
-## text
-*.txt
-
-## assets
-*.png
-*.jpg
-*.jpeg
-*.ico
-
-## packages
-packages/
+packages/web/_static
+packages/web/.next

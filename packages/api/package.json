@@ -1,21 +1,12 @@
 {
 	"name": "tarnhelm-api",
 	"version": "0.1.0",
-	"repository": "git@github.com:bkiac/tarnhelm.git",
-	"license": "MIT",
-	"author": "Bence Knáb <benceknab@pm.me>",
+	"private": true,
 	"scripts": {
 		"build": "tsc -p .",
-		"check:format": "prettier --check .",
-		"check:lint": "eslint --cache src",
 		"check:types": "tsc --noEmit",
-		"checks": "run-p --aggregate-output --continue-on-error check:*",
 		"dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
-		"fix": "run-s --continue-on-error fix:lint fix:format",
-		"fix:format": "prettier --write .",
-		"fix:lint": "yarn check:lint --fix",
 		"postinstall": "patch-package",
-		"pre-commit": "lint-staged --concurrent false",
 		"start": "node -r dotenv/config dist/index.js",
 		"test": "echo TODO",
 		"type": "tsc --noEmit"
@@ -42,7 +33,7 @@
 		"express-ws": "^4.0.0",
 		"ioredis": "^4.19.2",
 		"joi": "^17.3.0",
-		"ln-service": "^50.9.1",
+		"ln-service": "50.9.1",
 		"lodash": "^4.17.20",
 		"npm-run-all": "^4.1.5",
 		"patch-package": "^6.2.2",
@@ -51,27 +42,11 @@
 		"pino-pretty": "^4.3.0",
 		"postinstall-postinstall": "^2.1.0",
 		"ts-node": "^9.1.0",
-		"ts-node-dev": "^1.0.0",
 		"typescript": "^4.1.2",
 		"uuid": "^8.3.0",
 		"ws": "^7.3.1"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^4.9.0",
-		"@typescript-eslint/parser": "^4.9.0",
-		"eslint": "^7.15.0",
-		"eslint-config-airbnb-typescript": "^12.0.0",
-		"eslint-config-bkiac": "^7.0.0",
-		"eslint-config-prettier": "^7.0.0",
-		"eslint-plugin-import": "^2.22.1",
-		"eslint-plugin-jsx-a11y": "^6.4.1",
-		"eslint-plugin-prettier": "^3.2.0",
-		"eslint-plugin-react": "^7.21.5",
-		"eslint-plugin-react-hooks": "^4.2.0",
-		"lint-staged": "^10.5.3",
-		"prettier": "^2.2.1",
-		"prettier-plugin-organize-imports": "^1.1.1",
-		"prettier-plugin-packagejson": "^2.2.8",
-		"prettier-plugin-sh": "^0.6.0"
+		"ts-node-dev": "^1.0.0"
 	}
 }

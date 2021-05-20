@@ -1,9 +1,9 @@
 import React from "react"
-import type { FlattenSimpleInterpolation } from "styled-components"
-import styled, { css } from "styled-components"
-import { noise, twitch } from "../styles/animations"
-import { A } from "./A"
-import { InternalLink } from "./InternalLink"
+import type {FlattenSimpleInterpolation} from "styled-components"
+import styled, {css} from "styled-components"
+import {noise, twitch} from "../styles/animations"
+import {A} from "./A"
+import {InternalLink} from "./InternalLink"
 
 const twitchOptions = {
 	duration: 5,

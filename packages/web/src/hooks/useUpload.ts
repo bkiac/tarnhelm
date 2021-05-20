@@ -1,11 +1,11 @@
-import { addMilliseconds, differenceInMilliseconds } from "date-fns"
-import type { Reducer } from "react"
-import { useCallback, useEffect, useMemo, useReducer } from "react"
+import {addMilliseconds, differenceInMilliseconds} from "date-fns"
+import type {Reducer} from "react"
+import {useCallback, useEffect, useMemo, useReducer} from "react"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/webSocket"
-import type { ReducerAction } from "../types/reducer"
-import { useKeyring } from "./useKeyring"
-import { useWebSocket } from "./useWebSocket"
+import type {ReducerAction} from "../types/reducer"
+import {useKeyring} from "./useKeyring"
+import {useWebSocket} from "./useWebSocket"
 
 export enum UseUploadStatus {
 	Setup = 0,
@@ -48,14 +48,14 @@ enum ActionType {
 	SetReady = 5,
 }
 
-type Start = ReducerAction<ActionType.Start, { file: File; options?: Options }>
+type Start = ReducerAction<ActionType.Start, {file: File; options?: Options}>
 type SetProgress = ReducerAction<
 	ActionType.SetProgress,
-	{ startDate: Date; totalBytes: number; uploadedBytes: number }
+	{startDate: Date; totalBytes: number; uploadedBytes: number}
 >
-type Stop = ReducerAction<ActionType.Stop, { id: string }>
+type Stop = ReducerAction<ActionType.Stop, {id: string}>
 type SetReady = ReducerAction<ActionType.SetReady>
-type AwaitPayment = ReducerAction<ActionType.AwaitPayment, { invoice: string }>
+type AwaitPayment = ReducerAction<ActionType.AwaitPayment, {invoice: string}>
 type ConfirmPayment = ReducerAction<ActionType.ConfirmPayment>
 
 type Action =
@@ -121,8 +121,8 @@ const reducer: Reducer<UseUploadState, Action> = (state, action) => {
 			}
 
 		case ActionType.SetProgress: {
-			const { startDate, totalBytes, uploadedBytes } = action.payload
-			const { ticks: prevTicks } = state.progress
+			const {startDate, totalBytes, uploadedBytes} = action.payload
+			const {ticks: prevTicks} = state.progress
 
 			const ticks = prevTicks + 1
 			const finished = uploadedBytes >= totalBytes
@@ -164,26 +164,26 @@ const reducer: Reducer<UseUploadState, Action> = (state, action) => {
 
 type Upload = (file: File, options?: Options) => void
 
-export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
+export function useUpload(): [UseUploadState & {secretb64?: string}, Upload] {
 	const keyring = useKeyring()
 
-	const [{ ws }, connect, disconnect] = useWebSocket("/upload", { lazy: true })
+	const [{ws}, connect, disconnect] = useWebSocket("/upload", {lazy: true})
 
 	const [state, dispatch] = useReducer(reducer, initialState)
-	const { file, status, options } = state
+	const {file, status, options} = state
 
 	const handleUpload = useCallback<Upload>(
 		(f, o) =>
 			dispatch({
 				type: ActionType.Start,
-				payload: { file: f, options: o },
+				payload: {file: f, options: o},
 			}),
 		[],
 	)
 
 	useEffect(() => {
 		if (status === UseUploadStatus.Setup && keyring) {
-			dispatch({ type: ActionType.SetReady })
+			dispatch({type: ActionType.SetReady})
 		}
 	}, [status, keyring])
 
@@ -197,7 +197,7 @@ export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 	/** Handle stopping status */
 	useEffect(() => {
 		if (status === UseUploadStatus.Stopping) {
-			dispatch({ type: ActionType.SetReady })
+			dispatch({type: ActionType.SetReady})
 			disconnect()
 		}
 	}, [status, disconnect])
@@ -207,7 +207,7 @@ export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
 				// Properties need to be cloned here, passing `file` to `encryptMetadata` won't work, `name` and `type` will be `undefined` on upload
-				const { name, size, type } = file
+				const {name, size, type} = file
 				const encryptedContentMetadata = await keyring.encryptMetadata({
 					name,
 					size,
@@ -223,7 +223,7 @@ export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 				ws.send(JSON.stringify(uploadParams))
 
 				try {
-					const { id, invoice } = await webSocket.listen<{
+					const {id, invoice} = await webSocket.listen<{
 						id: string
 						invoice: {
 							request: string
@@ -263,7 +263,7 @@ export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 							},
 						})
 						if (uploadedBytes >= encryptedSize) {
-							dispatch({ type: ActionType.Stop, payload: { id } })
+							dispatch({type: ActionType.Stop, payload: {id}})
 						}
 					})
 
@@ -284,7 +284,7 @@ export function useUpload(): [UseUploadState & { secretb64?: string }, Upload] {
 	}, [keyring, ws, file, status, options])
 
 	return useMemo(
-		() => [{ ...state, secretb64: keyring?.secretb64 }, handleUpload],
+		() => [{...state, secretb64: keyring?.secretb64}, handleUpload],
 		[state, keyring, handleUpload],
 	)
 }

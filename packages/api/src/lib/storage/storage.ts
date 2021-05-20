@@ -1,9 +1,9 @@
 import * as crypto from "crypto"
-import { isNil } from "lodash"
+import {isNil} from "lodash"
 import type * as stream from "stream"
-import { config } from "../../config"
-import { log } from "../../utils"
-import { redis } from "./redis"
+import {config} from "../../config"
+import {log} from "../../utils"
+import {redis} from "./redis"
 import * as s3 from "./s3"
 
 const storageConfig = config.get("storage")
@@ -74,14 +74,14 @@ export async function set(
 	options: StorageUploadOptions,
 	listener?: s3.S3UploadListener,
 ): ReturnType<typeof s3.set> {
-	const { id, metadata, size } = file
+	const {id, metadata, size} = file
 	const {
 		expiry = storageConfig.expiry.def,
 		downloadLimit = storageConfig.downloads.def,
 		authb64,
 	} = options
 	const uploadData = await s3.set(
-		{ key: id, body: file.stream, length: size },
+		{key: id, body: file.stream, length: size},
 		listener,
 	)
 	await redis
@@ -100,7 +100,7 @@ export async function set(
 
 export async function isAvailable(id: string): Promise<boolean> {
 	try {
-		const { downloads, downloadLimit } = await getMetadata(id)
+		const {downloads, downloadLimit} = await getMetadata(id)
 		return downloads < downloadLimit
 	} catch (error: unknown) {
 		return false

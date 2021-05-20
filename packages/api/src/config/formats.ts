@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import convict from "convict"
-import { isString } from "lodash"
-import { restrictedPorts } from "./restrictedPorts"
+import {isString} from "lodash"
+import {restrictedPorts} from "./restrictedPorts"
 
 export function addCustomFormats(): void {
 	convict.addFormats({

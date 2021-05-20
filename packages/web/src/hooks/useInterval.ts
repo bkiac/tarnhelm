@@ -1,5 +1,5 @@
 import isNil from "lodash/isNil"
-import { useEffect, useMemo, useRef } from "react"
+import {useEffect, useMemo, useRef} from "react"
 
 export function useInterval(callback: () => void, delay?: number): void {
 	const savedCallback = useRef<() => void>(callback)
@@ -10,7 +10,7 @@ export function useInterval(callback: () => void, delay?: number): void {
 	}, [callback])
 
 	useEffect(() => {
-		let id: number
+		let id: NodeJS.Timeout
 		if (isRunning) {
 			id = setInterval(() => savedCallback.current(), delay)
 		}
