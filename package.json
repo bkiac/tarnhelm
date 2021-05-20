@@ -5,10 +5,11 @@
 	"author": "Ben Knáb <benknab@pm.me>",
 	"scripts": {
 		"build": "lerna run build --no-bail",
-		"checks": "run-s --continue-on-error *:check",
+		"checks": "run-p --continue-on-error --aggregate-output type lint format:check",
 		"fix": "run-s lint:fix format",
-		"format": "yarn format:check --write",
-		"format:check": "prettier \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
+		"format": "yarn format:prettier --write",
+		"format:check": "yarn format:prettier --check",
+		"format:prettier": "prettier \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"lint": "eslint --cache --ext js,ts,tsx .",
 		"lint:fix": "yarn lint --fix",
 		"postinstall": "lerna bootstrap",
@@ -31,7 +32,6 @@
 		"npm-run-all": "^4.1.5",
 		"prettier": "^2.3.0",
 		"prettier-config-bkiac": "^1.1.1",
-		"prettier-plugin-organize-imports": "^2.1.0",
 		"prettier-plugin-packagejson": "^2.2.11",
 		"tsconfig-bkiac": "^1.0.1",
 		"typescript": "^4.2.4"

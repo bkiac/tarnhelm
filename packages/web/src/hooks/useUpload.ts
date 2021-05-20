@@ -1,6 +1,6 @@
 import {addMilliseconds, differenceInMilliseconds} from "date-fns"
-import type {Reducer} from "react"
 import {useCallback, useEffect, useMemo, useReducer} from "react"
+import type {Reducer} from "react"
 import * as stream from "../lib/stream"
 import * as webSocket from "../lib/webSocket"
 import type {ReducerAction} from "../types/reducer"

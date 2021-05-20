@@ -1,5 +1,5 @@
-import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
 import {css, keyframes} from "styled-components"
+import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
 
 export type GlitchAnimationUnit = "em" | "px"
 

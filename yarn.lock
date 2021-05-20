@@ -4352,11 +4352,6 @@ prettier-config-bkiac@^1.1.1:
   resolved "https://registry.yarnpkg.com/prettier-config-bkiac/-/prettier-config-bkiac-1.1.1.tgz#7c41c29df580bf53c53f917f9ada0bb6aa35c9f1"
   integrity sha512-nX88bKzId1amyEdoXzOJE0UmEl2GHd2KDRikJH9d+ZWuOiZqH/deJJPGYHcoL0WF6PXLeu5EhzLWi/X066ZDOw==
 
-prettier-plugin-organize-imports@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-organize-imports/-/prettier-plugin-organize-imports-2.1.0.tgz#5b2e762365b9bd2b25b4460c1f2cb2703b8b78db"
-  integrity sha512-P6TzXkuZRV4g9Fl363tN+r6/ecynu0fwmItKCb/04iksrUtwl/6Jf4DxBPuW8UbcgFRadltxB0VlV5Yh1Ec0Ow==
-
 prettier-plugin-packagejson@^2.2.11:
   version "2.2.11"
   resolved "https://registry.yarnpkg.com/prettier-plugin-packagejson/-/prettier-plugin-packagejson-2.2.11.tgz#640b6301da3a58c489889b3d315255e18153daf0"

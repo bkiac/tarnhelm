@@ -1,5 +1,5 @@
-import type {Reducer} from "react"
 import {useCallback, useEffect, useReducer} from "react"
+import type {Reducer} from "react"
 import {config} from "../config"
 import * as webSocket from "../lib/webSocket"
 import type {ReducerAction} from "../types/reducer"
