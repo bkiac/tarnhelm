@@ -1,9 +1,8 @@
 {
 	"name": "tarnhelm",
-	"version": "0.1.0",
+	"private": true,
 	"repository": "git@github.com:bkiac/tarnhelm.git",
-	"license": "MIT",
-	"author": "Bence Knáb <benceknab@pm.me>",
+	"author": "Ben Knáb <benknab@pm.me>",
 	"scripts": {
 		"check:format": "prettier --check \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"check:lint": "eslint --cache --ext js,ts,tsx .",

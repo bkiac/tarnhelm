@@ -1,9 +1,7 @@
 {
 	"name": "tarnhelm-api",
 	"version": "0.1.0",
-	"repository": "git@github.com:bkiac/tarnhelm.git",
-	"license": "MIT",
-	"author": "Bence Knáb <benceknab@pm.me>",
+	"private": true,
 	"scripts": {
 		"build": "tsc -p .",
 		"check:types": "tsc --noEmit",
