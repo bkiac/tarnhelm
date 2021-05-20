@@ -4,6 +4,7 @@
 	"repository": "git@github.com:bkiac/tarnhelm.git",
 	"author": "Ben Knáb <benknab@pm.me>",
 	"scripts": {
+		"build": "lerna run build --no-bail",
 		"check:format": "prettier --check \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"check:lint": "eslint --cache --ext js,ts,tsx .",
 		"check:types": "lerna run check:types --no-bail",
