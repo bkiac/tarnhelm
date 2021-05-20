@@ -58,7 +58,7 @@ function isDuplicate<A extends File, B extends File>(a: A, b: B): boolean {
 	)
 }
 
-interface FileObject {
+type FileObject = {
 	id: string
 	file: File
 }

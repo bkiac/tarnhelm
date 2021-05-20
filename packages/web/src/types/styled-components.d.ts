@@ -29,6 +29,7 @@ declare module "styled-components" {
 	}
 
 	// Must be an interface to extend `styled-components` theme
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 	export interface DefaultTheme {
 		iconContentCodes: DefaultThemeIconContentCodes
 		colors: DefaultThemeColors

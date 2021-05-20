@@ -186,12 +186,8 @@ export const download: express.RequestHandler<{id: string}> = async (
 			params: {id},
 		} = req
 
-		const {
-			authb64,
-			nonce,
-			downloads,
-			downloadLimit,
-		} = await storage.getMetadata(id)
+		const {authb64, nonce, downloads, downloadLimit} =
+			await storage.getMetadata(id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)
@@ -265,12 +261,8 @@ export const getMetadata: express.RequestHandler<{id: string}> = async (
 	res,
 ) => {
 	try {
-		const {
-			authb64,
-			downloads,
-			downloadLimit,
-			...metadata
-		} = await storage.getMetadata(req.params.id)
+		const {authb64, downloads, downloadLimit, ...metadata} =
+			await storage.getMetadata(req.params.id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)
