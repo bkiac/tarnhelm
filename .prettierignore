@@ -1,3 +1,5 @@
+.vscode
+
 packages/api/dist
 
 packages/web/_static

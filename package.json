@@ -5,15 +5,15 @@
 	"license": "MIT",
 	"author": "Bence Knáb <benceknab@pm.me>",
 	"scripts": {
-		"check:format": "prettier --check .",
+		"check:format": "prettier --check \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"check:lint": "eslint --cache --ext js,ts,tsx .",
+		"check:types": "lerna run check:types --no-bail",
 		"checks": "run-s --continue-on-error check:*",
 		"fix": "run-s fix:* packages:fix",
-		"fix:format": "prettier --write \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
+		"fix:format": "yarn prettier --write \"./**/*{.ts,tsx,js,jsx,json,css,md}\"",
 		"fix:lint": "yarn check:lint --fix",
 		"postinstall": "lerna bootstrap",
-		"packages:test": "lerna run test --no-bail",
-		"test": "yarn packages:test",
+		"test": "lerna run test --no-bail",
 		"prepare": "husky install"
 	},
 	"devDependencies": {
