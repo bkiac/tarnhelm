@@ -29,8 +29,6 @@
 		"@types/react-dom": "^17.0.0",
 		"@types/styled-components": "^5.1.4",
 		"@types/uuid": "^8.3.0",
-		"@typescript-eslint/eslint-plugin": "^4.8.2",
-		"@typescript-eslint/parser": "^4.8.2",
 		"axios": "^0.21.1",
 		"base64-js": "^1.5.1",
 		"bytes": "^3.1.0",
@@ -50,17 +48,6 @@
 		"uuid": "^8.3.0"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^4.8.2",
-		"@typescript-eslint/parser": "^4.8.2",
-		"eslint": "^7.14.0",
-		"eslint-config-airbnb-typescript": "^12.0.0",
-		"eslint-config-bkiac": "^7.0.0",
-		"eslint-config-prettier": "^7.0.0",
-		"eslint-plugin-import": "^2.22.1",
-		"eslint-plugin-jsx-a11y": "^6.4.1",
-		"eslint-plugin-prettier": "^3.1.4",
-		"eslint-plugin-react": "^7.21.5",
-		"eslint-plugin-react-hooks": "^4.2.0",
 		"lint-staged": "^10.5.2"
 	}
 }
