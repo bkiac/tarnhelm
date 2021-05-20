@@ -2035,10 +2035,10 @@ eslint-config-airbnb@^18.2.0:
     object.assign "^4.1.2"
     object.entries "^1.1.2"
 
-eslint-config-bkiac@8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/eslint-config-bkiac/-/eslint-config-bkiac-8.0.2.tgz#7616b5d6a23be6b5e0d347b816b0f29ac87f112f"
-  integrity sha512-00yZDlNLBdFCJ23z8qdiZO13UYDX0hFiug+FK0ppMz8Xqt/3p5cAAom5BT49a5jdtozDI8F39pxwGv/3w59Czg==
+eslint-config-bkiac@8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-bkiac/-/eslint-config-bkiac-8.1.0.tgz#162159baa2c1334425b30ee8a8c2936e2ac086f8"
+  integrity sha512-8NCQpMkI2b55I65yYyQNymdUO4gdcmscxpmd9nfqa0+6GHwUoSvPLjhB9BS7CiDMWmDdYD+2ZKHrwZrmKP4+SA==
   dependencies:
     eslint-config-airbnb-typescript "^12.3.1"
     eslint-config-prettier "^8.3.0"
