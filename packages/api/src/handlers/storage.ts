@@ -1,12 +1,12 @@
 import * as crypto from "crypto"
-import type express from "express"
-import type expressWs from "express-ws"
 import Joi from "joi"
-import type {SubscribeToInvoiceInvoiceUpdatedEvent} from "ln-service"
 import {isNil} from "lodash"
 import * as stream from "stream"
 import {v4 as uuid} from "uuid"
 import * as ws from "ws"
+import type {SubscribeToInvoiceInvoiceUpdatedEvent} from "ln-service"
+import type expressWs from "express-ws"
+import type express from "express"
 import {config} from "../config"
 import * as lnd from "../lib/lnd"
 import {getPriceQuote} from "../lib/price"
@@ -186,12 +186,8 @@ export const download: express.RequestHandler<{id: string}> = async (
 			params: {id},
 		} = req
 
-		const {
-			authb64,
-			nonce,
-			downloads,
-			downloadLimit,
-		} = await storage.getMetadata(id)
+		const {authb64, nonce, downloads, downloadLimit} =
+			await storage.getMetadata(id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)
@@ -265,12 +261,8 @@ export const getMetadata: express.RequestHandler<{id: string}> = async (
 	res,
 ) => {
 	try {
-		const {
-			authb64,
-			downloads,
-			downloadLimit,
-			...metadata
-		} = await storage.getMetadata(req.params.id)
+		const {authb64, downloads, downloadLimit, ...metadata} =
+			await storage.getMetadata(req.params.id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)

@@ -2,10 +2,10 @@ import bytes from "bytes"
 import differenceWith from "lodash/differenceWith"
 import QRCode from "qrcode.react"
 import React, {useCallback, useMemo, useState} from "react"
-import type {DropHandler} from "react-dropzone"
 import {useDropzone} from "react-dropzone"
 import styled, {css} from "styled-components"
 import {v4 as uuid} from "uuid"
+import type {DropHandler} from "react-dropzone"
 import {useUpload} from "../hooks"
 import {UseUploadStatus} from "../hooks/useUpload"
 import {Button} from "./Button"
@@ -58,7 +58,7 @@ function isDuplicate<A extends File, B extends File>(a: A, b: B): boolean {
 	)
 }
 
-interface FileObject {
+type FileObject = {
 	id: string
 	file: File
 }

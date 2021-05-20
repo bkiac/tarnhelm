@@ -93,7 +93,7 @@ const StyledButton = styled.button<{
 	`
 })
 
-interface Props {
+type Props = {
 	onClick?: (event: React.MouseEvent) => void
 	disabled?: boolean
 	children: string

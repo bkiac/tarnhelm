@@ -23,7 +23,7 @@ export const createStatsLogger = memoize(() => {
 
 export function asAsyncListener<
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	TFunction extends (...args: any[]) => Promise<void>
+	TFunction extends (...args: any[]) => Promise<void>,
 >(
 	asyncListener: TFunction,
 	errorFn: (err: unknown) => void = (err) =>

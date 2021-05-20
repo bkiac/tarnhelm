@@ -1,5 +1,5 @@
-import type {FlattenSimpleInterpolation} from "styled-components"
 import {css, keyframes} from "styled-components"
+import type {FlattenSimpleInterpolation} from "styled-components"
 
 const twitchKeyframes = keyframes`
   1% {

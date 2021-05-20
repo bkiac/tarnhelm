@@ -23,13 +23,8 @@ type StorageMetadata = {
 function marshalStorageMetadata(
 	metadata: Partial<Record<string, string>>,
 ): StorageMetadata | undefined {
-	const {
-		downloadLimit,
-		downloads,
-		authb64,
-		nonce,
-		encryptedContentMetadata,
-	} = metadata
+	const {downloadLimit, downloads, authb64, nonce, encryptedContentMetadata} =
+		metadata
 	if (
 		downloadLimit == null ||
 		downloads == null ||
