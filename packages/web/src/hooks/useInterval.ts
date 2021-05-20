@@ -10,7 +10,7 @@ export function useInterval(callback: () => void, delay?: number): void {
 	}, [callback])
 
 	useEffect(() => {
-		let id: number
+		let id: NodeJS.Timeout
 		if (isRunning) {
 			id = setInterval(() => savedCallback.current(), delay)
 		}

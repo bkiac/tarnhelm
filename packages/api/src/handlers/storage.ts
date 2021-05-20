@@ -18,7 +18,7 @@ const storageConfig = config.get("storage")
 
 function eof(): stream.Transform {
 	return new stream.Transform({
-		transform(chunk: Buffer, encoding, callback) {
+		transform(chunk: Buffer, _, callback) {
 			if (chunk.length === 1 && chunk[0] === 0) {
 				this.push(null)
 			} else {
@@ -32,7 +32,7 @@ function eof(): stream.Transform {
 function limiter(limit = storageConfig.fileSize.max): stream.Transform {
 	let length = 0
 	return new stream.Transform({
-		transform(chunk: Buffer, encoding, callback): void {
+		transform(chunk: Buffer, _, callback): void {
 			length += chunk.length
 			this.push(chunk)
 			return length > limit ? callback(new Error("limit")) : callback()
