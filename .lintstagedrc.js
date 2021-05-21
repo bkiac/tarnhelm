@@ -6,5 +6,5 @@ module.exports = {
 
 	"*.{ts,tsx,js}": "eslint --cache --fix",
 
-	"*.{ts,tsx,js,jsx,json,css,md}": "prettier --write",
+	"*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": "prettier --write",
 }
