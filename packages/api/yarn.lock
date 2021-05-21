@@ -2681,6 +2681,11 @@ ts-node@^9.0.0, ts-node@^9.1.0:
     source-map-support "^0.5.17"
     yn "3.1.1"
 
+tsconfig-bkiac@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tsconfig-bkiac/-/tsconfig-bkiac-1.0.1.tgz#db185ae0c36295c3dcfcf01860f8f72b1a2a5891"
+  integrity sha512-GQIpwv+vubOs9N/awLByOmAGp5YQu/FCBBcU6FTD9w7gC7NCkoyz3N4AaYrgJAoFtWliu+ceOoPH97PJe2zjyQ==
+
 tsconfig@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/tsconfig/-/tsconfig-7.0.0.tgz#84538875a4dc216e5c4a5432b3a4dec3d54e91b7"
