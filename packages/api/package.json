@@ -4,9 +4,10 @@
 	"private": true,
 	"scripts": {
 		"build": "tsc -p .",
-		"dev": "ts-node-dev -r dotenv/config --respawn --transpile-only src/index.ts",
+		"dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+		"dev:storage": "docker-compose up",
 		"postinstall": "patch-package",
-		"start": "node -r dotenv/config dist/index.js",
+		"start": "node dist/index.js",
 		"test": "echo TODO",
 		"type": "tsc --noEmit"
 	},
