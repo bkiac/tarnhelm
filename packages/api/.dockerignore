@@ -4,4 +4,3 @@
 !tsconfig.json
 !package.json
 !yarn.lock
-!wait-for-it.sh
