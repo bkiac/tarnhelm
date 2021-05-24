@@ -8,6 +8,8 @@ const s3 = new AWS.S3({
 	accessKeyId: accessKey.id,
 	secretAccessKey: accessKey.secret,
 	endpoint,
+	s3ForcePathStyle: true,
+	signatureVersion: "v4",
 })
 
 export type S3UploadArgs = {
