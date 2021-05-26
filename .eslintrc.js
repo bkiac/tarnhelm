@@ -5,7 +5,14 @@ module.exports = {
 		tsconfigRootDir: __dirname,
 		project: "./tsconfig.json",
 	},
-	ignorePatterns: ["node_modules", "dist", "_static", ".next", "*rc.js"],
+	ignorePatterns: [
+		"node_modules",
+		"dist",
+		"_static",
+		".next",
+		"*rc.js",
+		"commitlint.config.js",
+	],
 	overrides: [
 		{
 			env: {
