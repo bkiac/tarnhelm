@@ -40,3 +40,57 @@ export function obfuscate(
 
 	return obfuscatedStrings
 }
+
+export const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024
+
+export const ONE_MINUTE = 60
+export const ONE_HOUR = 60 * ONE_MINUTE
+export const ONE_DAY = 24 * ONE_HOUR
+export const ONE_WEEK = 7 * ONE_DAY
+
+export const expiryOptions = [
+	{
+		value: 5 * ONE_MINUTE,
+		label: "5 minutes",
+	},
+	{
+		value: ONE_HOUR,
+		label: "1 hour",
+	},
+	{
+		value: ONE_DAY,
+		label: "1 day",
+	},
+	{
+		value: ONE_WEEK,
+		label: "1 week",
+	},
+	{
+		value: 2 * ONE_WEEK,
+		label: "2 weeks",
+	},
+]
+
+export const downloadLimitOptions = [
+	{
+		value: 1,
+	},
+	{
+		value: 2,
+	},
+	{
+		value: 3,
+	},
+	{
+		value: 5,
+	},
+	{
+		value: 20,
+	},
+	{
+		value: 100,
+	},
+	{
+		value: 200,
+	},
+]

@@ -13,6 +13,12 @@ import {DangerIcon} from "./DangerIcon"
 import {Loader} from "./Loader"
 import {Select} from "./Select"
 import {Vault} from "./Vault"
+import {
+	downloadLimitOptions,
+	expiryOptions,
+	MAX_FILE_SIZE,
+	ONE_WEEK,
+} from "../utils"
 
 const Container = styled.div`
 	width: 30vw;
@@ -70,59 +76,6 @@ const TotalSize: React.FC<{hasError?: boolean}> = ({hasError, children}) => (
 	</StyledTotalSize>
 )
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024
-
-const ONE_MINUTE = 60
-const ONE_HOUR = 60 * ONE_MINUTE
-const ONE_DAY = 24 * ONE_HOUR
-const ONE_WEEK = 7 * ONE_DAY
-const EXPIRY_OPTIONS = [
-	{
-		value: 5 * ONE_MINUTE,
-		label: "5 minutes",
-	},
-	{
-		value: ONE_HOUR,
-		label: "1 hour",
-	},
-	{
-		value: ONE_DAY,
-		label: "1 day",
-	},
-	{
-		value: ONE_WEEK,
-		label: "1 week",
-	},
-	{
-		value: 2 * ONE_WEEK,
-		label: "2 weeks",
-	},
-]
-
-const DOWNLOAD_LIMIT_OPTIONS = [
-	{
-		value: 1,
-	},
-	{
-		value: 2,
-	},
-	{
-		value: 3,
-	},
-	{
-		value: 5,
-	},
-	{
-		value: 20,
-	},
-	{
-		value: 100,
-	},
-	{
-		value: 200,
-	},
-]
-
 export const Upload: React.FC = () => {
 	const [fileObjects, setFileObjects] = useState<FileObject[]>([])
 	const files = useMemo(() => fileObjects.map((fo) => fo.file), [fileObjects])
@@ -161,9 +114,9 @@ export const Upload: React.FC = () => {
 		[fileObjects, createFileDeleteHandler],
 	)
 
-	const [expiry, setExpiry] = useState(EXPIRY_OPTIONS[0].value)
+	const [expiry, setExpiry] = useState(expiryOptions[0].value)
 	const [downloadLimit, setDownloadLimit] = useState(
-		DOWNLOAD_LIMIT_OPTIONS[0].value,
+		downloadLimitOptions[0].value,
 	)
 
 	const [state, upload] = useUpload()
@@ -258,12 +211,12 @@ export const Upload: React.FC = () => {
 					<p>Expires After</p>
 					{uploading || success ? (
 						<p>
-							{EXPIRY_OPTIONS.find((option) => option.value === expiry)?.label}
+							{expiryOptions.find((option) => option.value === expiry)?.label}
 						</p>
 					) : (
 						<Select
 							value={expiry}
-							options={EXPIRY_OPTIONS}
+							options={expiryOptions}
 							onChange={(value) => setExpiry(value)}
 						/>
 					)}
@@ -276,7 +229,7 @@ export const Upload: React.FC = () => {
 					) : (
 						<Select
 							value={downloadLimit}
-							options={DOWNLOAD_LIMIT_OPTIONS}
+							options={downloadLimitOptions}
 							onChange={(value) => setDownloadLimit(value)}
 						/>
 					)}
