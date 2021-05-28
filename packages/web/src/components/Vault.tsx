@@ -57,18 +57,10 @@ type FileObject = {
 }
 
 export const Vault: React.FC<{
-	files: FileObject[]
-	isDragActive: boolean
-	loading?: boolean
-	success?: boolean
+	files?: FileObject[]
+	isDragActive?: boolean
 	hasError?: boolean
-}> = ({
-	files,
-	isDragActive,
-	loading = false,
-	success = false,
-	hasError = false,
-}) => {
+}> = ({files = [], isDragActive = false, hasError = false}) => {
 	const isEmpty = files.length === 0
 
 	function renderPartial(
@@ -84,7 +76,7 @@ export const Vault: React.FC<{
 	}
 
 	return (
-		<StyledVault center={isEmpty || loading || success} hasError={hasError}>
+		<StyledVault center={isEmpty} hasError={hasError}>
 			{hasError ? (
 				renderPartial(<DeathIcon />, "Unexpected Error")
 			) : (

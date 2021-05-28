@@ -87,7 +87,7 @@ const FileInfoTop = styled(FileInfo)`
 	font-size: 1rem;
 `
 
-export const FileStick: React.FC<{
+export const FileStick: React.VFC<{
 	name: string
 	size: number
 	className?: string

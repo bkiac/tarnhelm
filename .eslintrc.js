@@ -33,6 +33,14 @@ module.exports = {
 			},
 			files: "packages/web/**",
 			extends: ["bkiac"],
+			overrides: [
+				{
+					files: "*.stories.tsx",
+					rules: {
+						"import/no-anonymous-default-export": "off",
+					},
+				},
+			],
 		},
 	],
 }
