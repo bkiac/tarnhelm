@@ -190,8 +190,6 @@ export const Upload: React.FC = () => {
 									<Vault
 										files={filesInVault}
 										isDragActive={dropzone.isDragActive}
-										loading={loading}
-										success={success}
 									/>
 									<input {...dropzone.getInputProps()} />
 								</Dropzone>
