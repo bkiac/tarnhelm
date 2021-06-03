@@ -23,8 +23,8 @@ function createNoiseKeyframePartials(
 
 function createNoiseKeyframes(steps: number, fraction: number): Keyframes {
 	return keyframes`
-    ${createNoiseKeyframePartials(steps, fraction)}
-  `
+		${createNoiseKeyframePartials(steps, fraction)}
+	`
 }
 
 export function noise(opts: {

@@ -43,6 +43,6 @@ export function glitch({
 }): FlattenSimpleInterpolation {
 	const gkfs = createGlitchKeyframes(size, unit)
 	return css`
-		${gkfs} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite;
+		${gkfs} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite
 	`
 }
