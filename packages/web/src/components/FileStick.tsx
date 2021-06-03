@@ -1,6 +1,7 @@
 import bytes from "bytes"
 import React, {useEffect} from "react"
-import styled, {css} from "styled-components"
+import styled from "@emotion/styled"
+import {css} from "@emotion/react"
 import {useTextObfuscate} from "../hooks"
 import {noise} from "../styles/animations"
 import {DeleteIcon} from "./DeleteIcon"

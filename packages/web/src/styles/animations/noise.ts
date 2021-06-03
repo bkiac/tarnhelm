@@ -1,10 +1,11 @@
-import {css, keyframes} from "styled-components"
-import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
+import {css, keyframes} from "@emotion/react"
+import type {SerializedStyles} from "@emotion/react"
+import type {Keyframes} from "@emotion/serialize"
 
 function createNoiseKeyframePartials(
 	steps: number,
 	fraction: number,
-): (FlattenSimpleInterpolation | string)[] {
+): (SerializedStyles | string)[] {
 	return Array.from(Array(steps)).map((_, i) => {
 		const top = Math.random()
 		const bottom = 1.01 - top
@@ -31,7 +32,7 @@ export function noise(opts: {
 	duration: number
 	steps: number
 	fraction?: number
-}): FlattenSimpleInterpolation {
+}): SerializedStyles {
 	const {duration, steps, fraction = 1} = opts
 	return css`
 		${createNoiseKeyframes(

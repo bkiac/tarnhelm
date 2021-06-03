@@ -1,5 +1,5 @@
-import {css, keyframes} from "styled-components"
-import type {FlattenSimpleInterpolation} from "styled-components"
+import {css, keyframes} from "@emotion/react"
+import type {SerializedStyles} from "@emotion/react"
 
 const twitchKeyframes = keyframes`
   1% {
@@ -13,7 +13,7 @@ const twitchKeyframes = keyframes`
 export function twitch(opts: {
 	duration: number
 	delay: number
-}): FlattenSimpleInterpolation {
+}): SerializedStyles {
 	const {duration, delay} = opts
 	return css`
 		${twitchKeyframes} ${duration}s ${delay}s infinite

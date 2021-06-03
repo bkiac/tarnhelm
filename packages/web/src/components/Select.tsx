@@ -1,6 +1,7 @@
 import isNil from "lodash/isNil"
 import React, {useCallback, useMemo, useState} from "react"
-import styled, {css} from "styled-components"
+import styled from "@emotion/styled"
+import {css} from "@emotion/react"
 import {glitch} from "../styles/animations"
 
 const glitchSize = 0.06

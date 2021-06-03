@@ -1,5 +1,5 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import {iconFont} from "../styles/mixins"
 
 const StyledIconButton = styled.button`

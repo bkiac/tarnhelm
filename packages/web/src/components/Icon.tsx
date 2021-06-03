@@ -1,9 +1,9 @@
-import styled from "styled-components"
-import type {DefaultThemeIconContentCodes} from "styled-components"
+import styled from "@emotion/styled"
+import type {ThemeIconContentCodes} from "@emotion/react"
 import {iconFont} from "../styles/mixins"
 
 export const Icon = styled.i<{
-	glyph: keyof DefaultThemeIconContentCodes
+	glyph: keyof ThemeIconContentCodes
 }>`
 	${iconFont}
 

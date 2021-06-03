@@ -1,5 +1,6 @@
 import React from "react"
-import styled, {css} from "styled-components"
+import styled from "@emotion/styled"
+import {css} from "@emotion/react"
 import {DeathIcon} from "./DeathIcon"
 import {FileStick} from "./FileStick"
 import {SaveIcon} from "./SaveIcon"

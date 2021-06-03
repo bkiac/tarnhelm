@@ -1,6 +1,6 @@
 import React from "react"
-import styled, {css} from "styled-components"
-import type {FlattenSimpleInterpolation} from "styled-components"
+import styled from "@emotion/styled"
+import {css} from "@emotion/react"
 import {noise, twitch} from "../styles/animations"
 import {A} from "./A"
 import {InternalLink} from "./InternalLink"
@@ -15,17 +15,18 @@ const noiseOptions = {
 	fraction: 2,
 }
 
-const glitchAnim1 = (): FlattenSimpleInterpolation =>
-	css`
-		${noise(noiseOptions)}, ${twitch({
-			...twitchOptions,
-			delay: twitchOptions.delay + 0.05,
-		})}
-	`
-const glitchAnim2 = (): FlattenSimpleInterpolation =>
-	css`
-		${noise(noiseOptions)}, ${twitch(twitchOptions)}
-	`
+const twitchAnimation = twitch(twitchOptions)
+
+const glitchAnimationBefore = css`
+	${noise(noiseOptions)}, ${twitch({
+		...twitchOptions,
+		delay: twitchOptions.delay + 0.05,
+	})}
+`
+
+const glitchAnimationAfter = css`
+	${noise(noiseOptions)}, ${twitch(twitchOptions)}
+`
 
 const StyledAppTitle = styled.span<{
 	content: string
@@ -39,7 +40,7 @@ const StyledAppTitle = styled.span<{
 		text-transform: uppercase;
 		color: ${props.theme.palette.foreground};
 		position: relative;
-		animation: ${twitch(twitchOptions)};
+		animation: ${twitchAnimation};
 
 		&:before,
 		&:after {
@@ -53,13 +54,13 @@ const StyledAppTitle = styled.span<{
 		&:before {
 			left: -2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.tertiary};
-			animation: ${glitchAnim1};
+			animation: ${glitchAnimationBefore};
 		}
 
 		&:after {
 			left: 2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.primary};
-			animation: ${glitchAnim2};
+			animation: ${glitchAnimationAfter};
 		}
 	`,
 )

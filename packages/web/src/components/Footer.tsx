@@ -1,5 +1,5 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import {AppTitle} from "./AppTitle"
 import {ExternalLink} from "./ExternalLink"
 import {InternalLink} from "./InternalLink"
