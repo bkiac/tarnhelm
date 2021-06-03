@@ -1,5 +1,6 @@
 import React from "react"
-import styled, {css} from "styled-components"
+import styled from "@emotion/styled"
+import {css} from "@emotion/react"
 import {distortion} from "../styles/animations"
 import {A} from "./A"
 import {InternalLink} from "./InternalLink"

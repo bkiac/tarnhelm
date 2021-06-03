@@ -1,5 +1,5 @@
 import React from "react"
-import {ThemeProvider} from "styled-components"
+import {ThemeProvider} from "@emotion/react"
 import type {AppProps} from "next/app"
 import {Footer, Layout} from "../components"
 import {GlobalStyle} from "../components/GlobalStyle"
