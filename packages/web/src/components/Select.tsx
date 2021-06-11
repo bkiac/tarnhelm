@@ -2,13 +2,11 @@ import isNil from "lodash/isNil"
 import React, {useCallback, useMemo, useState} from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
-import {glitch} from "../styles/animations"
+import {createGlitch} from "../styles/keyframes"
 
 const glitchSize = 0.06
-const glitchOptions = {
-	size: glitchSize,
-	duration: 0.3,
-}
+const glitchUnit = "em"
+const glitch = createGlitch(glitchSize, glitchUnit)
 
 const Root = styled.div`
 	position: relative;
@@ -106,10 +104,12 @@ const Option = styled.li<{content: string}>(
 		&:focus {
 			span:nth-child(2) {
 				&:before {
-					animation: ${glitch(glitchOptions)};
+					animation: ${glitch} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) normal
+						both infinite;
 				}
 				&:after {
-					animation: ${glitch({...glitchOptions, direction: "reverse"})};
+					animation: ${glitch} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse
+						both infinite;
 				}
 			}
 		}

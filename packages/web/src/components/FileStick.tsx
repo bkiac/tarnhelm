@@ -3,15 +3,11 @@ import React, {useEffect} from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
 import {useTextObfuscate} from "../hooks"
-import {noise} from "../styles/animations"
+import {createNoise} from "../styles/keyframes"
 import {DeleteIcon} from "./DeleteIcon"
 import {IconButton} from "./IconButton"
 
-const noiseOptions = {
-	duration: 3,
-	steps: 66,
-	fraction: 2,
-}
+const noise = createNoise(66, 2)
 
 const StyledFileStick = styled.div((props) => {
 	const height = 50
@@ -61,13 +57,12 @@ const StyledIconButton = styled(IconButton)(
 
 				&:before {
 					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-					animation: ${noise(noiseOptions)};
+					animation: ${noise} 3s linear infinite alternate-reverse;
 				}
-
 				&:after {
 					left: 1px;
 					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-					animation: ${noise(noiseOptions)};
+					animation: ${noise} 3s linear infinite alternate-reverse;
 				}
 			}
 		`,

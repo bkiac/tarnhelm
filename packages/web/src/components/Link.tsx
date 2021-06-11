@@ -1,23 +1,19 @@
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
-import {glitch} from "../styles/animations"
+import {createGlitch} from "../styles/keyframes"
 
 const borderSize = 1
 const borderUnit = "px"
-const borderSizeWithUnit = `${borderSize}${borderUnit}`
+const borderWidth = borderSize.toString() + borderUnit
 
-const glitchOptions: {size: number; unit: "px"; duration: number} = {
-	size: borderSize,
-	unit: borderUnit,
-	duration: 0.3,
-}
+const glitch = createGlitch(borderSize, borderUnit)
 
 export const Link = styled.a(
 	(props) => css`
 		color: ${props.theme.palette.foreground};
 		text-decoration: none;
 		padding: 0 0.5rem 0.25rem;
-		border-bottom: ${borderSizeWithUnit} solid ${props.theme.palette.foreground};
+		border-bottom: ${borderWidth} solid ${props.theme.palette.foreground};
 		position: relative;
 
 		&:visited {
@@ -28,10 +24,10 @@ export const Link = styled.a(
 		&:after {
 			content: "";
 			position: absolute;
-			bottom: -${borderSizeWithUnit};
+			bottom: -${borderWidth};
 			left: 0;
 			right: 0;
-			height: ${borderSizeWithUnit};
+			height: ${borderWidth};
 			visibility: hidden;
 		}
 
@@ -39,21 +35,24 @@ export const Link = styled.a(
 			background-color: ${props.theme.palette.secondary};
 			z-index: -1;
 		}
-
 		&:after {
 			background-color: ${props.theme.palette.tertiary};
 			z-index: -2;
 		}
 
 		&:hover {
-			&:before {
-				visibility: visible;
-				animation: ${glitch(glitchOptions)};
-			}
-
+			&:before,
 			&:after {
 				visibility: visible;
-				animation: ${glitch({...glitchOptions, direction: "reverse"})};
+			}
+
+			&:before {
+				animation: ${glitch} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) normal
+					both infinite;
+			}
+			&:after {
+				animation: ${glitch} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse
+					both infinite;
 			}
 		}
 	`,

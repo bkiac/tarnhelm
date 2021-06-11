@@ -1,32 +1,11 @@
 import React from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
-import {noise, twitch} from "../styles/animations"
+import {twitch, createNoise} from "../styles/keyframes"
 import {A} from "./A"
 import {InternalLink} from "./InternalLink"
 
-const twitchOptions = {
-	duration: 5,
-	delay: 5,
-}
-const noiseOptions = {
-	duration: 8,
-	steps: 30,
-	fraction: 2,
-}
-
-const twitchAnimation = twitch(twitchOptions)
-
-const glitchAnimationBefore = css`
-	${noise(noiseOptions)}, ${twitch({
-		...twitchOptions,
-		delay: twitchOptions.delay + 0.05,
-	})}
-`
-
-const glitchAnimationAfter = css`
-	${noise(noiseOptions)}, ${twitch(twitchOptions)}
-`
+const noise = createNoise(30, 2)
 
 const StyledAppTitle = styled.span<{
 	content: string
@@ -40,7 +19,7 @@ const StyledAppTitle = styled.span<{
 		text-transform: uppercase;
 		color: ${props.theme.palette.foreground};
 		position: relative;
-		animation: ${twitchAnimation};
+		animation: ${twitch} 5s 5s infinite;
 
 		&:before,
 		&:after {
@@ -54,13 +33,14 @@ const StyledAppTitle = styled.span<{
 		&:before {
 			left: -2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.tertiary};
-			animation: ${glitchAnimationBefore};
+			animation: ${noise} 8s linear infinite alternate-reverse,
+				${twitch} 5s 5s infinite;
 		}
-
 		&:after {
 			left: 2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.primary};
-			animation: ${glitchAnimationAfter};
+			animation: ${noise} 8s linear infinite alternate-reverse,
+				${twitch} 5s 5.05s infinite;
 		}
 	`,
 )

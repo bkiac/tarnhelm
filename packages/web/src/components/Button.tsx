@@ -1,18 +1,19 @@
 import React from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
-import {glitch} from "../styles/animations"
+import {createGlitch} from "../styles/keyframes"
 
 const glitchSize = 0.06
-const glitchOptions = {
-	size: glitchSize,
-	duration: 0.3,
-}
+const glitchUnit = "em"
+const glitchLength = glitchSize.toString() + glitchUnit
+const glitch = createGlitch(glitchSize, glitchUnit)
+
+const paddingTopBottom = "8px"
+const paddingLeftRight = "16px"
 
 const StyledButton = styled.button<{
 	content: string
 }>((props) => {
-	const [paddingTopBottom, paddingLeftRight] = ["8px", "16px"]
 	const disabled = props.disabled ?? false
 	return css`
 		font-size: 1.5rem;
@@ -40,7 +41,7 @@ const StyledButton = styled.button<{
 				position: relative;
 				left: 0;
 				top: 0;
-				text-shadow: ${glitchSize}em ${glitchSize}em
+				text-shadow: ${glitchLength} ${glitchLength}
 					${props.theme.palette.secondary};
 				color: inherit;
 				z-index: 3;
@@ -63,7 +64,6 @@ const StyledButton = styled.button<{
 					color: ${props.theme.palette.secondary};
 					z-index: 1;
 				}
-
 				&:after {
 					left: 0;
 					color: ${props.theme.palette.tertiary};
@@ -79,10 +79,12 @@ const StyledButton = styled.button<{
 
 				span:nth-child(2) {
 					&:before {
-						animation: ${glitch(glitchOptions)};
+						animation: ${glitch} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+							normal both infinite;
 					}
 					&:after {
-						animation: ${glitch({...glitchOptions, direction: "reverse"})};
+						animation: ${glitch} 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+							reverse both infinite;
 					}
 				}
 			}
