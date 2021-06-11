@@ -2,11 +2,8 @@ import styled from "@emotion/styled"
 import {css} from "@emotion/react"
 import {createGlitch} from "../styles/keyframes"
 
-const borderSize = 1
-const borderUnit = "px"
-const borderWidth = borderSize.toString() + borderUnit
-
-const glitch = createGlitch(borderSize, borderUnit)
+const borderWidth = "1px"
+const glitch = createGlitch(borderWidth)
 
 export const Link = styled.a(
 	(props) => css`

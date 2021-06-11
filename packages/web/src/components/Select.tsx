@@ -4,9 +4,8 @@ import styled from "@emotion/styled"
 import {css} from "@emotion/react"
 import {createGlitch} from "../styles/keyframes"
 
-const glitchSize = 0.06
-const glitchUnit = "em"
-const glitch = createGlitch(glitchSize, glitchUnit)
+const glitchLength = "0.06em"
+const glitch = createGlitch(glitchLength)
 
 const Root = styled.div`
 	position: relative;

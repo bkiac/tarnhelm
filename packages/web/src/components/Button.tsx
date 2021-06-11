@@ -3,10 +3,8 @@ import styled from "@emotion/styled"
 import {css} from "@emotion/react"
 import {createGlitch} from "../styles/keyframes"
 
-const glitchSize = 0.06
-const glitchUnit = "em"
-const glitchLength = glitchSize.toString() + glitchUnit
-const glitch = createGlitch(glitchSize, glitchUnit)
+const glitchLength = "0.06em"
+const glitch = createGlitch(glitchLength)
 
 const paddingTopBottom = "8px"
 const paddingLeftRight = "16px"
