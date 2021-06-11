@@ -7,7 +7,8 @@ import {createNoise} from "../styles/keyframes"
 import {DeleteIcon} from "./DeleteIcon"
 import {IconButton} from "./IconButton"
 
-const noise = createNoise(66, 2)
+const noise1 = createNoise(66, 2)
+const noise2 = createNoise(66, 2)
 
 const StyledFileStick = styled.div((props) => {
 	const height = 50
@@ -57,12 +58,12 @@ const StyledIconButton = styled(IconButton)(
 
 				&:before {
 					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-					animation: ${noise} 3s linear infinite alternate-reverse;
+					animation: ${noise1} 3s linear infinite alternate-reverse;
 				}
 				&:after {
 					left: 1px;
 					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-					animation: ${noise} 3s linear infinite alternate-reverse;
+					animation: ${noise2} 3s linear infinite alternate-reverse;
 				}
 			}
 		`,

@@ -18,7 +18,11 @@ function createNoiseClipPaths(steps: number, fraction: number): string[] {
 	})
 }
 
-/** Use with `${createNoise(...)} ${duration}s linear infinite alternate-reverse` */
+/**
+ * Use with `${createNoise(...)} ${duration}s linear infinite alternate-reverse`
+ * For multiple noise animations on the same element to be visible,
+ * create additional keyframes with this method (the returned noise is randomly generated), otherwise they will overlap.
+ */
 export function createNoise(steps: number, fraction: number): Keyframes {
 	return keyframes`
 		${createNoiseClipPaths(steps, fraction)}

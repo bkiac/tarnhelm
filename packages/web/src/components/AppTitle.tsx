@@ -5,7 +5,8 @@ import {twitch, createNoise} from "../styles/keyframes"
 import {A} from "./A"
 import {InternalLink} from "./InternalLink"
 
-const noise = createNoise(30, 2)
+const noise1 = createNoise(30, 2)
+const noise2 = createNoise(30, 2)
 
 const StyledAppTitle = styled.span<{
 	content: string
@@ -33,13 +34,13 @@ const StyledAppTitle = styled.span<{
 		&:before {
 			left: -2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.tertiary};
-			animation: ${noise} 8s linear infinite alternate-reverse,
+			animation: ${noise1} 8s linear infinite alternate-reverse,
 				${twitch} 5s 5s infinite;
 		}
 		&:after {
 			left: 2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.primary};
-			animation: ${noise} 8s linear infinite alternate-reverse,
+			animation: ${noise2} 8s linear infinite alternate-reverse,
 				${twitch} 5s 5.05s infinite;
 		}
 	`,
