@@ -3,7 +3,7 @@ import type {FlattenSimpleInterpolation} from "styled-components"
 import type {NoiseArgs} from "./noise"
 import {noiseSnippet} from "./noise"
 import type {TwitchArgs} from "./twitch"
-import {twitch} from "./twitch"
+import {twitchSnippet} from "./twitch"
 
 export type DistortionArgs = {
 	noise: NoiseArgs
@@ -16,12 +16,12 @@ export function distortion(args: DistortionArgs): FlattenSimpleInterpolation {
 		delay: args.twitch.delay + args.twitch.delayDelta,
 	}
 	return css`
-		animation: ${twitch(args.twitch)}};
+		animation: ${twitchSnippet(args.twitch)}};
 		&:before {
-			animation: ${noiseSnippet(args.noise)}, ${twitch(args.twitch)}};
+			animation: ${noiseSnippet(args.noise)}, ${twitchSnippet(args.twitch)}};
 		}
 		&:after {
-			animation: ${noiseSnippet(args.noise)}, ${twitch(delayedTwitchArgs)};
+			animation: ${noiseSnippet(args.noise)}, ${twitchSnippet(delayedTwitchArgs)};
 		}
 	`
 }

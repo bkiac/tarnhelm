@@ -17,11 +17,17 @@ export type TwitchAnimationProperties = {
 
 export type TwitchArgs = TwitchAnimationProperties
 
-export function twitch({
+export function twitchSnippet({
 	duration,
 	delay,
 }: TwitchArgs): FlattenSimpleInterpolation {
 	return css`
 		${twitchKeyframes} ${duration}s ${delay}s infinite
+	`
+}
+
+export function twitch(args: TwitchArgs): FlattenSimpleInterpolation {
+	return css`
+		animation: ${twitchSnippet(args)};
 	`
 }
