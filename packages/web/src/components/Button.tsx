@@ -2,16 +2,17 @@ import React from "react"
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const glitchSize = 0.06
-const glitchOptions = {
-	size: glitchSize,
+const glitchArgs = {
+	width: "0.06em",
 	duration: 0.3,
 }
+
+const paddingTopBottom = "8px"
+const paddingLeftRight = "16px"
 
 const StyledButton = styled.button<{
 	content: string
 }>((props) => {
-	const [paddingTopBottom, paddingLeftRight] = ["8px", "16px"]
 	const disabled = props.disabled ?? false
 	return css`
 		font-size: 1.5rem;
@@ -35,16 +36,21 @@ const StyledButton = styled.button<{
 
 		${!disabled &&
 		css`
+			&:focus {
+				border: 1px solid ${props.theme.palette.tertiary};
+			}
+
 			span:first-child {
 				position: relative;
 				left: 0;
 				top: 0;
-				text-shadow: ${glitchSize}em ${glitchSize}em
+				text-shadow: ${glitchArgs.width} ${glitchArgs.width}
 					${props.theme.palette.secondary};
 				color: inherit;
 				z-index: 3;
 			}
 
+			/** Animation */
 			span:nth-child(2) {
 				position: absolute;
 				top: ${paddingTopBottom};
@@ -77,17 +83,8 @@ const StyledButton = styled.button<{
 				}
 
 				span:nth-child(2) {
-					&:before {
-						animation: ${glitch(glitchOptions)};
-					}
-					&:after {
-						animation: ${glitch({...glitchOptions, direction: "reverse"})};
-					}
+					${glitch(glitchArgs)}
 				}
-			}
-
-			&:focus {
-				border: 1px solid ${props.theme.palette.tertiary};
 			}
 		`}
 	`

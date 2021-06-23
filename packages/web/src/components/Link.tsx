@@ -1,13 +1,8 @@
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const borderSize = 1
-const borderUnit = "px"
-const borderSizeWithUnit = `${borderSize}${borderUnit}`
-
-const glitchOptions: {size: number; unit: "px"; duration: number} = {
-	size: borderSize,
-	unit: borderUnit,
+const glitchArgs = {
+	width: "1px",
 	duration: 0.3,
 }
 
@@ -16,21 +11,22 @@ export const Link = styled.a(
 		color: ${props.theme.palette.foreground};
 		text-decoration: none;
 		padding: 0 0.5rem 0.25rem;
-		border-bottom: ${borderSizeWithUnit} solid ${props.theme.palette.foreground};
+		border-bottom: ${glitchArgs.width} solid ${props.theme.palette.foreground};
 		position: relative;
 
 		&:visited {
 			color: ${props.theme.palette.foreground};
 		}
 
+		/** Animation */
 		&:before,
 		&:after {
 			content: "";
 			position: absolute;
-			bottom: -${borderSizeWithUnit};
+			bottom: -${glitchArgs.width};
 			left: 0;
 			right: 0;
-			height: ${borderSizeWithUnit};
+			height: ${glitchArgs.width};
 			visibility: hidden;
 		}
 
@@ -45,15 +41,12 @@ export const Link = styled.a(
 		}
 
 		&:hover {
-			&:before {
-				visibility: visible;
-				animation: ${glitch(glitchOptions)};
-			}
-
+			&:before,
 			&:after {
 				visibility: visible;
-				animation: ${glitch({...glitchOptions, direction: "reverse"})};
 			}
+
+			${glitch(glitchArgs)}
 		}
 	`,
 )
