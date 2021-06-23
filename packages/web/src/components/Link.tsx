@@ -45,13 +45,16 @@ export const Link = styled.a(
 		}
 
 		&:hover {
-			&:before {
+			&:before,
+			&:after {
 				visibility: visible;
+			}
+
+			&:before {
 				animation: ${glitch(glitchOptions)};
 			}
 
 			&:after {
-				visibility: visible;
 				animation: ${glitch({...glitchOptions, direction: "reverse"})};
 			}
 		}
