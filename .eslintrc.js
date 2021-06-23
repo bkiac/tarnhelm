@@ -7,6 +7,7 @@ module.exports = {
 		".next",
 		"*rc.js",
 		"commitlint.config.js",
+		"*.config.js",
 	],
 	overrides: [
 		{

@@ -1,7 +1,6 @@
-import type {ByteArray} from "../utils"
-import {MAX_INT32} from "../utils"
-import {NONCE_LENGTH} from "./constants"
-import {exportKey, generateNonceKey} from "./keysmith"
+import {exportKey, generateNonceKey} from "./keys"
+import type {ByteArray} from "./util"
+import {MAX_INT32, NONCE_LENGTH} from "./util"
 
 /**
  * Check if `number` is in the range of 32-bit integer
@@ -37,5 +36,3 @@ export async function generateNonceBase(
 		generateNonce: (seq: number): Buffer => generateNonce(seq, nonceBase),
 	}
 }
-
-export {NONCE_LENGTH}

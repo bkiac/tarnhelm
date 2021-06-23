@@ -31,7 +31,7 @@ export function useKeyring<M>(secretb64?: string): Keyring<M> | undefined {
 	useEffect(() => {
 		if (crypto) {
 			const secret =
-				secretb64 == null ? crypto.ece.generateIKM() : base64.toArray(secretb64)
+				secretb64 == null ? crypto.ece.generateIkm() : base64.toArray(secretb64)
 
 			const createKeyring = async (): Promise<void> => {
 				const authKey = await crypto.ece.generateAuthenticationKey(

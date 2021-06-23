@@ -9,6 +9,6 @@
 		"target": "esnext",
 		"noEmit": true
 	},
-	"include": ["src", "next-env.d.ts"],
+	"include": ["src", "next-env.d.ts", "test"],
 	"exclude": ["node_modules"]
 }
