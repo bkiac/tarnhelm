@@ -15,10 +15,12 @@ export type TwitchAnimationProperties = {
 	delay: number
 }
 
+export type TwitchArgs = TwitchAnimationProperties
+
 export function twitch({
 	duration,
 	delay,
-}: TwitchAnimationProperties): FlattenSimpleInterpolation {
+}: TwitchArgs): FlattenSimpleInterpolation {
 	return css`
 		${twitchKeyframes} ${duration}s ${delay}s infinite
 	`

@@ -31,10 +31,12 @@ export function createNoiseKeyframes({
 
 export type NoiseAnimationProperties = {duration: number}
 
-export function noise(
-	args: NoiseKeyframesArgs,
-	{duration}: NoiseAnimationProperties,
-): FlattenSimpleInterpolation {
+export type NoiseArgs = NoiseKeyframesArgs & NoiseAnimationProperties
+
+export function noise({
+	duration,
+	...args
+}: NoiseArgs): FlattenSimpleInterpolation {
 	const noiseKeyframes = createNoiseKeyframes(args)
 	return css`
 		${noiseKeyframes} ${duration}s linear infinite alternate-reverse

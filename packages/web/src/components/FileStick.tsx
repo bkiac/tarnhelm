@@ -6,11 +6,9 @@ import {noise} from "../styles/animations"
 import {DeleteIcon} from "./DeleteIcon"
 import {IconButton} from "./IconButton"
 
-const noiseKeyframeArgs = {
+const noiseArgs = {
 	steps: 66,
 	fraction: 2,
-}
-const noiseAnimationProperties = {
 	duration: 3,
 }
 
@@ -62,13 +60,13 @@ const StyledIconButton = styled(IconButton)(
 
 				&:before {
 					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-					animation: ${noise(noiseKeyframeArgs, noiseAnimationProperties)};
+					animation: ${noise(noiseArgs)};
 				}
 
 				&:after {
 					left: 1px;
 					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-					animation: ${noise(noiseKeyframeArgs, noiseAnimationProperties)};
+					animation: ${noise(noiseArgs)};
 				}
 			}
 		`,
