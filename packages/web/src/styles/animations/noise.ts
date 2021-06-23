@@ -1,11 +1,16 @@
 import {css, keyframes} from "styled-components"
 import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
 
-function createNoiseKeyframePartials(
-	steps: number,
-	fraction: number,
-): (FlattenSimpleInterpolation | string)[] {
-	return Array.from(Array(steps)).map((_, i) => {
+export type NoiseKeyframesArgs = {
+	steps: number
+	fraction: number
+}
+
+export function createNoiseKeyframes({
+	steps,
+	fraction,
+}: NoiseKeyframesArgs): Keyframes {
+	const partials = Array.from(Array(steps)).map((_, i) => {
 		const top = Math.random()
 		const bottom = 1.01 - top
 		const percentage = i * (1 / steps)
@@ -19,24 +24,19 @@ function createNoiseKeyframePartials(
 			}
 		`
 	})
-}
-
-function createNoiseKeyframes(steps: number, fraction: number): Keyframes {
 	return keyframes`
-		${createNoiseKeyframePartials(steps, fraction)}
+		${partials}
 	`
 }
 
-export function noise(opts: {
-	duration: number
-	steps: number
-	fraction?: number
-}): FlattenSimpleInterpolation {
-	const {duration, steps, fraction = 1} = opts
+export type NoiseAnimationProperties = {duration: number}
+
+export function noise(
+	args: NoiseKeyframesArgs,
+	{duration}: NoiseAnimationProperties,
+): FlattenSimpleInterpolation {
+	const noiseKeyframes = createNoiseKeyframes(args)
 	return css`
-		${createNoiseKeyframes(
-			steps,
-			fraction,
-		)} ${duration}s linear infinite alternate-reverse
+		${noiseKeyframes} ${duration}s linear infinite alternate-reverse
 	`
 }

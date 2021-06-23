@@ -3,9 +3,8 @@ import React, {useCallback, useMemo, useState} from "react"
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const glitchSize = 0.06
-const glitchOptions = {
-	size: glitchSize,
+const glitchWidth = "0.06em"
+const glitchProperties = {
 	duration: 0.3,
 }
 
@@ -105,10 +104,13 @@ const Option = styled.li<{content: string}>(
 		&:focus {
 			span:nth-child(2) {
 				&:before {
-					animation: ${glitch(glitchOptions)};
+					animation: ${glitch(glitchWidth, glitchProperties)};
 				}
 				&:after {
-					animation: ${glitch({...glitchOptions, direction: "reverse"})};
+					animation: ${glitch(glitchWidth, {
+						...glitchProperties,
+						direction: "reverse",
+					})};
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 import {css, keyframes} from "styled-components"
 import type {FlattenSimpleInterpolation} from "styled-components"
 
-const twitchKeyframes = keyframes`
+export const twitchKeyframes = keyframes`
 	1% {
 		transform: rotateX(10deg) skewX(60deg);
 	}
@@ -10,11 +10,15 @@ const twitchKeyframes = keyframes`
 	}
 `
 
-export function twitch(opts: {
+export type TwitchAnimationProperties = {
 	duration: number
 	delay: number
-}): FlattenSimpleInterpolation {
-	const {duration, delay} = opts
+}
+
+export function twitch({
+	duration,
+	delay,
+}: TwitchAnimationProperties): FlattenSimpleInterpolation {
 	return css`
 		${twitchKeyframes} ${duration}s ${delay}s infinite
 	`

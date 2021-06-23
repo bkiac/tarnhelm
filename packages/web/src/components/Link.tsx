@@ -1,13 +1,8 @@
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const borderSize = 1
-const borderUnit = "px"
-const borderSizeWithUnit = `${borderSize}${borderUnit}`
-
-const glitchOptions: {size: number; unit: "px"; duration: number} = {
-	size: borderSize,
-	unit: borderUnit,
+const glitchWidth = "1px"
+const glitchProperties = {
 	duration: 0.3,
 }
 
@@ -16,7 +11,7 @@ export const Link = styled.a(
 		color: ${props.theme.palette.foreground};
 		text-decoration: none;
 		padding: 0 0.5rem 0.25rem;
-		border-bottom: ${borderSizeWithUnit} solid ${props.theme.palette.foreground};
+		border-bottom: ${glitchWidth} solid ${props.theme.palette.foreground};
 		position: relative;
 
 		&:visited {
@@ -27,10 +22,10 @@ export const Link = styled.a(
 		&:after {
 			content: "";
 			position: absolute;
-			bottom: -${borderSizeWithUnit};
+			bottom: -${glitchWidth};
 			left: 0;
 			right: 0;
-			height: ${borderSizeWithUnit};
+			height: ${glitchWidth};
 			visibility: hidden;
 		}
 
@@ -51,11 +46,14 @@ export const Link = styled.a(
 			}
 
 			&:before {
-				animation: ${glitch(glitchOptions)};
+				animation: ${glitch(glitchWidth, glitchProperties)};
 			}
 
 			&:after {
-				animation: ${glitch({...glitchOptions, direction: "reverse"})};
+				animation: ${glitch(glitchWidth, {
+					...glitchProperties,
+					direction: "reverse",
+				})};
 			}
 		}
 	`,

@@ -6,10 +6,12 @@ import {noise} from "../styles/animations"
 import {DeleteIcon} from "./DeleteIcon"
 import {IconButton} from "./IconButton"
 
-const noiseOptions = {
-	duration: 3,
+const noiseKeyframeArgs = {
 	steps: 66,
 	fraction: 2,
+}
+const noiseAnimationProperties = {
+	duration: 3,
 }
 
 const StyledFileStick = styled.div((props) => {
@@ -60,13 +62,13 @@ const StyledIconButton = styled(IconButton)(
 
 				&:before {
 					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-					animation: ${noise(noiseOptions)};
+					animation: ${noise(noiseKeyframeArgs, noiseAnimationProperties)};
 				}
 
 				&:after {
 					left: 1px;
 					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-					animation: ${noise(noiseOptions)};
+					animation: ${noise(noiseKeyframeArgs, noiseAnimationProperties)};
 				}
 			}
 		`,
