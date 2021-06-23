@@ -1,8 +1,8 @@
-import type { Reducer } from "react"
-import { useCallback, useEffect, useReducer } from "react"
-import { config } from "../config"
+import {useCallback, useEffect, useReducer} from "react"
+import type {Reducer} from "react"
+import {config} from "../config"
 import * as webSocket from "../lib/webSocket"
-import type { ReducerAction } from "../types/reducer"
+import type {ReducerAction} from "../types/reducer"
 
 export enum UseWebSocketConnectionStatus {
 	Opening = 0,
@@ -28,16 +28,13 @@ enum ActionType {
 }
 
 type ConnectPending = ReducerAction<ActionType.ConnectPending>
-type ConnectSuccess = ReducerAction<
-	ActionType.ConnectSuccess,
-	{ ws: WebSocket }
->
-type ConnectFailure = ReducerAction<ActionType.ConnectFailure, { error: Error }>
+type ConnectSuccess = ReducerAction<ActionType.ConnectSuccess, {ws: WebSocket}>
+type ConnectFailure = ReducerAction<ActionType.ConnectFailure, {error: Error}>
 type DisconnectPending = ReducerAction<ActionType.DisconnectPending>
 type DisconnectSuccess = ReducerAction<ActionType.DisconnectSuccess>
 type DisconnectFailure = ReducerAction<
 	ActionType.DisconnectFailure,
-	{ error: Error }
+	{error: Error}
 >
 
 type ConnectionAction =
@@ -61,7 +58,7 @@ const reducer: Reducer<UseWebSocketState, ConnectionAction> = (
 			}
 		}
 		case ActionType.ConnectSuccess: {
-			const { ws } = action.payload
+			const {ws} = action.payload
 			return {
 				loading: false,
 				status: UseWebSocketConnectionStatus.Open,
@@ -69,7 +66,7 @@ const reducer: Reducer<UseWebSocketState, ConnectionAction> = (
 			}
 		}
 		case ActionType.ConnectFailure: {
-			const { error } = action.payload
+			const {error} = action.payload
 			return {
 				loading: false,
 				status: UseWebSocketConnectionStatus.Closed,
@@ -91,7 +88,7 @@ const reducer: Reducer<UseWebSocketState, ConnectionAction> = (
 			}
 		}
 		case ActionType.DisconnectFailure: {
-			const { error } = action.payload
+			const {error} = action.payload
 			return {
 				loading: false,
 				status: UseWebSocketConnectionStatus.Open,
@@ -110,7 +107,7 @@ export type UseWebSocketOptions = {
 
 function init(options: UseWebSocketOptions): UseWebSocketState {
 	if (options.lazy) {
-		return { status: UseWebSocketConnectionStatus.Closed, loading: false }
+		return {status: UseWebSocketConnectionStatus.Closed, loading: false}
 	}
 	return {
 		status: UseWebSocketConnectionStatus.Opening,
@@ -120,17 +117,17 @@ function init(options: UseWebSocketOptions): UseWebSocketState {
 
 export function useWebSocket(
 	url = "",
-	options: UseWebSocketOptions = { lazy: false },
+	options: UseWebSocketOptions = {lazy: false},
 ): [UseWebSocketState, () => void, () => void] {
 	const [connection, dispatch] = useReducer(reducer, init(options))
 
 	const handleConnect = useCallback(
-		() => dispatch({ type: ActionType.ConnectPending }),
+		() => dispatch({type: ActionType.ConnectPending}),
 		[],
 	)
 	const handleDisconnect = useCallback(() => {
 		if (connection.ws) {
-			dispatch({ type: ActionType.DisconnectPending })
+			dispatch({type: ActionType.DisconnectPending})
 		}
 	}, [connection.ws])
 
@@ -143,11 +140,11 @@ export function useWebSocket(
 						connection.ws.close()
 					}
 					const ws = await webSocket.open(config.ws + url)
-					dispatch({ type: ActionType.ConnectSuccess, payload: { ws } })
+					dispatch({type: ActionType.ConnectSuccess, payload: {ws}})
 				} catch (error: unknown) {
 					dispatch({
 						type: ActionType.ConnectFailure,
-						payload: { error: error as Error },
+						payload: {error: error as Error},
 					})
 				}
 			}
@@ -164,11 +161,11 @@ export function useWebSocket(
 					if (connection.ws) {
 						await webSocket.close(connection.ws)
 					}
-					dispatch({ type: ActionType.DisconnectSuccess })
+					dispatch({type: ActionType.DisconnectSuccess})
 				} catch (error: unknown) {
 					dispatch({
 						type: ActionType.DisconnectFailure,
-						payload: { error: error as Error },
+						payload: {error: error as Error},
 					})
 				}
 			}

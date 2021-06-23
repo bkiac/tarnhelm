@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import type { Page, WebKitBrowser } from "playwright"
-import { webkit } from "playwright"
+import {webkit} from "playwright"
+import type {Page, WebKitBrowser} from "playwright"
 
 let browser: WebKitBrowser
 let page: Page

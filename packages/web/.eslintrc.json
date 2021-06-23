@@ -1,7 +1,0 @@
-{
-	"extends": ["bkiac"],
-	"parserOptions": {
-		"project": "./tsconfig.json"
-	},
-	"ignorePatterns": ["**/*rc.*", "jest.config.js"]
-}

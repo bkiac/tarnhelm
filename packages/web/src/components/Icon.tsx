@@ -1,6 +1,6 @@
-import type { DefaultThemeIconContentCodes } from "styled-components"
 import styled from "styled-components"
-import { iconFont } from "../styles/mixins"
+import type {DefaultThemeIconContentCodes} from "styled-components"
+import {iconFont} from "../styles/mixins"
 
 export const Icon = styled.i<{
 	glyph: keyof DefaultThemeIconContentCodes

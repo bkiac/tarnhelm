@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
-import type { Page, WebKitBrowser } from "playwright"
-import { webkit } from "playwright"
-import { importKey, importKeyWithoutArgs } from "../src/lib/ece/keys"
+import {webkit} from "playwright"
+import type {Page, WebKitBrowser} from "playwright"
+import {importKey, importKeyWithoutArgs} from "../src/lib/ece/keys"
 // import { importKey, importKeyWithoutArgs } from "./keys"
 
 let browser: WebKitBrowser

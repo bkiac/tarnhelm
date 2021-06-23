@@ -1,10 +1,10 @@
-import type { SetRequired } from "type-fest"
+import type {SetRequired} from "type-fest"
 import * as stream from "../stream"
-import { generateContentEncryptionKey } from "./keys"
-import { generateNonceBase } from "./nonce"
-import { slice } from "./slice"
-import type { ByteArray } from "./util"
-import { KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH } from "./util"
+import {generateContentEncryptionKey} from "./keys"
+import {generateNonceBase} from "./nonce"
+import {slice} from "./slice"
+import type {ByteArray} from "./util"
+import {KEY_LENGTH, Mode, RECORD_SIZE, TAG_LENGTH} from "./util"
 
 export async function sign(
 	key: CryptoKey,
@@ -19,7 +19,7 @@ export async function encrypt(
 	plaintext: ByteArray,
 ): Promise<ArrayBuffer> {
 	return crypto.subtle.encrypt(
-		{ name: "AES-GCM", iv, tagLength: 128 },
+		{name: "AES-GCM", iv, tagLength: 128},
 		key,
 		plaintext,
 	)
@@ -50,30 +50,27 @@ export type EceHeader = {
 	length: number
 }
 
+type Controller = TransformStreamDefaultController<Buffer>
+type StartCallback = TransformerStartCallback<Buffer>
+type TransformerCallback = TransformerTransformCallback<Uint8Array, Buffer>
+
 async function createCipher(
 	salt: ByteArray,
 	ikm: Uint8Array,
 	recordSize = RECORD_SIZE,
 ): Promise<EceTransformer<Uint8Array, Buffer>> {
-	type Controller = TransformStreamDefaultController<Buffer>
-	type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>
-	type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
-		Uint8Array,
-		Buffer
-	>
-
 	let i = 0
 	let prevChunk: Buffer | undefined
 	let isFirstChunk = true
 
 	const key = await generateContentEncryptionKey(salt, ikm)
-	const { generateNonce } = await generateNonceBase(salt, ikm)
+	const {generateNonce} = await generateNonceBase(salt, ikm)
 
 	/**
 	 * Pad records so all of them will have the same length.
 	 */
 	function pad(record: Buffer, isFinal: boolean): Buffer {
-		const { length } = record
+		const {length} = record
 		if (length + TAG_LENGTH >= recordSize) {
 			throw new Error(
 				`Buffer too large for record size: ${
@@ -123,11 +120,11 @@ async function createCipher(
 		i += 1
 	}
 
-	const start: ControllerCallback = (controller) => {
+	const start: StartCallback = (controller) => {
 		controller.enqueue(writeHeader())
 	}
 
-	const transform: ControllerTransformCallback = async (chunk, controller) => {
+	const transform: TransformerCallback = async (chunk, controller) => {
 		if (!isFirstChunk && prevChunk) {
 			await transformPrevChunk(prevChunk, false, controller)
 		}
@@ -135,23 +132,16 @@ async function createCipher(
 		prevChunk = Buffer.from(chunk.buffer)
 	}
 
-	const flush: ControllerCallback = async (controller) => {
+	const flush: StartCallback = async (controller) => {
 		if (prevChunk) {
 			await transformPrevChunk(prevChunk, true, controller)
 		}
 	}
 
-	return { start, transform, flush }
+	return {start, transform, flush}
 }
 
 function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
-	type Controller = TransformStreamDefaultController<Buffer>
-	type ControllerCallback = TransformStreamDefaultControllerCallback<Buffer>
-	type ControllerTransformCallback = TransformStreamDefaultControllerTransformCallback<
-		Uint8Array,
-		Buffer
-	>
-
 	let i = 0
 	let prevChunk: Buffer | undefined
 	let isFirstChunk = true
@@ -185,7 +175,7 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 		const salt = header.buffer.slice(0, KEY_LENGTH)
 		const rs = header.readUIntBE(KEY_LENGTH, 4)
 		const length = header.readUInt8(KEY_LENGTH + 4) + KEY_LENGTH + 5
-		return { salt, recordSize: rs, length }
+		return {salt, recordSize: rs, length}
 	}
 
 	async function decryptRecord(
@@ -206,16 +196,16 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 			// The first chunk during decryption contains only the header
 			const header = readHeader(chunk)
 			key = await generateContentEncryptionKey(header.salt, ikm)
-			;({ generateNonce } = await generateNonceBase(header.salt, ikm))
+			;({generateNonce} = await generateNonceBase(header.salt, ikm))
 		} else {
 			controller.enqueue(await decryptRecord(chunk, isFinal))
 		}
 		i += 1
 	}
 
-	const start: ControllerCallback = () => {}
+	const start: StartCallback = () => {}
 
-	const transform: ControllerTransformCallback = async (chunk, controller) => {
+	const transform: TransformerCallback = async (chunk, controller) => {
 		if (!isFirstChunk && prevChunk) {
 			await transformPrevChunk(prevChunk, false, controller)
 		}
@@ -223,13 +213,13 @@ function createDecipher(ikm: Uint8Array): EceTransformer<Uint8Array, Buffer> {
 		prevChunk = Buffer.from(chunk.buffer)
 	}
 
-	const flush: ControllerCallback = async (controller) => {
+	const flush: StartCallback = async (controller) => {
 		if (prevChunk) {
 			await transformPrevChunk(prevChunk, true, controller)
 		}
 	}
 
-	return { start, transform, flush }
+	return {start, transform, flush}
 }
 
 export async function encryptStream(

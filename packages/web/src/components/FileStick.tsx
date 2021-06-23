@@ -1,15 +1,15 @@
 import bytes from "bytes"
-import React, { useEffect } from "react"
-import styled, { css } from "styled-components"
-import { useTextObfuscate } from "../hooks"
-import { noise } from "../styles/animations"
-import { DeleteIcon } from "./DeleteIcon"
-import { IconButton } from "./IconButton"
+import React, {useEffect} from "react"
+import styled, {css} from "styled-components"
+import {useTextObfuscate} from "../hooks"
+import {noise} from "../styles/animations"
+import {DeleteIcon} from "./DeleteIcon"
+import {IconButton} from "./IconButton"
 
-const noiseOptions = {
-	duration: 3,
+const noiseArgs = {
 	steps: 66,
 	fraction: 2,
+	duration: 3,
 }
 
 const StyledFileStick = styled.div((props) => {
@@ -45,6 +45,11 @@ const StyledIconButton = styled(IconButton)(
 			margin-right: 8px;
 			position: relative;
 
+			&:hover {
+				cursor: pointer;
+			}
+
+			/** Animation */
 			&:before,
 			&:after {
 				content: "${props.theme.iconContentCodes.delete}";
@@ -56,18 +61,16 @@ const StyledIconButton = styled(IconButton)(
 			}
 
 			&:hover {
-				cursor: pointer;
-
 				&:before {
 					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-					animation: ${noise(noiseOptions)};
 				}
 
 				&:after {
 					left: 1px;
 					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-					animation: ${noise(noiseOptions)};
 				}
+
+				${noise(noiseArgs)};
 			}
 		`,
 )
@@ -87,13 +90,13 @@ const FileInfoTop = styled(FileInfo)`
 	font-size: 1rem;
 `
 
-export const FileStick: React.FC<{
+export const FileStick: React.VFC<{
 	name: string
 	size: number
 	className?: string
 	obfuscate?: boolean
 	onDelete: () => void
-}> = ({ className, name, size, obfuscate = false, onDelete }) => {
+}> = ({className, name, size, obfuscate = false, onDelete}) => {
 	const [obfuscatedName, obfuscateName] = useTextObfuscate(name, 100)
 	const [obfuscatedSize, obfuscateSize] = useTextObfuscate(bytes(size), 100)
 

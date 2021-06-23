@@ -1,8 +1,8 @@
 import React from "react"
-import styled, { css } from "styled-components"
-import { DeathIcon } from "./DeathIcon"
-import { FileStick } from "./FileStick"
-import { SaveIcon } from "./SaveIcon"
+import styled, {css} from "styled-components"
+import {DeathIcon} from "./DeathIcon"
+import {FileStick} from "./FileStick"
+import {SaveIcon} from "./SaveIcon"
 
 const StyledVault = styled.div<{
 	center: boolean
@@ -57,18 +57,10 @@ type FileObject = {
 }
 
 export const Vault: React.FC<{
-	files: FileObject[]
-	isDragActive: boolean
-	loading?: boolean
-	success?: boolean
+	files?: FileObject[]
+	isDragActive?: boolean
 	hasError?: boolean
-}> = ({
-	files,
-	isDragActive,
-	loading = false,
-	success = false,
-	hasError = false,
-}) => {
+}> = ({files = [], isDragActive = false, hasError = false}) => {
 	const isEmpty = files.length === 0
 
 	function renderPartial(
@@ -84,7 +76,7 @@ export const Vault: React.FC<{
 	}
 
 	return (
-		<StyledVault center={isEmpty || loading || success} hasError={hasError}>
+		<StyledVault center={isEmpty} hasError={hasError}>
 			{hasError ? (
 				renderPartial(<DeathIcon />, "Unexpected Error")
 			) : (
@@ -96,7 +88,7 @@ export const Vault: React.FC<{
 								: renderPartial(<SaveIcon />, "Click or drop files to start")}
 						</>
 					) : (
-						files.map(({ id, ...f }) => <StyledFileStick key={id} {...f} />)
+						files.map(({id, ...f}) => <StyledFileStick key={id} {...f} />)
 					)}
 				</>
 			)}

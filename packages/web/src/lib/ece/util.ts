@@ -1,4 +1,5 @@
 export const MAX_INT32 = 0xffffffff // = (2^32) - 1 = 4294967295
+
 export const KEY_LENGTH = 16
 export const NONCE_LENGTH = 12
 export const TAG_LENGTH = 16
@@ -19,7 +20,6 @@ export type ByteArray =
 	| Uint8ClampedArray
 	| Float32Array
 	| Float64Array
-	| DataView
 	| ArrayBuffer
 
 export function calculateEncryptedSize(

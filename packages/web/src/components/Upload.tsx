@@ -1,18 +1,24 @@
 import bytes from "bytes"
 import differenceWith from "lodash/differenceWith"
 import QRCode from "qrcode.react"
-import React, { useCallback, useMemo, useState } from "react"
-import type { DropHandler } from "react-dropzone"
-import { useDropzone } from "react-dropzone"
-import styled, { css } from "styled-components"
-import { v4 as uuid } from "uuid"
-import { useUpload } from "../hooks"
-import { UseUploadStatus } from "../hooks/useUpload"
-import { Button } from "./Button"
-import { DangerIcon } from "./DangerIcon"
-import { Loader } from "./Loader"
-import { Select } from "./Select"
-import { Vault } from "./Vault"
+import React, {useCallback, useMemo, useState} from "react"
+import {useDropzone} from "react-dropzone"
+import styled, {css} from "styled-components"
+import {v4 as uuid} from "uuid"
+import type {DropHandler} from "react-dropzone"
+import {useUpload} from "../hooks"
+import {UseUploadStatus} from "../hooks/useUpload"
+import {Button} from "./Button"
+import {DangerIcon} from "./DangerIcon"
+import {Loader} from "./Loader"
+import {Select} from "./Select"
+import {Vault} from "./Vault"
+import {
+	downloadLimitOptions,
+	expiryOptions,
+	MAX_FILE_SIZE,
+	ONE_WEEK,
+} from "../utils"
 
 const Container = styled.div`
 	width: 30vw;
@@ -41,7 +47,7 @@ const InfoRow = styled.div`
 	}
 `
 
-const StyledTotalSize = styled.p<{ hasError?: boolean }>(
+const StyledTotalSize = styled.p<{hasError?: boolean}>(
 	(props) => css`
 		color: ${props.hasError ?? false
 			? props.theme.palette.error
@@ -58,73 +64,17 @@ function isDuplicate<A extends File, B extends File>(a: A, b: B): boolean {
 	)
 }
 
-interface FileObject {
+type FileObject = {
 	id: string
 	file: File
 }
 
-const TotalSize: React.FC<{ hasError?: boolean }> = ({
-	hasError,
-	children,
-}) => (
+const TotalSize: React.FC<{hasError?: boolean}> = ({hasError, children}) => (
 	<StyledTotalSize hasError={hasError}>
 		{(hasError ?? false) && <DangerIcon />}
 		{children}
 	</StyledTotalSize>
 )
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024
-
-const ONE_MINUTE = 60
-const ONE_HOUR = 60 * ONE_MINUTE
-const ONE_DAY = 24 * ONE_HOUR
-const ONE_WEEK = 7 * ONE_DAY
-const EXPIRY_OPTIONS = [
-	{
-		value: 5 * ONE_MINUTE,
-		label: "5 minutes",
-	},
-	{
-		value: ONE_HOUR,
-		label: "1 hour",
-	},
-	{
-		value: ONE_DAY,
-		label: "1 day",
-	},
-	{
-		value: ONE_WEEK,
-		label: "1 week",
-	},
-	{
-		value: 2 * ONE_WEEK,
-		label: "2 weeks",
-	},
-]
-
-const DOWNLOAD_LIMIT_OPTIONS = [
-	{
-		value: 1,
-	},
-	{
-		value: 2,
-	},
-	{
-		value: 3,
-	},
-	{
-		value: 5,
-	},
-	{
-		value: 20,
-	},
-	{
-		value: 100,
-	},
-	{
-		value: 200,
-	},
-]
 
 export const Upload: React.FC = () => {
 	const [fileObjects, setFileObjects] = useState<FileObject[]>([])
@@ -139,7 +89,7 @@ export const Upload: React.FC = () => {
 	const addFiles = useCallback((newFiles: File[]) => {
 		setFileObjects((oldFileObjects) => [
 			...oldFileObjects,
-			...newFiles.map((f) => ({ id: uuid(), file: f })),
+			...newFiles.map((f) => ({id: uuid(), file: f})),
 		])
 	}, [])
 	const deleteFile = useCallback((id: string) => {
@@ -164,9 +114,9 @@ export const Upload: React.FC = () => {
 		[fileObjects, createFileDeleteHandler],
 	)
 
-	const [expiry, setExpiry] = useState(EXPIRY_OPTIONS[0].value)
+	const [expiry, setExpiry] = useState(expiryOptions[0].value)
 	const [downloadLimit, setDownloadLimit] = useState(
-		DOWNLOAD_LIMIT_OPTIONS[0].value,
+		downloadLimitOptions[0].value,
 	)
 
 	const [state, upload] = useUpload()
@@ -175,7 +125,7 @@ export const Upload: React.FC = () => {
 		id,
 		status,
 		invoice,
-		progress: { loading, percent },
+		progress: {loading, percent},
 	} = state
 
 	const handleDrop = useCallback<DropHandler>(
@@ -192,7 +142,7 @@ export const Upload: React.FC = () => {
 
 	const handleClick = useCallback(() => {
 		if (!loading && hasFiles) {
-			upload(files[0], { expiry, downloadLimit })
+			upload(files[0], {expiry, downloadLimit})
 		}
 	}, [files, hasFiles, loading, upload, expiry, downloadLimit])
 
@@ -222,7 +172,7 @@ export const Upload: React.FC = () => {
 			{awaitingPayment && invoice != null ? (
 				<>
 					<QRCode value={invoice} size={256} />
-					<p style={{ width: 300, wordWrap: "break-word" }}>{invoice}</p>
+					<p style={{width: 300, wordWrap: "break-word"}}>{invoice}</p>
 				</>
 			) : (
 				<>
@@ -240,8 +190,6 @@ export const Upload: React.FC = () => {
 									<Vault
 										files={filesInVault}
 										isDragActive={dropzone.isDragActive}
-										loading={loading}
-										success={success}
 									/>
 									<input {...dropzone.getInputProps()} />
 								</Dropzone>
@@ -261,12 +209,12 @@ export const Upload: React.FC = () => {
 					<p>Expires After</p>
 					{uploading || success ? (
 						<p>
-							{EXPIRY_OPTIONS.find((option) => option.value === expiry)?.label}
+							{expiryOptions.find((option) => option.value === expiry)?.label}
 						</p>
 					) : (
 						<Select
 							value={expiry}
-							options={EXPIRY_OPTIONS}
+							options={expiryOptions}
 							onChange={(value) => setExpiry(value)}
 						/>
 					)}
@@ -279,7 +227,7 @@ export const Upload: React.FC = () => {
 					) : (
 						<Select
 							value={downloadLimit}
-							options={DOWNLOAD_LIMIT_OPTIONS}
+							options={downloadLimitOptions}
 							onChange={(value) => setDownloadLimit(value)}
 						/>
 					)}

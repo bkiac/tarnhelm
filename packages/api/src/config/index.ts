@@ -1,9 +1,11 @@
-/* eslint-disable no-console */
 import convict from "convict"
-import { ONE_DAY_IN_SECONDS } from "../utils"
-import { addCustomFormats } from "./formats"
+import {ONE_DAY_IN_SECONDS} from "../utils"
+import {nonEmptyString, webSocketPort} from "./formats"
 
-addCustomFormats()
+convict.addFormats({
+	nonEmptyString,
+	webSocketPort,
+})
 
 export const config = convict({
 	env: {
@@ -15,7 +17,7 @@ export const config = convict({
 
 	port: {
 		doc: "The port to bind.",
-		format: "websocket-port",
+		format: "webSocketPort",
 		default: 7089,
 		env: "PORT",
 	},
@@ -23,7 +25,7 @@ export const config = convict({
 	redis: {
 		url: {
 			doc: "The Redis server URL.",
-			format: "string",
+			format: "nonEmptyString",
 			default: "",
 			sensitive: true,
 			env: "REDIS_URL",
@@ -33,14 +35,14 @@ export const config = convict({
 	s3: {
 		endpoint: {
 			doc: "The S3 endpoint.",
-			format: "string",
+			format: "nonEmptyString",
 			default: "",
 			sensitive: true,
 			env: "S3_ENDPOINT",
 		},
 		bucket: {
 			doc: "The S3 bucket.",
-			format: "string",
+			format: "nonEmptyString",
 			default: "",
 			sensitive: true,
 			env: "S3_BUCKET",
@@ -48,14 +50,14 @@ export const config = convict({
 		accessKey: {
 			id: {
 				doc: "The S3 access key ID.",
-				format: "string",
+				format: "nonEmptyString",
 				default: "",
 				sensitive: true,
 				env: "S3_ACCESS_KEY_ID",
 			},
 			secret: {
 				doc: "The S3 access key secret.",
-				format: "string",
+				format: "nonEmptyString",
 				default: "",
 				sensitive: true,
 				env: "S3_ACCESS_KEY_SECRET",
@@ -107,26 +109,27 @@ export const config = convict({
 	lnd: {
 		socket: {
 			doc: "The LND socket to connect to.",
-			format: "string",
+			format: "nonEmptyString",
 			default: "",
 			sensitive: true,
 			env: "LND_SOCKET",
 		},
 		cert: {
 			doc: "The LND TLS certificate in base64.",
-			format: "string",
+			format: String,
 			default: "",
 			sensitive: true,
 			env: "LND_CERT",
 		},
 		macaroon: {
 			doc: "The LND admin macaroon in base64.",
-			format: "string",
+			format: "nonEmptyString",
 			default: "",
 			sensitive: true,
 			env: "LND_MACAROON",
 		},
 	},
-}).validate({ allowed: "strict" })
+}).validate({allowed: "strict"})
 
+// eslint-disable-next-line no-console
 console.log("⚙️ Config has been loaded:", config.toString())

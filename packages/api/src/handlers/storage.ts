@@ -1,24 +1,24 @@
 import * as crypto from "crypto"
-import type express from "express"
-import type expressWs from "express-ws"
 import Joi from "joi"
-import type { SubscribeToInvoiceInvoiceUpdatedEvent } from "ln-service"
-import { isNil } from "lodash"
+import {isNil} from "lodash"
 import * as stream from "stream"
-import { v4 as uuid } from "uuid"
+import {v4 as uuid} from "uuid"
 import * as ws from "ws"
-import { config } from "../config"
+import type {SubscribeToInvoiceInvoiceUpdatedEvent} from "ln-service"
+import type expressWs from "express-ws"
+import type express from "express"
+import {config} from "../config"
 import * as lnd from "../lib/lnd"
-import { getPriceQuote } from "../lib/price"
+import {getPriceQuote} from "../lib/price"
 import * as storage from "../lib/storage/storage"
 import * as webSocket from "../lib/webSocket"
-import { asAsyncListener, log } from "../utils"
+import {asAsyncListener, log} from "../utils"
 
 const storageConfig = config.get("storage")
 
 function eof(): stream.Transform {
 	return new stream.Transform({
-		transform(chunk: Buffer, encoding, callback) {
+		transform(chunk: Buffer, _, callback) {
 			if (chunk.length === 1 && chunk[0] === 0) {
 				this.push(null)
 			} else {
@@ -32,7 +32,7 @@ function eof(): stream.Transform {
 function limiter(limit = storageConfig.fileSize.max): stream.Transform {
 	let length = 0
 	return new stream.Transform({
-		transform(chunk: Buffer, encoding, callback): void {
+		transform(chunk: Buffer, _, callback): void {
 			length += chunk.length
 			this.push(chunk)
 			return length > limit ? callback(new Error("limit")) : callback()
@@ -76,9 +76,9 @@ function validateUploadParams(
 
 	// Care: `errors` is always `undefined`, use `error`
 	// See: https://github.com/sideway/joi/issues/2523
-	const { error } = uploadParamsSchema.validate(params)
+	const {error} = uploadParamsSchema.validate(params)
 	if (error) {
-		return [undefined, error.details.map(({ message }) => message)]
+		return [undefined, error.details.map(({message}) => message)]
 	}
 
 	// Assertion is safe after validation
@@ -99,14 +99,14 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 		asAsyncListener(async (msg: string) => {
 			const [params, errors] = validateUploadParams(msg)
 			if (!params || errors) {
-				webSocket.send(client, { error: 400 })
+				webSocket.send(client, {error: 400})
 				client.close()
 				return
 			}
 
 			const id = uuid()
 			const sats = await getPriceQuote(params)
-			const { metadata, size, downloadLimit, expiry, authb64 } = params
+			const {metadata, size, downloadLimit, expiry, authb64} = params
 			const invoice = await lnd.createInvoice({
 				tokens: sats,
 				description: `Size: ${size}B, Download Limit: ${downloadLimit}, Expiry: ${expiry}s`,
@@ -147,19 +147,18 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 								.pipe(eof())
 								.pipe(limiter(size))
 
-							log("Start storage upload", { id })
+							log("Start storage upload", {id})
 
 							try {
 								const data = await storage.set(
-									{ id, stream: fileStream, metadata, size },
-									{ downloadLimit, expiry, authb64 },
-									(progress) =>
-										webSocket.send(client, { data: progress.loaded }),
+									{id, stream: fileStream, metadata, size},
+									{downloadLimit, expiry, authb64},
+									(progress) => webSocket.send(client, {data: progress.loaded}),
 								)
-								log("Finish storage upload", { data })
+								log("Finish storage upload", {data})
 							} catch (e: unknown) {
 								const err = e as Error
-								log("Storage error", { id, error: err })
+								log("Storage error", {id, error: err})
 
 								fileStream.destroy()
 
@@ -168,7 +167,7 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 								})
 
 								await storage.del(id)
-								log("Temporary file deleted", { id })
+								log("Temporary file deleted", {id})
 							}
 						}
 					},
@@ -178,21 +177,17 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 	)
 }
 
-export const download: express.RequestHandler<{ id: string }> = async (
+export const download: express.RequestHandler<{id: string}> = async (
 	req,
 	res,
 ) => {
 	try {
 		const {
-			params: { id },
+			params: {id},
 		} = req
 
-		const {
-			authb64,
-			nonce,
-			downloads,
-			downloadLimit,
-		} = await storage.getMetadata(id)
+		const {authb64, nonce, downloads, downloadLimit} =
+			await storage.getMetadata(id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)
@@ -231,7 +226,7 @@ export const download: express.RequestHandler<{ id: string }> = async (
 		let cancelled = false
 		let finished = false
 
-		log("Start storage download", { id })
+		log("Start storage download", {id})
 		fileStream
 			.pipe(res)
 			.on(
@@ -242,9 +237,9 @@ export const download: express.RequestHandler<{ id: string }> = async (
 						const newDownloads = await storage.bumpDownloads(id)
 						if (newDownloads >= downloadLimit) {
 							await storage.del(id)
-							log("Finish storage download and delete file", { id })
+							log("Finish storage download and delete file", {id})
 						} else {
-							log("Finish storage download", { id })
+							log("Finish storage download", {id})
 						}
 					}
 				}),
@@ -252,7 +247,7 @@ export const download: express.RequestHandler<{ id: string }> = async (
 			.on("close", () => {
 				if (!finished) {
 					cancelled = true
-					log("Storage download error", { id })
+					log("Storage download error", {id})
 					fileStream.destroy()
 				}
 			})
@@ -261,17 +256,13 @@ export const download: express.RequestHandler<{ id: string }> = async (
 	}
 }
 
-export const getMetadata: express.RequestHandler<{ id: string }> = async (
+export const getMetadata: express.RequestHandler<{id: string}> = async (
 	req,
 	res,
 ) => {
 	try {
-		const {
-			authb64,
-			downloads,
-			downloadLimit,
-			...metadata
-		} = await storage.getMetadata(req.params.id)
+		const {authb64, downloads, downloadLimit, ...metadata} =
+			await storage.getMetadata(req.params.id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)

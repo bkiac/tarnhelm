@@ -1,5 +1,5 @@
 import isNil from "lodash/isNil"
-import type { SetRequired } from "type-fest"
+import type {SetRequired} from "type-fest"
 
 /* eslint-disable no-await-in-loop */
 export async function read<T>(
@@ -15,7 +15,7 @@ export async function read<T>(
 }
 
 export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
-	type ControllerCallback = ReadableStreamDefaultControllerCallback<T>
+	type ControllerCallback = UnderlyingSourcePullCallback<T>
 
 	let index = 0
 	let reader: ReadableStreamReader<T> | undefined
@@ -39,14 +39,14 @@ export function concat<T>(streams: ReadableStream<T>[]): ReadableStream<T> {
 		return controller.close()
 	}
 
-	return new ReadableStream<T>({ pull })
+	return new ReadableStream<T>({pull})
 }
 
 export function createBlobStream(
 	blob: Blob,
 	chunkSize = 1024 * 64,
 ): ReadableStream<Uint8Array> {
-	type ControllerCallback = ReadableStreamDefaultControllerCallback<Uint8Array>
+	type ControllerCallback = UnderlyingSourcePullCallback<Uint8Array>
 
 	let index = 0
 
@@ -74,7 +74,7 @@ export function createBlobStream(
 			}
 		})
 
-	return new ReadableStream({ pull })
+	return new ReadableStream({pull})
 }
 
 export function createFileStream(
@@ -130,7 +130,7 @@ export async function toArrayBuffer(
 export function transform<I, O = I>(
 	stream: ReadableStream<I>,
 	transformer: SetRequired<Transformer<I, O>, "transform">,
-	onCancel?: ReadableStreamErrorCallback,
+	onCancel?: UnderlyingSourceCancelCallback,
 ): ReadableStream<O> {
 	try {
 		return stream.pipeThrough(new TransformStream(transformer))

@@ -1,28 +1,27 @@
-# .gitignore
-
-## dependencies
+# dependencies
 node_modules
 .pnp
 .pnp.js
 
-## Tests
+# Tests
 test-files/
 coverage
 .nyc_output
 
-## compiled output
+# compiled output
 build
 dist
 .next
 _static
 
-## env
-*.env*
+# env
+.env
+.env*.local
 
-## OS
+# OS
 .DS_Store
 
-## Logs
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -30,10 +29,10 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-## tools
+# tools
 .eslintcache
 
-## IDE
+# IDE
 *.*workspace*
 /.idea
 .project

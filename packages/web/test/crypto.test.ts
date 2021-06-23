@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
-import type { FirefoxBrowser, Page } from "playwright"
-import { firefox } from "playwright"
+import {firefox} from "playwright"
+import type {FirefoxBrowser, Page} from "playwright"
 
 let browser: FirefoxBrowser
 let page: Page

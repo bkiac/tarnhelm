@@ -1,6 +1,6 @@
-import { exportKey, generateNonceKey } from "./keys"
-import type { ByteArray } from "./util"
-import { MAX_INT32, NONCE_LENGTH } from "./util"
+import {exportKey, generateNonceKey} from "./keys"
+import type {ByteArray} from "./util"
+import {MAX_INT32, NONCE_LENGTH} from "./util"
 
 /**
  * Check if `number` is in the range of 32-bit integer
@@ -27,7 +27,7 @@ export function generateNonce(seq: number, nb: Buffer): Buffer {
 export async function generateNonceBase(
 	salt: ByteArray,
 	ikm: Uint8Array,
-): Promise<{ nonceBase: Buffer; generateNonce: (seq: number) => Buffer }> {
+): Promise<{nonceBase: Buffer; generateNonce: (seq: number) => Buffer}> {
 	const nonceKey = await generateNonceKey(salt, ikm)
 	const base = await exportKey(nonceKey)
 	const nonceBase = Buffer.from(base.slice(0, NONCE_LENGTH))

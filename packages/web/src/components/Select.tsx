@@ -1,11 +1,10 @@
 import isNil from "lodash/isNil"
-import React, { useCallback, useMemo, useState } from "react"
-import styled, { css } from "styled-components"
-import { glitch } from "../styles/animations"
+import React, {useCallback, useMemo, useState} from "react"
+import styled, {css} from "styled-components"
+import {glitch} from "../styles/animations"
 
-const glitchSize = 0.06
-const glitchOptions = {
-	size: glitchSize,
+const glitchArgs = {
+	width: "0.06em",
 	duration: 0.3,
 }
 
@@ -33,7 +32,7 @@ const Control = styled.div(
 	`,
 )
 
-const Arrow = styled.span<{ isOpen: boolean }>(
+const Arrow = styled.span<{isOpen: boolean}>(
 	(props) => css`
 		margin-right: 8px;
 		border-color: ${props.isOpen
@@ -66,7 +65,7 @@ const Menu = styled.ul(
 	`,
 )
 
-const Option = styled.li<{ content: string }>(
+const Option = styled.li<{content: string}>(
 	(props) => css`
 		box-sizing: border-box;
 		cursor: pointer;
@@ -74,6 +73,11 @@ const Option = styled.li<{ content: string }>(
 		padding-bottom: 8px;
 		position: relative;
 
+		&:focus {
+			border: 1px solid ${props.theme.palette.tertiary};
+		}
+
+		/** Animation */
 		span:first-child {
 			position: relative;
 			color: inherit;
@@ -104,23 +108,14 @@ const Option = styled.li<{ content: string }>(
 		&:hover,
 		&:focus {
 			span:nth-child(2) {
-				&:before {
-					animation: ${glitch(glitchOptions)};
-				}
-				&:after {
-					animation: ${glitch({ ...glitchOptions, direction: "reverse" })};
-				}
+				${glitch(glitchArgs)}
 			}
-		}
-
-		&:focus {
-			border: 1px solid ${props.theme.palette.tertiary};
 		}
 	`,
 )
 
-interface Props<V extends React.ReactText> {
-	options: { value: V; label?: string }[]
+type Props<V extends React.ReactText> = {
+	options: {value: V; label?: string}[]
 	onChange: (newValue: V) => void
 	value: V
 }
@@ -155,7 +150,7 @@ export function Select<V extends React.ReactText>({
 	const close = useCallback(() => setIsOpen(false), [])
 	const handleKeyDown = useCallback(
 		(event: React.KeyboardEvent) => {
-			const { key } = event
+			const {key} = event
 			if (key === "Enter") {
 				toggle()
 			} else if (

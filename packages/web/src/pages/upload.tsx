@@ -1,5 +1,5 @@
 import React from "react"
-import { H1, Page, Upload } from "../components"
+import {H1, Page, Upload} from "../components"
 
 const UploadPage: React.FC = () => (
 	<Page>

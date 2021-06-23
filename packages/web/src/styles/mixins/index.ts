@@ -1,4 +1,4 @@
-import { css } from "styled-components"
+import {css} from "styled-components"
 
 export const iconFont = css`
 	/* use !important to prevent issues with browser extensions that change fonts */

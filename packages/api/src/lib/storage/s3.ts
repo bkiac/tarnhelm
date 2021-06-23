@@ -1,13 +1,15 @@
 import AWS from "aws-sdk"
 import type * as AWSRequest from "aws-sdk/lib/request"
 import type * as stream from "stream"
-import { config } from "../../config"
+import {config} from "../../config"
 
-const { accessKey, endpoint, bucket } = config.get("s3")
+const {accessKey, endpoint, bucket} = config.get("s3")
 const s3 = new AWS.S3({
 	accessKeyId: accessKey.id,
 	secretAccessKey: accessKey.secret,
 	endpoint,
+	s3ForcePathStyle: true,
+	signatureVersion: "v4",
 })
 
 export type S3UploadArgs = {
@@ -22,7 +24,7 @@ export async function set(
 	data: S3UploadArgs,
 	listener?: (progress: AWS.S3.ManagedUpload.Progress) => void,
 ): Promise<AWS.S3.ManagedUpload.SendData> {
-	const { key, body, length } = data
+	const {key, body, length} = data
 	const managedUpload = s3.upload({
 		Bucket: bucket,
 		Key: key,
@@ -36,7 +38,7 @@ export async function set(
 }
 
 export function get(key: string): stream.Readable {
-	return s3.getObject({ Bucket: bucket, Key: key }).createReadStream()
+	return s3.getObject({Bucket: bucket, Key: key}).createReadStream()
 }
 
 export async function del(
@@ -44,7 +46,7 @@ export async function del(
 ): Promise<
 	AWSRequest.PromiseResult<AWS.S3.Types.DeleteObjectOutput, AWS.AWSError>
 > {
-	return s3.deleteObject({ Bucket: bucket, Key: key }).promise()
+	return s3.deleteObject({Bucket: bucket, Key: key}).promise()
 }
 
 export async function delMany(
@@ -55,7 +57,7 @@ export async function delMany(
 	return s3
 		.deleteObjects({
 			Bucket: bucket,
-			Delete: { Objects: keys.map((key) => ({ Key: key })) },
+			Delete: {Objects: keys.map((key) => ({Key: key}))},
 		})
 		.promise()
 }

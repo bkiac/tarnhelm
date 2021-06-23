@@ -1,14 +1,14 @@
-import type { AppProps } from "next/app"
 import React from "react"
-import { ThemeProvider } from "styled-components"
-import { Footer, Layout } from "../components"
-import { GlobalStyle } from "../components/GlobalStyle"
+import {ThemeProvider} from "styled-components"
+import type {AppProps} from "next/app"
+import {Footer, Layout} from "../components"
+import {GlobalStyle} from "../components/GlobalStyle"
 // Set up axios
 import "../lib/axios"
 import "../styles/index.css"
-import { theme } from "../styles/theme"
+import {theme} from "../styles/theme"
 
-export default function App({ Component, pageProps }: AppProps): JSX.Element {
+export default function App({Component, pageProps}: AppProps): JSX.Element {
 	return (
 		<ThemeProvider theme={theme}>
 			<GlobalStyle />

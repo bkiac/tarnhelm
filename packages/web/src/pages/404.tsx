@@ -1,5 +1,5 @@
 import React from "react"
-import { NotFound, Page } from "../components"
+import {NotFound, Page} from "../components"
 
 const NotFoundPage: React.FC = () => (
 	<Page>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Page } from "../components"
+import {Page} from "../components"
 
 const ThanksPage: React.FC = () => <Page>Thanks...</Page>
 

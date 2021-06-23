@@ -1,13 +1,13 @@
-import type { FlattenSimpleInterpolation, Keyframes } from "styled-components"
-import { css, keyframes } from "styled-components"
+import {css, keyframes} from "styled-components"
+import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
+import type {CssUnitValue} from "../../lib/css"
+import {toCssText} from "../../lib/css"
 
-export type GlitchAnimationUnit = "em" | "px"
-
-function createGlitchKeyframes(
-	size: number,
-	unit: GlitchAnimationUnit,
-): Keyframes {
-	const value = `${size}${unit}`
+export function createGlitchKeyframes(width: CssUnitValue | string): Keyframes {
+	let value = width
+	if (typeof width !== "string") {
+		value = toCssText(width.value, width.unit)
+	}
 	return keyframes`
     0% {
       transform: translate(0);
@@ -30,19 +30,35 @@ function createGlitchKeyframes(
 `
 }
 
-export function glitch({
-	size,
-	unit = "em",
-	duration,
-	direction = "normal",
-}: {
-	size: number
-	unit?: GlitchAnimationUnit
+export type GlitchWidth = CssUnitValue | string
+
+export type GlitchAnimationProperties = {
 	duration: number
-	direction?: "normal" | "reverse"
-}): FlattenSimpleInterpolation {
-	const gkfs = createGlitchKeyframes(size, unit)
+	direction: "normal" | "reverse"
+}
+
+export type GlitchSnippetArgs = {width: GlitchWidth} & GlitchAnimationProperties
+
+export function glitchSnippet({
+	width,
+	duration,
+	direction,
+}: GlitchSnippetArgs): FlattenSimpleInterpolation {
+	const glitchKeyframes = createGlitchKeyframes(width)
 	return css`
-		${gkfs} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite;
+		${glitchKeyframes} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite
+	`
+}
+
+export type GlitchArgs = Omit<GlitchSnippetArgs, "direction">
+
+export function glitch(args: GlitchArgs): FlattenSimpleInterpolation {
+	return css`
+		&:before {
+			animation: ${glitchSnippet({...args, direction: "normal"})};
+		}
+		&:after {
+			animation: ${glitchSnippet({...args, direction: "reverse"})};
+		}
 	`
 }

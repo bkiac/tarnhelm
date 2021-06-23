@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 import * as base64 from "../lib/base64"
-import type { Crypto } from "../lib/crypto"
-import { useCrypto } from "./useCrypto"
+import type {Crypto} from "../lib/crypto"
+import {useCrypto} from "./useCrypto"
 
 type Sign = (nonceb64: string) => Promise<string>
 type EncryptMetadata<M> = (metadata: M) => Promise<string>

@@ -1,22 +1,9 @@
 {
+	"extends": "tsconfig-bkiac",
 	"compilerOptions": {
-		"skipLibCheck": true,
-		"alwaysStrict": true,
-		"strict": true,
-		"noUnusedLocals": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"allowSyntheticDefaultImports": true,
-		"noUnusedParameters": false,
-		"forceConsistentCasingInFileNames": true,
-
-		"esModuleInterop": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
 		"allowJs": true,
 		"isolatedModules": true,
 		"module": "esnext",
-
 		"jsx": "preserve",
 		"lib": ["dom", "es2017"],
 		"target": "esnext",

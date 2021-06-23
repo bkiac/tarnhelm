@@ -1,6 +1,6 @@
 import express from "express"
 import type expressWs from "express-ws"
-import { storage } from "../handlers"
+import {storage} from "../handlers"
 
 export const storageRouter: expressWs.Router = express
 	.Router()
