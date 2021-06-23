@@ -45,6 +45,11 @@ const StyledIconButton = styled(IconButton)(
 			margin-right: 8px;
 			position: relative;
 
+			&:hover {
+				cursor: pointer;
+			}
+
+			/** Animation */
 			&:before,
 			&:after {
 				content: "${props.theme.iconContentCodes.delete}";
@@ -56,18 +61,16 @@ const StyledIconButton = styled(IconButton)(
 			}
 
 			&:hover {
-				cursor: pointer;
-
 				&:before {
 					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-					animation: ${noise(noiseArgs)};
 				}
 
 				&:after {
 					left: 1px;
 					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-					animation: ${noise(noiseArgs)};
 				}
+
+				${noise(noiseArgs)};
 			}
 		`,
 )
