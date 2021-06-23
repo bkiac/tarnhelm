@@ -23,12 +23,12 @@ const noiseAnimationProperties = {
 }
 const noiseArgs = [noiseKeyframesArgs, noiseAnimationProperties] as const
 
-const glitchAnimationBefore = (): FlattenSimpleInterpolation =>
+const noiseAndTwitchAnimationBefore = (): FlattenSimpleInterpolation =>
 	css`
 		animation: ${noise(...noiseArgs)}, ${twitch(twitchAnimationProperties)};
 	`
 
-const glitchAnimationAfter = (): FlattenSimpleInterpolation =>
+const noiseAndTwitchAnimationAfter = (): FlattenSimpleInterpolation =>
 	css`
 		animation: ${noise(...noiseArgs)},
 			${twitch(twitchLargerDelayAnimationProperties)};
@@ -60,13 +60,13 @@ const StyledAppTitle = styled.span<{
 		&:before {
 			left: -2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.tertiary};
-			${glitchAnimationBefore()}
+			${noiseAndTwitchAnimationBefore()}
 		}
 
 		&:after {
 			left: 2px;
 			text-shadow: -0.05em 0 ${props.theme.palette.primary};
-			${glitchAnimationAfter()}
+			${noiseAndTwitchAnimationAfter()}
 		}
 	`,
 )
