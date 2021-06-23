@@ -1,8 +1,8 @@
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const glitchWidth = "1px"
-const glitchProperties = {
+const glitchArgs = {
+	width: "1px",
 	duration: 0.3,
 }
 
@@ -11,21 +11,22 @@ export const Link = styled.a(
 		color: ${props.theme.palette.foreground};
 		text-decoration: none;
 		padding: 0 0.5rem 0.25rem;
-		border-bottom: ${glitchWidth} solid ${props.theme.palette.foreground};
+		border-bottom: ${glitchArgs.width} solid ${props.theme.palette.foreground};
 		position: relative;
 
 		&:visited {
 			color: ${props.theme.palette.foreground};
 		}
 
+		/** Animation */
 		&:before,
 		&:after {
 			content: "";
 			position: absolute;
-			bottom: -${glitchWidth};
+			bottom: -${glitchArgs.width};
 			left: 0;
 			right: 0;
-			height: ${glitchWidth};
+			height: ${glitchArgs.width};
 			visibility: hidden;
 		}
 
@@ -45,16 +46,7 @@ export const Link = styled.a(
 				visibility: visible;
 			}
 
-			&:before {
-				animation: ${glitch(glitchWidth, glitchProperties)};
-			}
-
-			&:after {
-				animation: ${glitch(glitchWidth, {
-					...glitchProperties,
-					direction: "reverse",
-				})};
-			}
+			${glitch(glitchArgs)}
 		}
 	`,
 )

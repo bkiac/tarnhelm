@@ -2,8 +2,8 @@ import React from "react"
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const glitchWidth = "0.06em"
-const glitchProperties = {
+const glitchArgs = {
+	width: "0.06em",
 	duration: 0.3,
 }
 
@@ -36,16 +36,21 @@ const StyledButton = styled.button<{
 
 		${!disabled &&
 		css`
+			&:focus {
+				border: 1px solid ${props.theme.palette.tertiary};
+			}
+
 			span:first-child {
 				position: relative;
 				left: 0;
 				top: 0;
-				text-shadow: ${glitchWidth} ${glitchWidth}
+				text-shadow: ${glitchArgs.width} ${glitchArgs.width}
 					${props.theme.palette.secondary};
 				color: inherit;
 				z-index: 3;
 			}
 
+			/** Animation */
 			span:nth-child(2) {
 				position: absolute;
 				top: ${paddingTopBottom};
@@ -78,17 +83,8 @@ const StyledButton = styled.button<{
 				}
 
 				span:nth-child(2) {
-					&:before {
-						animation: ${glitch(glitchWidth, glitchProperties)};
-					}
-					&:after {
-						animation: ${glitch(glitchWidth, glitchProperties)};
-					}
+					${glitch(glitchArgs)}
 				}
-			}
-
-			&:focus {
-				border: 1px solid ${props.theme.palette.tertiary};
 			}
 		`}
 	`

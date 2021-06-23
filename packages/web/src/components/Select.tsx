@@ -3,8 +3,8 @@ import React, {useCallback, useMemo, useState} from "react"
 import styled, {css} from "styled-components"
 import {glitch} from "../styles/animations"
 
-const glitchWidth = "0.06em"
-const glitchProperties = {
+const glitchArgs = {
+	width: "0.06em",
 	duration: 0.3,
 }
 
@@ -73,6 +73,11 @@ const Option = styled.li<{content: string}>(
 		padding-bottom: 8px;
 		position: relative;
 
+		&:focus {
+			border: 1px solid ${props.theme.palette.tertiary};
+		}
+
+		/** Animation */
 		span:first-child {
 			position: relative;
 			color: inherit;
@@ -103,20 +108,8 @@ const Option = styled.li<{content: string}>(
 		&:hover,
 		&:focus {
 			span:nth-child(2) {
-				&:before {
-					animation: ${glitch(glitchWidth, glitchProperties)};
-				}
-				&:after {
-					animation: ${glitch(glitchWidth, {
-						...glitchProperties,
-						direction: "reverse",
-					})};
-				}
+				${glitch(glitchArgs)}
 			}
-		}
-
-		&:focus {
-			border: 1px solid ${props.theme.palette.tertiary};
 		}
 	`,
 )

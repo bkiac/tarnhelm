@@ -30,17 +30,35 @@ export function createGlitchKeyframes(width: CssUnitValue | string): Keyframes {
 `
 }
 
+export type GlitchWidth = CssUnitValue | string
+
 export type GlitchAnimationProperties = {
 	duration: number
-	direction?: "normal" | "reverse"
+	direction: "normal" | "reverse"
 }
 
-export function glitch(
-	width: CssUnitValue | string,
-	{duration, direction = "normal"}: GlitchAnimationProperties,
-): FlattenSimpleInterpolation {
+export type GlitchPartialArgs = {width: GlitchWidth} & GlitchAnimationProperties
+
+export function glitchPartial({
+	width,
+	duration,
+	direction,
+}: GlitchPartialArgs): FlattenSimpleInterpolation {
 	const glitchKeyframes = createGlitchKeyframes(width)
 	return css`
 		${glitchKeyframes} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite
+	`
+}
+
+export type GlitchArgs = Omit<GlitchPartialArgs, "direction">
+
+export function glitch(args: GlitchArgs): FlattenSimpleInterpolation {
+	return css`
+		&:before {
+			animation: ${glitchPartial({...args, direction: "normal"})};
+		}
+		&:after {
+			animation: ${glitchPartial({...args, direction: "reverse"})};
+		}
 	`
 }
