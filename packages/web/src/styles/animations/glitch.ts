@@ -3,6 +3,7 @@ import type {SerializedStyles} from "@emotion/react"
 import type {Keyframes} from "@emotion/serialize"
 import type {CssUnitValue} from "../../lib/css"
 import {toCssText} from "../../lib/css"
+import type {EmotionAnimationSnippet} from "./utils"
 
 export function createGlitchKeyframes(width: CssUnitValue | string): Keyframes {
 	let value = width
@@ -40,16 +41,14 @@ export type GlitchAnimationProperties = {
 
 export type GlitchSnippetArgs = {width: GlitchWidth} & GlitchAnimationProperties
 
-export function glitchSnippet({
+export const glitchSnippet: EmotionAnimationSnippet<GlitchSnippetArgs> = ({
 	width,
 	duration,
 	direction,
-}: GlitchSnippetArgs): [Keyframes, string] {
-	return [
-		createGlitchKeyframes(width),
-		`${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite`,
-	]
-}
+}) => [
+	createGlitchKeyframes(width),
+	`${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite`,
+]
 
 export type GlitchArgs = Omit<GlitchSnippetArgs, "direction">
 

@@ -1,6 +1,7 @@
 import {css, keyframes} from "@emotion/react"
 import type {SerializedStyles} from "@emotion/react"
 import type {Keyframes} from "@emotion/serialize"
+import type {EmotionAnimationSnippet} from "./utils"
 
 export type NoiseKeyframesArgs = {
 	steps: number
@@ -34,13 +35,13 @@ export type NoiseAnimationProperties = {duration: number}
 
 export type NoiseArgs = NoiseKeyframesArgs & NoiseAnimationProperties
 
-export function noiseSnippet({
+export const noiseSnippet: EmotionAnimationSnippet<NoiseArgs> = ({
 	duration,
 	...args
-}: NoiseArgs): [Keyframes, string] {
-	const noiseKeyframes = createNoiseKeyframes(args)
-	return [noiseKeyframes, `${duration}s linear infinite alternate-reverse`]
-}
+}) => [
+	createNoiseKeyframes(args),
+	`${duration}s linear infinite alternate-reverse`,
+]
 
 export function noise(args: NoiseArgs): SerializedStyles {
 	const [keyframesBefore, optionsBefore] = noiseSnippet(args)

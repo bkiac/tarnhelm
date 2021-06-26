@@ -1,6 +1,6 @@
 import {css, keyframes} from "@emotion/react"
-import type {Keyframes} from "@emotion/serialize"
 import type {SerializedStyles} from "@emotion/react"
+import type {EmotionAnimationSnippet} from "./utils"
 
 export const twitchKeyframes = keyframes`
 	1% {
@@ -18,12 +18,10 @@ export type TwitchAnimationProperties = {
 
 export type TwitchArgs = TwitchAnimationProperties
 
-export function twitchSnippet({
+export const twitchSnippet: EmotionAnimationSnippet<TwitchArgs> = ({
 	duration,
 	delay,
-}: TwitchArgs): [Keyframes, string] {
-	return [twitchKeyframes, `${duration}s ${delay}s infinite`]
-}
+}) => [twitchKeyframes, `${duration}s ${delay}s infinite`]
 
 export function twitch(args: TwitchArgs): SerializedStyles {
 	const [snippetKeyframes, properties] = twitchSnippet(args)
