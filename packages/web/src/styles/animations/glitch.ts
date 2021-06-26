@@ -53,20 +53,20 @@ export const glitchSnippet: EmotionAnimationSnippet<GlitchSnippetArgs> = ({
 export type GlitchArgs = Omit<GlitchSnippetArgs, "direction">
 
 export function glitch(args: GlitchArgs): SerializedStyles {
-	const [keyframesBefore, optionsBefore] = glitchSnippet({
+	const [keyframesBefore, propertiesBefore] = glitchSnippet({
 		...args,
 		direction: "normal",
 	})
-	const [keyframesAfter, optionsAfter] = glitchSnippet({
+	const [keyframesAfter, propertiesAfter] = glitchSnippet({
 		...args,
 		direction: "reverse",
 	})
 	return css`
 		&:before {
-			animation: ${keyframesBefore} ${optionsBefore};
+			animation: ${keyframesBefore} ${propertiesBefore};
 		}
 		&:after {
-			animation: ${keyframesAfter} ${optionsAfter};
+			animation: ${keyframesAfter} ${propertiesAfter};
 		}
 	`
 }

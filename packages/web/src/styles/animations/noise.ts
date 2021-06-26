@@ -44,14 +44,14 @@ export const noiseSnippet: EmotionAnimationSnippet<NoiseArgs> = ({
 ]
 
 export function noise(args: NoiseArgs): SerializedStyles {
-	const [keyframesBefore, optionsBefore] = noiseSnippet(args)
-	const [keyframesAfter, optionsAfter] = noiseSnippet(args)
+	const [keyframesBefore, propertiesBefore] = noiseSnippet(args)
+	const [keyframesAfter, propertiesAfter] = noiseSnippet(args)
 	return css`
 		&:before {
-			animation: ${keyframesBefore} ${optionsBefore};
+			animation: ${keyframesBefore} ${propertiesBefore};
 		}
 		&:after {
-			animation: ${keyframesAfter} ${optionsAfter};
+			animation: ${keyframesAfter} ${propertiesAfter};
 		}
 	`
 }
