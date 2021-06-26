@@ -1,7 +1,9 @@
-import {css, keyframes} from "styled-components"
-import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
+import {css, keyframes} from "@emotion/react"
+import type {SerializedStyles} from "@emotion/react"
+import type {Keyframes} from "@emotion/serialize"
 import type {CssUnitValue} from "../../lib/css"
 import {toCssText} from "../../lib/css"
+import type {EmotionAnimationSnippet} from "./utils"
 
 export function createGlitchKeyframes(width: CssUnitValue | string): Keyframes {
 	let value = width
@@ -9,25 +11,25 @@ export function createGlitchKeyframes(width: CssUnitValue | string): Keyframes {
 		value = toCssText(width.value, width.unit)
 	}
 	return keyframes`
-    0% {
-      transform: translate(0);
-    }
-    20% {
-      transform: translate(-${value}, ${value});
-    }
-    40% {
-      transform: translate(-${value}, -${value});
-    }
-    60% {
-      transform: translate(${value}, ${value});
-    }
-    80% {
-      transform: translate(${value}, -${value});
-    }
-    to {
-      transform: translate(0);
-    }
-`
+		0% {
+			transform: translate(0);
+		}
+		20% {
+			transform: translate(-${value}, ${value});
+		}
+		40% {
+			transform: translate(-${value}, -${value});
+		}
+		60% {
+			transform: translate(${value}, ${value});
+		}
+		80% {
+			transform: translate(${value}, -${value});
+		}
+		to {
+			transform: translate(0);
+		}
+	`
 }
 
 export type GlitchWidth = CssUnitValue | string
@@ -39,26 +41,32 @@ export type GlitchAnimationProperties = {
 
 export type GlitchSnippetArgs = {width: GlitchWidth} & GlitchAnimationProperties
 
-export function glitchSnippet({
+export const glitchSnippet: EmotionAnimationSnippet<GlitchSnippetArgs> = ({
 	width,
 	duration,
 	direction,
-}: GlitchSnippetArgs): FlattenSimpleInterpolation {
-	const glitchKeyframes = createGlitchKeyframes(width)
-	return css`
-		${glitchKeyframes} ${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite
-	`
-}
+}) => [
+	createGlitchKeyframes(width),
+	`${duration}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${direction} both infinite`,
+]
 
 export type GlitchArgs = Omit<GlitchSnippetArgs, "direction">
 
-export function glitch(args: GlitchArgs): FlattenSimpleInterpolation {
+export function glitch(args: GlitchArgs): SerializedStyles {
+	const [keyframesBefore, propertiesBefore] = glitchSnippet({
+		...args,
+		direction: "normal",
+	})
+	const [keyframesAfter, propertiesAfter] = glitchSnippet({
+		...args,
+		direction: "reverse",
+	})
 	return css`
 		&:before {
-			animation: ${glitchSnippet({...args, direction: "normal"})};
+			animation: ${keyframesBefore} ${propertiesBefore};
 		}
 		&:after {
-			animation: ${glitchSnippet({...args, direction: "reverse"})};
+			animation: ${keyframesAfter} ${propertiesAfter};
 		}
 	`
 }

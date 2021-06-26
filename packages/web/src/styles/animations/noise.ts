@@ -1,5 +1,7 @@
-import {css, keyframes} from "styled-components"
-import type {FlattenSimpleInterpolation, Keyframes} from "styled-components"
+import {css, keyframes} from "@emotion/react"
+import type {SerializedStyles} from "@emotion/react"
+import type {Keyframes} from "@emotion/serialize"
+import type {EmotionAnimationSnippet} from "./utils"
 
 export type NoiseKeyframesArgs = {
 	steps: number
@@ -33,23 +35,23 @@ export type NoiseAnimationProperties = {duration: number}
 
 export type NoiseArgs = NoiseKeyframesArgs & NoiseAnimationProperties
 
-export function noiseSnippet({
+export const noiseSnippet: EmotionAnimationSnippet<NoiseArgs> = ({
 	duration,
 	...args
-}: NoiseArgs): FlattenSimpleInterpolation {
-	const noiseKeyframes = createNoiseKeyframes(args)
-	return css`
-		${noiseKeyframes} ${duration}s linear infinite alternate-reverse
-	`
-}
+}) => [
+	createNoiseKeyframes(args),
+	`${duration}s linear infinite alternate-reverse`,
+]
 
-export function noise(args: NoiseArgs): FlattenSimpleInterpolation {
+export function noise(args: NoiseArgs): SerializedStyles {
+	const [keyframesBefore, propertiesBefore] = noiseSnippet(args)
+	const [keyframesAfter, propertiesAfter] = noiseSnippet(args)
 	return css`
 		&:before {
-			animation: ${noiseSnippet(args)};
+			animation: ${keyframesBefore} ${propertiesBefore};
 		}
 		&:after {
-			animation: ${noiseSnippet(args)};
+			animation: ${keyframesAfter} ${propertiesAfter};
 		}
 	`
 }

@@ -1,5 +1,6 @@
-import {css, keyframes} from "styled-components"
-import type {FlattenSimpleInterpolation} from "styled-components"
+import {css, keyframes} from "@emotion/react"
+import type {SerializedStyles} from "@emotion/react"
+import type {EmotionAnimationSnippet} from "./utils"
 
 export const twitchKeyframes = keyframes`
 	1% {
@@ -17,17 +18,14 @@ export type TwitchAnimationProperties = {
 
 export type TwitchArgs = TwitchAnimationProperties
 
-export function twitchSnippet({
+export const twitchSnippet: EmotionAnimationSnippet<TwitchArgs> = ({
 	duration,
 	delay,
-}: TwitchArgs): FlattenSimpleInterpolation {
-	return css`
-		${twitchKeyframes} ${duration}s ${delay}s infinite
-	`
-}
+}) => [twitchKeyframes, `${duration}s ${delay}s infinite`]
 
-export function twitch(args: TwitchArgs): FlattenSimpleInterpolation {
+export function twitch(args: TwitchArgs): SerializedStyles {
+	const [snippetKeyframes, properties] = twitchSnippet(args)
 	return css`
-		animation: ${twitchSnippet(args)};
+		animation: ${snippetKeyframes} ${properties};
 	`
 }

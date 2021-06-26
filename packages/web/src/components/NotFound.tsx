@@ -1,5 +1,5 @@
 import React from "react"
-import styled, {css} from "styled-components"
+import styled from "@emotion/styled"
 
 const fontSize = 3
 
@@ -12,22 +12,18 @@ const Container = styled.div`
 	height: 60vh;
 `
 
-const commonStyles = css(
-	(props) => css`
-		margin: 0;
-		text-align: center;
-		color: ${props.theme.palette.foreground};
-	`,
-)
-
 const Code = styled.h2`
-	${commonStyles}
+	margin: 0;
+	text-align: center;
+	color: ${(props) => props.theme.palette.foreground};
 	font-size: ${fontSize * 2}rem;
 	font-weight: bold;
 `
 
 const ErrorMessage = styled.h1`
-	${commonStyles}
+	margin: 0;
+	text-align: center;
+	color: ${(props) => props.theme.palette.foreground};
 	font-size: ${fontSize}rem;
 `
 
