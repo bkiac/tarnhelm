@@ -20,18 +20,22 @@ const distortionArgs = {
 
 const StyledAppTitle = styled.span<{
 	content: string
-}>(
-	(props) => css`
-		margin: 0;
-		font-size: 2.5rem;
-		font-family: "Roboto Condensed", sans-serif;
+}>((props) => {
+	const fontSize = props.theme.fontSizes["4xl"]
+	return css`
+		display: inline-block;
+
+		font-size: ${fontSize};
+		// line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
+		line-height: ${fontSize};
+		font-family: ${props.theme.fonts.brand};
 		font-style: italic;
-		font-weight: 700;
+		font-weight: ${props.theme.fontWeights.bold};
 		text-transform: uppercase;
 		color: ${props.theme.palette.foreground};
-		position: relative;
 
 		/** Animation */
+		position: relative;
 		&:before,
 		&:after {
 			content: "${props.content}";
@@ -52,8 +56,8 @@ const StyledAppTitle = styled.span<{
 		}
 
 		${distortion(distortionArgs)}
-	`,
-)
+	`
+})
 
 const title = "Tarnhelm"
 
