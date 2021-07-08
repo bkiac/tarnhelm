@@ -1,3 +1,5 @@
+import {extendTheme} from "@chakra-ui/react"
+
 const iconContentCodes = {
 	delete: "\\e900",
 	save: "\\e901",
@@ -25,8 +27,16 @@ const palette = {
 	error: colors.sangria,
 } as const
 
-export const theme = {
+const fonts = {
+	body: "DotGothic16, sans-serif",
+	heading: "Dosis, sans-serif",
+	mono: "VT323, monospace",
+	brand: "Paytone One, sans-serif",
+}
+
+export const theme = extendTheme({
 	iconContentCodes,
 	colors,
 	palette,
-} as const
+	fonts,
+})
