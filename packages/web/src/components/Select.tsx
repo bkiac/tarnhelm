@@ -69,54 +69,43 @@ const List = styled.ul(
 	`,
 )
 
-const ListItem = styled.li<{content: string}>(
-	(props) => css`
-		box-sizing: border-box;
-		cursor: pointer;
-		display: block;
-		padding-bottom: ${props.theme.space["0.5"]};
+const ListItem = styled.li`
+	box-sizing: border-box;
+	cursor: pointer;
+	display: block;
+	padding-bottom: ${(props) => props.theme.space["1"]};
 
-		&:focus {
-			border: 1px solid ${props.theme.colors.tertiary};
-		}
+	&:focus {
+		border: 1px solid ${(props) => props.theme.colors.tertiary};
+	}
+`
 
-		/** Animation */
-		position: relative;
-		span:first-child {
-			position: relative;
-			color: inherit;
-			z-index: 3;
-		}
+const ListItemLabel = styled.span`
+	position: relative;
+	color: inherit;
+	z-index: 3;
+`
 
-		span:nth-child(2) {
-			position: absolute;
+const ListItemLabelAnimation = styled.span<{content: string}>`
+	&:before,
+	&:after {
+		content: "${(props) => props.content}";
+		position: absolute;
+		right: 0;
+	}
 
-			&:before,
-			&:after {
-				content: "${props.content}";
-				position: absolute;
-				right: 0;
-			}
+	&:before {
+		color: ${(props) => props.theme.colors.secondary};
+		z-index: 1;
+	}
 
-			&:before {
-				color: ${props.theme.colors.secondary};
-				z-index: 1;
-			}
+	&:after {
+		color: ${(props) => props.theme.colors.tertiary};
+		z-index: 2;
+	}
 
-			&:after {
-				color: ${props.theme.colors.tertiary};
-				z-index: 2;
-			}
-		}
-
-		&:hover,
-		&:focus {
-			span:nth-child(2) {
-				${glitch(glitchArgs)}
-			}
-		}
-	`,
-)
+	${glitch(glitchArgs)}
+`
 
 type OptionType<V extends React.ReactText> = {
 	value: V
@@ -125,14 +114,22 @@ type OptionType<V extends React.ReactText> = {
 
 function Option<TValue extends React.ReactText>({
 	value,
-	label,
+	label = value.toString(),
 	...liProps
 }: OptionType<TValue> &
-	Omit<React.HTMLProps<HTMLLIElement>, "children" | "as">): React.ReactElement {
+	Pick<
+		React.HTMLProps<HTMLLIElement>,
+		"onClick" | "onKeyPress" | "role" | "aria-selected"
+	>): React.ReactElement {
+	const [hover, setHover] = useState(false)
 	return (
-		<ListItem content={label ?? value.toString()} {...liProps}>
-			<span>{label}</span>
-			<span /> {/* Second span is required for the animation to work */}
+		<ListItem
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			{...liProps}
+		>
+			<ListItemLabel>{label}</ListItemLabel>
+			{hover && <ListItemLabelAnimation content={label} />}
 		</ListItem>
 	)
 }
