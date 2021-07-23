@@ -11,15 +11,15 @@ export const Link = styled.a(
 	(props) => css`
 		color: ${props.theme.colors.foreground};
 		text-decoration: none;
-		padding: 0 0.5rem 0.25rem;
+		padding: 0 ${props.theme.space["2"]} ${props.theme.space["1"]};
 		border-bottom: ${glitchArgs.width} solid ${props.theme.colors.foreground};
-		position: relative;
 
 		&:visited {
 			color: ${props.theme.colors.foreground};
 		}
 
 		/** Animation */
+		position: relative;
 		&:before,
 		&:after {
 			content: "";
