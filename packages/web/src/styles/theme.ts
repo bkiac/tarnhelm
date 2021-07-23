@@ -32,7 +32,7 @@ const fonts = {
 	heading: "Dosis, sans-serif",
 	mono: "VT323, monospace",
 	brand: "Paytone One, sans-serif",
-}
+} as const
 
 export const theme = extendTheme({
 	iconContentCodes,
