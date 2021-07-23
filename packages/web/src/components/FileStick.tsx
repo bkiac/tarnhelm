@@ -14,15 +14,13 @@ const noiseArgs = {
 }
 
 const StyledFileStick = styled.div((props) => {
-	const height = 50
-	const triangleHeight = height / 2
+	const triangleHeight = "25px"
 	return css`
 		font-size: 1rem;
 		color: ${props.theme.palette.foreground};
 		display: flex;
 		padding: 0.5rem 1rem;
 		background-color: ${props.theme.palette.tertiary};
-		height: ${height}px;
 		position: relative;
 		align-items: center;
 		width: 20vw;
@@ -32,49 +30,50 @@ const StyledFileStick = styled.div((props) => {
 			position: absolute;
 			top: 0;
 			right: 0;
-			border-left: ${triangleHeight}px solid transparent;
-			border-top: ${triangleHeight}px solid ${props.theme.palette.background};
+			border-left: ${triangleHeight} solid transparent;
+			border-top: ${triangleHeight} solid ${props.theme.palette.background};
 		}
 	`
 })
 
-const StyledIconButton = styled(IconButton)(
-	(props) =>
-		css`
-			font-size: 36px;
-			color: ${props.theme.palette.foreground};
-			margin-right: 8px;
-			position: relative;
+const StyledIconButton = styled(IconButton)((props) => {
+	const fontSize = props.theme.fontSizes["4xl"]
+	return css`
+		font-size: ${fontSize};
+		line-height: ${fontSize}; // line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
+		color: ${props.theme.palette.foreground};
+		margin-right: 8px;
 
-			&:hover {
-				cursor: pointer;
+		&:hover {
+			cursor: pointer;
+		}
+
+		/** Animation */
+		position: relative;
+		&:before,
+		&:after {
+			content: "${props.theme.iconContentCodes.delete}";
+			position: absolute;
+			top: 0;
+			left: 0;
+			overflow: hidden;
+			background: ${props.theme.palette.tertiary};
+		}
+
+		&:hover {
+			&:before {
+				text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
 			}
 
-			/** Animation */
-			&:before,
 			&:after {
-				content: "${props.theme.iconContentCodes.delete}";
-				position: absolute;
-				top: 0;
-				left: 0;
-				overflow: hidden;
-				background: ${props.theme.palette.tertiary};
+				left: 1px;
+				text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
 			}
 
-			&:hover {
-				&:before {
-					text-shadow: 0.05em 0.025em ${props.theme.palette.secondary};
-				}
-
-				&:after {
-					left: 1px;
-					text-shadow: 0.025em 0.05em ${props.theme.palette.primary};
-				}
-
-				${noise(noiseArgs)};
-			}
-		`,
-)
+			${noise(noiseArgs)};
+		}
+	`
+})
 
 const FileInfo = styled.p`
 	text-align: left;
