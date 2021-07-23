@@ -11,14 +11,12 @@ const StyledVault = styled.div<{
 }>(
 	(props) => css`
 		border: 1px solid
-			${props.hasError
-				? props.theme.palette.error
-				: props.theme.palette.primary};
+			${props.hasError ? props.theme.colors.error : props.theme.colors.primary};
 		padding: 2rem 0;
 		height: 30vw;
 		color: ${props.hasError
-			? props.theme.palette.error
-			: props.theme.palette.secondary};
+			? props.theme.colors.error
+			: props.theme.colors.secondary};
 		font-size: 10rem;
 		overflow-x: hidden;
 		overflow-y: auto;
@@ -45,8 +43,8 @@ const Text = styled.p<{
 	(props) => css`
 		font-size: 1rem;
 		color: ${props.hasError
-			? props.theme.palette.error
-			: props.theme.palette.foreground};
+			? props.theme.colors.error
+			: props.theme.colors.foreground};
 	`,
 )
 

@@ -15,7 +15,7 @@ const Container = styled.div`
 const Code = styled.h2`
 	margin: 0;
 	text-align: center;
-	color: ${(props) => props.theme.palette.foreground};
+	color: ${(props) => props.theme.colors.foreground};
 	font-size: ${fontSize * 2}rem;
 	font-weight: bold;
 `
@@ -23,7 +23,7 @@ const Code = styled.h2`
 const ErrorMessage = styled.h1`
 	margin: 0;
 	text-align: center;
-	color: ${(props) => props.theme.palette.foreground};
+	color: ${(props) => props.theme.colors.foreground};
 	font-size: ${fontSize}rem;
 `
 

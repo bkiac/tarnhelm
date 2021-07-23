@@ -32,7 +32,7 @@ const StyledAppTitle = styled.span<{
 		font-style: italic;
 		font-weight: ${props.theme.fontWeights.bold};
 		text-transform: uppercase;
-		color: ${props.theme.palette.foreground};
+		color: ${props.theme.colors.foreground};
 
 		/** Animation */
 		position: relative;
@@ -42,17 +42,17 @@ const StyledAppTitle = styled.span<{
 			position: absolute;
 			top: 0;
 			overflow: hidden;
-			background: ${props.theme.palette.background};
+			background: ${props.theme.colors.background};
 		}
 
 		&:before {
 			left: -2px;
-			text-shadow: -0.05em 0 ${props.theme.palette.tertiary};
+			text-shadow: -0.05em 0 ${props.theme.colors.tertiary};
 		}
 
 		&:after {
 			left: 2px;
-			text-shadow: -0.05em 0 ${props.theme.palette.primary};
+			text-shadow: -0.05em 0 ${props.theme.colors.primary};
 		}
 
 		${distortion(distortionArgs)}

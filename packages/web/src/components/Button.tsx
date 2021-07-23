@@ -19,24 +19,24 @@ const StyledButton = styled.button<{
 		font-family: ${props.theme.fonts.brand};
 		font-style: italic;
 		text-transform: uppercase;
-		color: ${props.theme.palette.background};
+		color: ${props.theme.colors.background};
 		border: none;
-		background-color: ${props.theme.palette.primary};
+		background-color: ${props.theme.colors.primary};
 		position: relative;
 		cursor: pointer;
 
 		padding: ${paddingTopBottom} ${paddingLeftRight};
 
 		&:disabled {
-			color: ${props.theme.palette.error};
-			border: 1px solid ${props.theme.palette.error};
-			background-color: ${props.theme.palette.background};
+			color: ${props.theme.colors.error};
+			border: 1px solid ${props.theme.colors.error};
+			background-color: ${props.theme.colors.background};
 		}
 
 		${!disabled &&
 		css`
 			&:focus {
-				border: 1px solid ${props.theme.palette.tertiary};
+				border: 1px solid ${props.theme.colors.tertiary};
 			}
 
 			span:first-child {
@@ -44,7 +44,7 @@ const StyledButton = styled.button<{
 				left: 0;
 				top: 0;
 				text-shadow: ${glitchArgs.width} ${glitchArgs.width}
-					${props.theme.palette.secondary};
+					${props.theme.colors.secondary};
 				color: inherit;
 				z-index: 3;
 			}
@@ -64,13 +64,13 @@ const StyledButton = styled.button<{
 				}
 
 				&:before {
-					color: ${props.theme.palette.secondary};
+					color: ${props.theme.colors.secondary};
 					z-index: 1;
 				}
 
 				&:after {
 					left: 0;
-					color: ${props.theme.palette.tertiary};
+					color: ${props.theme.colors.tertiary};
 					z-index: 2;
 				}
 			}

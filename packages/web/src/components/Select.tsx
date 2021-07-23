@@ -23,9 +23,9 @@ const Control = styled.div(
 		align-items: center;
 		position: relative;
 		overflow: hidden;
-		background-color: ${props.theme.palette.background};
+		background-color: ${props.theme.colors.background};
 		box-sizing: border-box;
-		color: ${props.theme.palette.foreground};
+		color: ${props.theme.colors.foreground};
 		cursor: pointer;
 		outline: none;
 		transition: all 200ms ease;
@@ -37,8 +37,8 @@ const Arrow = styled.span<{isOpen: boolean}>(
 	(props) => css`
 		margin-right: 8px;
 		border-color: ${props.isOpen
-			? `transparent transparent ${props.theme.palette.foreground}`
-			: `${props.theme.palette.foreground} transparent transparent`};
+			? `transparent transparent ${props.theme.colors.foreground}`
+			: `${props.theme.colors.foreground} transparent transparent`};
 		border-style: solid;
 		border-width: ${props.isOpen ? "0 5px 5px" : "5px 5px 0px"};
 	`,
@@ -54,7 +54,7 @@ const Menu = styled.ul(
 		padding-inline-start: 0;
 
 		/* Component */
-		background-color: ${props.theme.palette.background};
+		background-color: ${props.theme.colors.background};
 		box-sizing: border-box;
 		margin-top: -1px;
 		max-height: 100px;
@@ -75,7 +75,7 @@ const Option = styled.li<{content: string}>(
 		position: relative;
 
 		&:focus {
-			border: 1px solid ${props.theme.palette.tertiary};
+			border: 1px solid ${props.theme.colors.tertiary};
 		}
 
 		/** Animation */
@@ -96,12 +96,12 @@ const Option = styled.li<{content: string}>(
 			}
 
 			&:before {
-				color: ${props.theme.palette.secondary};
+				color: ${props.theme.colors.secondary};
 				z-index: 1;
 			}
 
 			&:after {
-				color: ${props.theme.palette.tertiary};
+				color: ${props.theme.colors.tertiary};
 				z-index: 2;
 			}
 		}
