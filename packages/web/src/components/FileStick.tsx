@@ -16,15 +16,15 @@ const noiseArgs = {
 const StyledFileStick = styled.div((props) => {
 	const triangleHeight = "25px"
 	return css`
-		font-size: 1rem;
+		font-size: ${props.theme.fontSizes.md};
 		color: ${props.theme.palette.foreground};
 		display: flex;
-		padding: 0.5rem 1rem;
+		padding: ${props.theme.space["2"]} ${props.theme.space["4"]};
 		background-color: ${props.theme.palette.tertiary};
-		position: relative;
 		align-items: center;
-		width: 20vw;
 
+		/** Top-right edge cut off */
+		position: relative;
 		&:after {
 			content: "";
 			position: absolute;
@@ -42,7 +42,7 @@ const StyledIconButton = styled(IconButton)((props) => {
 		font-size: ${fontSize};
 		line-height: ${fontSize}; // line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
 		color: ${props.theme.palette.foreground};
-		margin-right: 8px;
+		margin-right: ${props.theme.space[2]};
 
 		&:hover {
 			cursor: pointer;
@@ -81,13 +81,12 @@ const FileInfo = styled.p`
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	width: 16vw;
-	font-size: 0.8rem;
+	font-size: ${(props) => props.theme.fontSizes.sm};
 `
 
 const FileInfoTop = styled(FileInfo)`
-	margin-bottom: 0.25rem;
-	font-size: 1rem;
+	margin-bottom: ${(props) => props.theme.space["1"]};
+	font-size: ${(props) => props.theme.fontSizes.md};
 `
 
 export const FileStick: React.VFC<{
