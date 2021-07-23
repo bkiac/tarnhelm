@@ -73,7 +73,7 @@ const ListItem = styled.li`
 	box-sizing: border-box;
 	cursor: pointer;
 	display: block;
-	padding-bottom: ${(props) => props.theme.space["1"]};
+	margin-bottom: ${(props) => props.theme.space["1"]};
 
 	&:focus {
 		border: 1px solid ${(props) => props.theme.colors.tertiary};
