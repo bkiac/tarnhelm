@@ -8,18 +8,16 @@ const glitchArgs = {
 	duration: 0.3,
 }
 
-const paddingTopBottom = "8px"
-const paddingLeftRight = "16px"
-
 const StyledButton = styled.button<{
 	content: string
 }>((props) => {
 	const disabled = props.disabled ?? false
+	const paddingTopBottom = props.theme.space["1"]
+	const paddingLeftRight = props.theme.space["4"]
 	return css`
-		font-size: 1.5rem;
-		font-family: "Roboto Condensed", sans-serif;
+		font-size: ${props.theme.fontSizes["2xl"]};
+		font-family: ${props.theme.fonts.brand};
 		font-style: italic;
-		font-weight: 700;
 		text-transform: uppercase;
 		color: ${props.theme.palette.background};
 		border: none;
