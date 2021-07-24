@@ -212,7 +212,10 @@ export const Upload: React.FC = () => {
 					) : (
 						<Select
 							value={downloadLimit}
-							options={downloadLimitOptions}
+							options={downloadLimitOptions.map(({value}) => ({
+								value,
+								label: value.toString(),
+							}))}
 							onChange={(value) => setDownloadLimit(value)}
 						/>
 					)}

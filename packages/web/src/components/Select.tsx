@@ -47,7 +47,7 @@ const Arrow = styled.span<{isOpen: boolean}>(
 	`,
 )
 
-const List = styled.ul(
+const OptionList = styled.ul(
 	(props) => css`
 		/* Reset list styles */
 		list-style-type: none;
@@ -69,7 +69,7 @@ const List = styled.ul(
 	`,
 )
 
-const ListItem = styled.li`
+const OptionListItem = styled.li`
 	box-sizing: border-box;
 	cursor: pointer;
 	display: block;
@@ -80,13 +80,13 @@ const ListItem = styled.li`
 	}
 `
 
-const ListItemLabel = styled.span`
+const OptionListItemLabel = styled.span`
 	position: relative;
 	color: inherit;
 	z-index: 3;
 `
 
-const ListItemLabelAnimation = styled.span<{content: string}>`
+const OptionListItemLabelAnimation = styled.span<{content: string}>`
 	&:before,
 	&:after {
 		content: "${(props) => props.content}";
@@ -109,12 +109,12 @@ const ListItemLabelAnimation = styled.span<{content: string}>`
 
 type OptionType<V extends React.ReactText> = {
 	value: V
-	label?: string
+	label: React.ReactText
 }
 
 function Option<TValue extends React.ReactText>({
 	value,
-	label = value.toString(),
+	label,
 	...liProps
 }: OptionType<TValue> &
 	Pick<
@@ -123,14 +123,14 @@ function Option<TValue extends React.ReactText>({
 	>): React.ReactElement {
 	const [hover, setHover] = useState(false)
 	return (
-		<ListItem
+		<OptionListItem
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
 			{...liProps}
 		>
-			<ListItemLabel>{label}</ListItemLabel>
-			{hover && <ListItemLabelAnimation content={label} />}
-		</ListItem>
+			<OptionListItemLabel>{label}</OptionListItemLabel>
+			{hover && <OptionListItemLabelAnimation content={label.toString()} />}
+		</OptionListItem>
 	)
 }
 
@@ -212,7 +212,7 @@ export function Select<V extends React.ReactText>({
 			</Control>
 
 			{isOpen && (
-				<List>
+				<OptionList>
 					{options.map((option) => (
 						<Option
 							key={option.value}
@@ -223,7 +223,7 @@ export function Select<V extends React.ReactText>({
 							aria-selected={value === option.value}
 						/>
 					))}
-				</List>
+				</OptionList>
 			)}
 		</Root>
 	)
