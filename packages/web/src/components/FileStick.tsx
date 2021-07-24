@@ -2,6 +2,8 @@ import bytes from "bytes"
 import React, {useEffect} from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
+import {Box} from "@chakra-ui/react"
+import type {BoxProps} from "@chakra-ui/react"
 import {useTextObfuscate} from "../hooks"
 import {noise} from "../styles/animations"
 import {DeleteIcon} from "./DeleteIcon"
@@ -13,9 +15,9 @@ const noiseArgs = {
 	duration: 3,
 }
 
-const StyledFileStick = styled.div((props) => {
-	const triangleHeight = "25px"
-	return css`
+const triangleHeight = "25px"
+const StyledFileStick = styled(Box)(
+	(props) => css`
 		font-size: ${props.theme.fontSizes.md};
 		color: ${props.theme.colors.foreground};
 		display: flex;
@@ -33,8 +35,8 @@ const StyledFileStick = styled.div((props) => {
 			border-left: ${triangleHeight} solid transparent;
 			border-top: ${triangleHeight} solid ${props.theme.colors.background};
 		}
-	`
-})
+	`,
+)
 
 const StyledIconButton = styled(IconButton)((props) => {
 	const fontSize = props.theme.fontSizes["4xl"]
@@ -89,13 +91,14 @@ const FileInfoTop = styled(FileInfo)`
 	font-size: ${(props) => props.theme.fontSizes.md};
 `
 
-export const FileStick: React.VFC<{
-	name: string
-	size: number
-	className?: string
-	obfuscate?: boolean
-	onDelete: () => void
-}> = ({className, name, size, obfuscate = false, onDelete}) => {
+export const FileStick: React.VFC<
+	{
+		name: string
+		size: number
+		obfuscate?: boolean
+		onDelete: () => void
+	} & BoxProps
+> = ({name, size, obfuscate = false, onDelete, ...boxProps}) => {
 	const [obfuscatedName, obfuscateName] = useTextObfuscate(name, 100)
 	const [obfuscatedSize, obfuscateSize] = useTextObfuscate(bytes(size), 100)
 
@@ -107,7 +110,7 @@ export const FileStick: React.VFC<{
 	}, [obfuscate, obfuscateName, obfuscateSize])
 
 	return (
-		<StyledFileStick className={className}>
+		<StyledFileStick {...boxProps}>
 			<StyledIconButton onClick={onDelete}>
 				<DeleteIcon />
 			</StyledIconButton>
