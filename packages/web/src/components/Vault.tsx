@@ -17,7 +17,6 @@ const StyledVault = styled.div<{
 		color: ${props.hasError
 			? props.theme.colors.error
 			: props.theme.colors.secondary};
-		font-size: ${props.theme.fontSizes["9xl"]};
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: flex;
