@@ -1,6 +1,6 @@
 import {useRouter} from "next/router"
 import React from "react"
-import {Download, H1, Page} from "../components"
+import {Download, Page} from "../components"
 import NotFoundPage from "./404"
 
 const DownloadPage: React.FC = () => {
@@ -10,8 +10,7 @@ const DownloadPage: React.FC = () => {
 	} = router
 	if (typeof id === "string" && typeof secretb64 === "string") {
 		return (
-			<Page>
-				<H1>Download</H1>
+			<Page title="Download">
 				<Download id={id} secretb64={secretb64} />
 			</Page>
 		)

@@ -2,7 +2,7 @@ import React from "react"
 import {NotFound, Page} from "../components"
 
 const NotFoundPage: React.FC = () => (
-	<Page>
+	<Page title="Not Found">
 		<NotFound />
 	</Page>
 )

@@ -1,14 +1,15 @@
 import React from "react"
 import {Box, Center, Flex, useBreakpointValue} from "@chakra-ui/react"
+import type {BoxProps} from "@chakra-ui/react"
 import {AppTitle} from "./AppTitle"
 import {ExternalLink} from "./ExternalLink"
 import {InternalLink} from "./InternalLink"
 
-export const Footer: React.FunctionComponent = () => {
+export const Footer: React.VFC<BoxProps> = (boxProps) => {
 	const showAppTitleRow = useBreakpointValue({base: true, lg: false}) ?? true
 	const showAppTitleItem = !showAppTitleRow
 	return (
-		<Box as="footer">
+		<Box as="footer" {...boxProps}>
 			<Flex
 				justify={{base: "space-around", lg: "space-between"}}
 				align="center"

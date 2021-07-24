@@ -6,9 +6,8 @@ export const GlobalStyle: React.VFC = () => (
 		styles={css`
 			html,
 			body,
-			#root {
+			#__next {
 				height: 100%;
-				margin: 0;
 			}
 		`}
 	/>
