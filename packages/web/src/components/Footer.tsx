@@ -8,7 +8,7 @@ export const Footer: React.FunctionComponent = () => {
 	const showAppTitleRow = useBreakpointValue({base: true, lg: false}) ?? true
 	const showAppTitleItem = !showAppTitleRow
 	return (
-		<Box>
+		<Box as="footer">
 			<Flex
 				justify={{base: "space-around", lg: "space-between"}}
 				align="center"
