@@ -1,16 +1,16 @@
-import * as lns from "ln-service"
+import * as lightning from "lightning"
 import {config} from "../config"
 
-export const {lnd} = lns.authenticatedLndGrpc(config.get("lnd"))
+export const {lnd} = lightning.authenticatedLndGrpc(config.get("lnd"))
 
 export async function createInvoice(
-	args: lns.CreateInvoiceArgs,
-): Promise<lns.CreateInvoiceResult> {
-	return lns.createInvoice({...args, lnd})
+	args: lightning.CreateInvoiceArgs,
+): Promise<lightning.CreateInvoiceResult> {
+	return lightning.createInvoice({...args, lnd})
 }
 
 export function subscribeToInvoice(
-	args: lns.SubscribeToInvoiceArgs,
-): ReturnType<typeof lns.subscribeToInvoice> {
-	return lns.subscribeToInvoice({...args, lnd})
+	args: lightning.SubscribeToInvoiceArgs,
+): ReturnType<typeof lightning.subscribeToInvoice> {
+	return lightning.subscribeToInvoice({...args, lnd})
 }
