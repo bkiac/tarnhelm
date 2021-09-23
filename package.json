@@ -11,7 +11,7 @@
 		"format": "yarn format:prettier --write",
 		"format:check": "yarn format:prettier --check",
 		"format:prettier": "prettier \"./**/*.{ts,tsx,js,jsx,json,css,md,yml,yaml}\"",
-		"lint": "eslint --cache --ext js,ts,tsx .",
+		"lint": "eslint --ext js,ts,tsx .",
 		"lint:fix": "yarn lint --fix",
 		"postinstall": "lerna bootstrap",
 		"test": "lerna run test --no-bail",
