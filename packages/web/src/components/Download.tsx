@@ -3,6 +3,7 @@ import {useRouter} from "next/router"
 import React, {useCallback, useState} from "react"
 import {Text} from "@chakra-ui/react"
 import {useDownload} from "../hooks"
+import {Button} from "./Button"
 
 export type DownloadProps = {
 	id: string
@@ -43,9 +44,9 @@ export const Download: React.FC<DownloadProps> = ({id, secretb64}) => {
 				{status !== 0 && loading && <Text>...</Text>}
 
 				{!loading && count === 0 && (
-					<button type="button" onClick={handleClick} disabled={loading}>
+					<Button onClick={handleClick} disabled={loading}>
 						Download
-					</button>
+					</Button>
 				)}
 			</div>
 		</>
