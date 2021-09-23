@@ -37,6 +37,9 @@ const fonts = {
 
 const styles = {
 	global: {
+		"html, body, #__next": {
+			height: "100%",
+		},
 		body: {
 			bg: "black",
 			color: "white",
