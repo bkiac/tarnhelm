@@ -4,13 +4,17 @@ import {Footer} from "./Footer"
 import {H1} from "./H1"
 
 export const Page: React.VFC<{
-	title: React.ReactText
+	title?: React.ReactText
 	children: React.ReactNode
 }> = ({title, children}) => (
 	<Flex direction="column" justify="space-between" h="100%" p="6">
-		<Box as="header" mb="4">
-			<H1>{title}</H1>
-		</Box>
+		{title != null ? (
+			<Box as="header" mb="4">
+				<H1>{title}</H1>
+			</Box>
+		) : (
+			<div />
+		)}
 
 		<Container as="main" maxW="container.md" centerContent>
 			{children}
