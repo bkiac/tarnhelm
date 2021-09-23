@@ -1,6 +1,7 @@
 import bytes from "bytes"
 import {useRouter} from "next/router"
 import React, {useCallback, useState} from "react"
+import {Text} from "@chakra-ui/react"
 import {useDownload} from "../hooks"
 
 export type DownloadProps = {
@@ -30,7 +31,7 @@ export const Download: React.FC<DownloadProps> = ({id, secretb64}) => {
 			<div>ID: {id}</div>
 			<div>Secret: {secretb64}</div>
 			<div>
-				{status === 0 && <p>Setting up keys...</p>}
+				{status === 0 && <Text>Setting up keys...</Text>}
 
 				{metadata && (
 					<>
@@ -39,7 +40,7 @@ export const Download: React.FC<DownloadProps> = ({id, secretb64}) => {
 					</>
 				)}
 
-				{status !== 0 && loading && <p>...</p>}
+				{status !== 0 && loading && <Text>...</Text>}
 
 				{!loading && count === 0 && (
 					<button type="button" onClick={handleClick} disabled={loading}>
