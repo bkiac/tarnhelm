@@ -7,7 +7,7 @@ export const Page: React.VFC<{
 	title: React.ReactText
 	children: React.ReactNode
 }> = ({title, children}) => (
-	<Flex direction="column" justify="space-between" h="100%" p="2">
+	<Flex direction="column" justify="space-between" h="100%" p="6">
 		<Box as="header" mb="4">
 			<H1>{title}</H1>
 		</Box>
