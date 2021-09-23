@@ -12,7 +12,6 @@ const glitchArgs = {
 const Root = styled.div`
 	position: relative;
 	text-align: right;
-	width: 8rem;
 	white-space: pre;
 `
 
@@ -23,28 +22,32 @@ const Control = styled.div(
 		align-items: center;
 		position: relative;
 		overflow: hidden;
-		background-color: ${props.theme.palette.background};
+		background-color: ${props.theme.colors.background};
 		box-sizing: border-box;
-		color: ${props.theme.palette.foreground};
+		color: ${props.theme.colors.foreground};
 		cursor: pointer;
 		outline: none;
 		transition: all 200ms ease;
-		margin-bottom: 8px;
 	`,
 )
 
 const Arrow = styled.span<{isOpen: boolean}>(
 	(props) => css`
-		margin-right: 8px;
-		border-color: ${props.isOpen
-			? `transparent transparent ${props.theme.palette.foreground}`
-			: `${props.theme.palette.foreground} transparent transparent`};
+		margin-right: ${props.theme.space["2"]};
 		border-style: solid;
-		border-width: ${props.isOpen ? "0 5px 5px" : "5px 5px 0px"};
+		${props.isOpen
+			? css`
+					border-color: transparent transparent ${props.theme.colors.foreground};
+					border-width: 0 5px 5px;
+			  `
+			: css`
+					border-color: ${props.theme.colors.foreground} transparent transparent;
+					border-width: 5px 5px 0px;
+			  `}
 	`,
 )
 
-const Menu = styled.ul(
+const OptionList = styled.ul(
 	(props) => css`
 		/* Reset list styles */
 		list-style-type: none;
@@ -54,7 +57,7 @@ const Menu = styled.ul(
 		padding-inline-start: 0;
 
 		/* Component */
-		background-color: ${props.theme.palette.background};
+		background-color: ${props.theme.colors.background};
 		box-sizing: border-box;
 		margin-top: -1px;
 		max-height: 100px;
@@ -66,75 +69,82 @@ const Menu = styled.ul(
 	`,
 )
 
-const Option = styled.li<{content: string}>(
-	(props) => css`
-		box-sizing: border-box;
-		cursor: pointer;
-		display: block;
-		padding-bottom: 8px;
-		position: relative;
+const OptionListItem = styled.li`
+	box-sizing: border-box;
+	cursor: pointer;
+	display: block;
+	margin-bottom: ${(props) => props.theme.space["1"]};
 
-		&:focus {
-			border: 1px solid ${props.theme.palette.tertiary};
-		}
+	&:focus {
+		border: 1px solid ${(props) => props.theme.colors.tertiary};
+	}
+`
 
-		/** Animation */
-		span:first-child {
-			position: relative;
-			color: inherit;
-			z-index: 3;
-		}
+const OptionListItemLabel = styled.span`
+	position: relative;
+	color: inherit;
+	z-index: 3;
+`
 
-		span:nth-child(2) {
-			position: absolute;
+const OptionListItemLabelAnimation = styled.span<{content: string}>`
+	&:before,
+	&:after {
+		content: "${(props) => props.content}";
+		position: absolute;
+		right: 0;
+	}
 
-			&:before,
-			&:after {
-				content: "${props.content}";
-				position: absolute;
-				right: 0;
-			}
+	&:before {
+		color: ${(props) => props.theme.colors.secondary};
+		z-index: 1;
+	}
 
-			&:before {
-				color: ${props.theme.palette.secondary};
-				z-index: 1;
-			}
+	&:after {
+		color: ${(props) => props.theme.colors.tertiary};
+		z-index: 2;
+	}
 
-			&:after {
-				color: ${props.theme.palette.tertiary};
-				z-index: 2;
-			}
-		}
+	${glitch(glitchArgs)}
+`
 
-		&:hover,
-		&:focus {
-			span:nth-child(2) {
-				${glitch(glitchArgs)}
-			}
-		}
-	`,
-)
+type OptionType<V extends React.ReactText> = {
+	value: V
+	label: React.ReactText
+}
+
+function Option<TValue extends React.ReactText>({
+	value,
+	label,
+	...liProps
+}: OptionType<TValue> &
+	Pick<
+		React.HTMLProps<HTMLLIElement>,
+		"onClick" | "onKeyPress" | "role" | "aria-selected"
+	>): React.ReactElement {
+	const [hover, setHover] = useState(false)
+	return (
+		<OptionListItem
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			{...liProps}
+		>
+			<OptionListItemLabel>{label}</OptionListItemLabel>
+			{hover && <OptionListItemLabelAnimation content={label.toString()} />}
+		</OptionListItem>
+	)
+}
 
 type Props<V extends React.ReactText> = {
-	options: {value: V; label?: string}[]
+	options: OptionType<V>[]
 	onChange: (newValue: V) => void
 	value: V
 }
 
 export function Select<V extends React.ReactText>({
-	options: rawOptions,
+	options,
 	onChange,
 	value,
 }: React.PropsWithChildren<Props<V>>): React.ReactElement {
-	const options = useMemo(
-		() =>
-			rawOptions.map((option) => ({
-				value: option.value,
-				label: option.label ?? option.value.toString(),
-			})),
-		[rawOptions],
-	)
-
 	const cursor = useMemo(() => {
 		const index = options.findIndex((option) => option.value === value)
 		const prev = index > 0 ? index - 1 : undefined
@@ -149,6 +159,7 @@ export function Select<V extends React.ReactText>({
 	const [isOpen, setIsOpen] = useState(false)
 	const toggle = useCallback(() => setIsOpen((prevOpen) => !prevOpen), [])
 	const close = useCallback(() => setIsOpen(false), [])
+
 	const handleKeyDown = useCallback(
 		(event: React.KeyboardEvent) => {
 			const {key} = event
@@ -201,21 +212,18 @@ export function Select<V extends React.ReactText>({
 			</Control>
 
 			{isOpen && (
-				<Menu>
+				<OptionList>
 					{options.map((option) => (
 						<Option
 							key={option.value}
-							content={option.label}
+							{...option}
 							onClick={createClickChangeHandler(option.value)}
 							onKeyPress={createEnterChangeHandler(option.value)}
 							role="option"
 							aria-selected={value === option.value}
-						>
-							<span>{option.label}</span>
-							<span />
-						</Option>
+						/>
 					))}
-				</Menu>
+				</OptionList>
 			)}
 		</Root>
 	)

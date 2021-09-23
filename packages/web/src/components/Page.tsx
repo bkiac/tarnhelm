@@ -1,7 +1,25 @@
-import styled from "@emotion/styled"
+import React from "react"
+import {Box, Container, Flex} from "@chakra-ui/react"
+import {Footer} from "./Footer"
+import {H1} from "./H1"
 
-export const Page = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-`
+export const Page: React.VFC<{
+	title?: React.ReactText
+	children: React.ReactNode
+}> = ({title, children}) => (
+	<Flex direction="column" justify="space-between" h="100%" p="6">
+		{title != null ? (
+			<Box as="header" mb="4">
+				<H1>{title}</H1>
+			</Box>
+		) : (
+			<div />
+		)}
+
+		<Container as="main" maxW="container.md" centerContent>
+			{children}
+		</Container>
+
+		<Footer mt="4" />
+	</Flex>
+)

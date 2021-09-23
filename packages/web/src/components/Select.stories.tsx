@@ -25,7 +25,10 @@ Expiry.args = {
 
 export const DownloadLimit = Template.bind({})
 DownloadLimit.args = {
-	options: downloadLimitOptions,
+	options: downloadLimitOptions.map(({value}) => ({
+		value,
+		label: value.toString(),
+	})),
 	value: downloadLimitOptions[0].value,
 	onChange,
 }

@@ -33,6 +33,9 @@ module.exports = {
 			},
 			files: "packages/web/**",
 			extends: ["bkiac"],
+			rules: {
+				"react/require-default-props": "off",
+			},
 			overrides: [
 				{
 					files: "*.stories.tsx",

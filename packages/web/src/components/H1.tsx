@@ -1,9 +1,8 @@
-import styled from "@emotion/styled"
+import {Heading} from "@chakra-ui/react"
+import React from "react"
 
-export const H1 = styled.h1`
-	text-align: center;
-	font-size: 1.25rem;
-	font-weight: normal;
-	margin: 0;
-	margin-bottom: 1.5rem;
-`
+export const H1: React.VFC<{children: React.ReactText}> = ({children}) => (
+	<Heading as="h1" textAlign="center" fontWeight="normal">
+		{children}
+	</Heading>
+)

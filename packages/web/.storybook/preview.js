@@ -1,6 +1,5 @@
 import React from "react"
-import {ThemeProvider} from "@emotion/react"
-import {GlobalStyle} from "../src/components/GlobalStyle"
+import {ChakraProvider} from "@chakra-ui/react"
 import {theme} from "../src/styles/theme"
 import "../src/styles/index.css"
 
@@ -16,9 +15,8 @@ export const parameters = {
 
 export const decorators = [
 	(Story) => (
-		<ThemeProvider theme={theme}>
-			<GlobalStyle />
+		<ChakraProvider theme={theme}>
 			<Story />
-		</ThemeProvider>
+		</ChakraProvider>
 	),
 ]

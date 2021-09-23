@@ -1,3 +1,5 @@
+import {extendTheme} from "@chakra-ui/react"
+
 const iconContentCodes = {
 	delete: "\\e900",
 	save: "\\e901",
@@ -6,7 +8,7 @@ const iconContentCodes = {
 	security: "\\e904",
 } as const
 
-const colors = {
+const colorPalette = {
 	black: "#000",
 	white: "#fff",
 	broom: "#ffed0b",
@@ -16,17 +18,38 @@ const colors = {
 	mediumPurple: "#a13be0",
 } as const
 
-const palette = {
-	background: colors.black,
-	foreground: colors.white,
-	primary: colors.broom,
-	secondary: colors.cyan,
-	tertiary: colors.radicalRed,
-	error: colors.sangria,
+const colors = {
+	...colorPalette,
+	background: colorPalette.black,
+	foreground: colorPalette.white,
+	primary: colorPalette.broom,
+	secondary: colorPalette.cyan,
+	tertiary: colorPalette.radicalRed,
+	error: colorPalette.sangria,
 } as const
 
-export const theme = {
+const fonts = {
+	body: "Source Code Pro, monospace",
+	heading: "Abel, sans-serif",
+	mono: "Source Code Pro, monospace",
+	brand: "Paytone One, sans-serif",
+} as const
+
+const styles = {
+	global: {
+		"html, body, #__next": {
+			height: "100%",
+		},
+		body: {
+			bg: "black",
+			color: "white",
+		},
+	},
+} as const
+
+export const theme = extendTheme({
 	iconContentCodes,
 	colors,
-	palette,
-} as const
+	fonts,
+	styles,
+})

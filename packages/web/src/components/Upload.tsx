@@ -4,8 +4,8 @@ import QRCode from "qrcode.react"
 import React, {useCallback, useMemo, useState} from "react"
 import {useDropzone} from "react-dropzone"
 import styled from "@emotion/styled"
-import {css} from "@emotion/react"
 import {v4 as uuid} from "uuid"
+import {Flex, Text} from "@chakra-ui/react"
 import type {DropHandler} from "react-dropzone"
 import {useUpload} from "../hooks"
 import {UseUploadStatus} from "../hooks/useUpload"
@@ -21,39 +21,20 @@ import {
 	ONE_WEEK,
 } from "../utils"
 
-const Container = styled.div`
-	width: 30vw;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-`
-
 const Dropzone = styled.div`
 	width: 100%;
-	margin-bottom: 1rem;
+	margin-bottom: ${(props) => props.theme.space["4"]};
 `
 
 const Info = styled.div`
 	width: 95%;
-	margin-bottom: 1rem;
+	margin-bottom: ${(props) => props.theme.space["4"]};
 `
 
-const InfoRow = styled.div`
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 1rem;
-
-	& > p {
-		margin: 0;
-	}
-`
-
-const StyledTotalSize = styled.p<{hasError?: boolean}>(
-	(props) => css`
-		color: ${props.hasError ?? false
-			? props.theme.palette.error
-			: props.theme.palette.foreground};
-	`,
+const InfoRow: React.VFC<{children: React.ReactNode}> = ({children}) => (
+	<Flex justify="space-between" mb="4">
+		{children}
+	</Flex>
 )
 
 function isDuplicate<A extends File, B extends File>(a: A, b: B): boolean {
@@ -70,11 +51,14 @@ type FileObject = {
 	file: File
 }
 
-const TotalSize: React.FC<{hasError?: boolean}> = ({hasError, children}) => (
-	<StyledTotalSize hasError={hasError}>
-		{(hasError ?? false) && <DangerIcon />}
+const TotalSize: React.FC<{hasError?: boolean}> = ({
+	hasError = false,
+	children,
+}) => (
+	<Text color={hasError ? "error" : "foreground"}>
+		{hasError && <DangerIcon />}
 		{children}
-	</StyledTotalSize>
+	</Text>
 )
 
 export const Upload: React.FC = () => {
@@ -169,23 +153,23 @@ export const Upload: React.FC = () => {
 	)
 
 	return (
-		<Container>
+		<Flex direction="column" align="center">
 			{awaitingPayment && invoice != null ? (
 				<>
 					<QRCode value={invoice} size={256} />
-					<p style={{width: 300, wordWrap: "break-word"}}>{invoice}</p>
+					<Text style={{width: 300, wordWrap: "break-word"}}>{invoice}</Text>
 				</>
 			) : (
 				<>
 					{loading ? (
 						<>
 							<Loader />
-							<p>{Math.floor(percent * 100)}%</p>
+							<Text>{Math.floor(percent * 100)}%</Text>
 						</>
 					) : (
 						<>
 							{success ? (
-								<p>{window.location.hostname + to}</p>
+								<Text>{window.location.hostname + to}</Text>
 							) : (
 								<Dropzone {...dropzone.getRootProps()}>
 									<Vault
@@ -202,16 +186,16 @@ export const Upload: React.FC = () => {
 
 			<Info>
 				<InfoRow>
-					<p>Total Size</p>
+					<Text>Total Size</Text>
 					<TotalSize hasError={areFilesTooLarge}>{bytes(totalSize)}</TotalSize>
 				</InfoRow>
 
 				<InfoRow>
-					<p>Expires After</p>
+					<Text>Expires After</Text>
 					{uploading || success ? (
-						<p>
+						<Text>
 							{expiryOptions.find((option) => option.value === expiry)?.label}
-						</p>
+						</Text>
 					) : (
 						<Select
 							value={expiry}
@@ -222,13 +206,16 @@ export const Upload: React.FC = () => {
 				</InfoRow>
 
 				<InfoRow>
-					<p>Download Limit</p>
+					<Text>Download Limit</Text>
 					{uploading || success ? (
-						<p>{downloadLimit}</p>
+						<Text>{downloadLimit}</Text>
 					) : (
 						<Select
 							value={downloadLimit}
-							options={downloadLimitOptions}
+							options={downloadLimitOptions.map(({value}) => ({
+								value,
+								label: value.toString(),
+							}))}
 							onChange={(value) => setDownloadLimit(value)}
 						/>
 					)}
@@ -236,8 +223,8 @@ export const Upload: React.FC = () => {
 
 				{hasFiles && (
 					<InfoRow>
-						<p>Price</p>
-						<p>${totalSize * 2e-10}</p>
+						<Text>Price</Text>
+						<Text>${totalSize * 2e-10}</Text>
 					</InfoRow>
 				)}
 			</Info>
@@ -247,6 +234,6 @@ export const Upload: React.FC = () => {
 					Pay & Upload
 				</Button>
 			)}
-		</Container>
+		</Flex>
 	)
 }
