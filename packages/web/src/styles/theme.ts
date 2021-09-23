@@ -29,9 +29,9 @@ const colors = {
 } as const
 
 const fonts = {
-	body: "DotGothic16, sans-serif",
-	heading: "Dosis, sans-serif",
-	mono: "VT323, monospace",
+	body: "Source Code Pro, monospace",
+	heading: "Abel, sans-serif",
+	mono: "Source Code Pro, monospace",
 	brand: "Paytone One, sans-serif",
 } as const
 
