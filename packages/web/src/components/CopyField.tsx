@@ -1,7 +1,7 @@
 import React, {useCallback} from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
-import {Box, Flex} from "@chakra-ui/react"
+import {Box, Flex, Center} from "@chakra-ui/react"
 import {CopyIcon} from "@chakra-ui/icons"
 import {IconButton} from "./IconButton"
 import {noise, noiseSnippet} from "../styles/animations"
@@ -48,13 +48,10 @@ const IconAfter = styled(IconBeforeAfter)((props) => {
 	`
 })
 
-const StyledIconButton = styled(IconButton)((props) => {
-	const fontSize = props.theme.fontSizes["2xl"]
-	return css`
-		font-size: ${fontSize};
-		line-height: ${fontSize}; // line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
+const StyledIconButton = styled(IconButton)(
+	(props) => css`
+		line-height: 100%; // line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
 		color: ${props.theme.colors.foreground};
-		margin-right: ${props.theme.space[2]};
 
 		&:hover {
 			cursor: pointer;
@@ -62,44 +59,37 @@ const StyledIconButton = styled(IconButton)((props) => {
 
 		/** Animation */
 		position: relative;
-	`
-})
-
-const B = styled(Box)(
-	(props) => css`
-		border-width: 1px 0 1px 1px;
-		border-style: solid;
-		border-color: white;
-		padding: ${props.theme.space["1"]};
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
 	`,
 )
 
-const B2 = styled(Box)(
-	(props) => css`
-		border-width: 1px 1px 1px 0;
-		border-style: solid;
-		border-color: white;
-		padding: ${props.theme.space["1"]};
-	`,
-)
+const B = styled(Flex)``
+
+const B1 = styled(Box)`
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+`
+
+const B2 = styled(Box)`
+	/* border-width: 1px 1px 1px 0; */
+`
 
 export const CopyField: React.VFC<{value: string}> = ({value}) => {
 	const handleClick = useCallback(() => {
 		void navigator.clipboard.writeText(value)
 	}, [value])
 	return (
-		<Flex align="center" mb="2">
-			<B>{value}</B>
+		<B align="center" border="1px" borderColor="white">
+			<B1>{value}</B1>
 			<B2 bg="tertiary">
-				<StyledIconButton onClick={handleClick}>
-					<IconBefore />
-					<Icon />
-					<IconAfter />
-				</StyledIconButton>
+				<Center>
+					<StyledIconButton onClick={handleClick}>
+						<IconBefore />
+						<Icon />
+						<IconAfter />
+					</StyledIconButton>
+				</Center>
 			</B2>
-		</Flex>
+		</B>
 	)
 }
