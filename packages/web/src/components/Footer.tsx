@@ -3,7 +3,7 @@ import {Box, Flex, HStack} from "@chakra-ui/react"
 import type {BoxProps} from "@chakra-ui/react"
 import {AppTitle} from "./AppTitle"
 import {ExternalLink} from "./ExternalLink"
-import {InternalLink} from "./InternalLink"
+// import {InternalLink} from "./InternalLink"
 
 export const Footer: React.VFC<BoxProps> = (boxProps) => (
 	<Box as="footer" {...boxProps}>
@@ -20,7 +20,7 @@ export const Footer: React.VFC<BoxProps> = (boxProps) => (
 				spacing={{base: "initial", md: "10"}}
 				justifyContent={{base: "space-between", sm: "space-around"}}
 			>
-				<InternalLink href="/thanks">Thanks</InternalLink>
+				{/* <InternalLink href="/thanks">Thanks</InternalLink> */}
 				<ExternalLink href="https://github.com/bkiac/tarnhelm" target="_blank">
 					Code
 				</ExternalLink>
