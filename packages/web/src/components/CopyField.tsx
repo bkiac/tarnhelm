@@ -1,7 +1,7 @@
 import React, {useCallback} from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
-import {Box, Flex, Center} from "@chakra-ui/react"
+import {Box, Flex} from "@chakra-ui/react"
 import {CopyIcon} from "@chakra-ui/icons"
 import {IconButton} from "./IconButton"
 import {noise, noiseSnippet} from "../styles/animations"
@@ -9,8 +9,10 @@ import {noise, noiseSnippet} from "../styles/animations"
 const noiseArgs = {
 	steps: 66,
 	fraction: 2,
-	duration: 3,
+	duration: 10,
 }
+
+const iconSpacing = 2
 
 const Icon = styled(CopyIcon)`
 	vertical-align: initial;
@@ -18,8 +20,8 @@ const Icon = styled(CopyIcon)`
 
 const IconBeforeAfter = styled(Icon)`
 	position: absolute;
-	top: 0;
-	left: 0;
+	top: ${(props) => props.theme.space[iconSpacing]};
+	right: ${(props) => props.theme.space[iconSpacing]};
 	overflow: hidden;
 
 	&:hover {
@@ -41,37 +43,25 @@ const IconAfter = styled(IconBeforeAfter)((props) => {
 	const [k, p] = noiseSnippet(noiseArgs)
 	return css`
 		&:hover {
-			left: 1px;
+			right: calc(${props.theme.space[iconSpacing]} - 1px);
 			filter: drop-shadow(0.025em 0.05em 0 ${props.theme.colors.secondary});
 			animation: ${k} ${p};
 		}
 	`
 })
 
-const StyledIconButton = styled(IconButton)(
-	(props) => css`
-		line-height: 100%; // line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
-		color: ${props.theme.colors.foreground};
+const StyledIconButton = styled(IconButton)`
+	line-height: 100%; // line-height must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
+	color: ${(props) => props.theme.colors.foreground};
+	background-color: ${(props) => props.theme.colors.tertiary};
+	padding: ${(props) => props.theme.space[iconSpacing]};
 
-		&:hover {
-			cursor: pointer;
-		}
+	&:hover {
+		cursor: pointer;
+	}
 
-		/** Animation */
-		position: relative;
-	`,
-)
-
-const B = styled(Flex)``
-
-const B1 = styled(Box)`
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-`
-
-const B2 = styled(Box)`
-	/* border-width: 1px 1px 1px 0; */
+	/** Animation */
+	position: relative;
 `
 
 export const CopyField: React.VFC<{value: string}> = ({value}) => {
@@ -79,17 +69,15 @@ export const CopyField: React.VFC<{value: string}> = ({value}) => {
 		void navigator.clipboard.writeText(value)
 	}, [value])
 	return (
-		<B align="center" border="1px" borderColor="white">
-			<B1>{value}</B1>
-			<B2 bg="tertiary">
-				<Center>
-					<StyledIconButton onClick={handleClick}>
-						<IconBefore />
-						<Icon />
-						<IconAfter />
-					</StyledIconButton>
-				</Center>
-			</B2>
-		</B>
+		<Flex align="center" border="1px" borderColor="white">
+			<Box overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis" px="1">
+				{value}
+			</Box>
+			<StyledIconButton onClick={handleClick}>
+				<IconBefore />
+				<Icon />
+				<IconAfter />
+			</StyledIconButton>
+		</Flex>
 	)
 }
