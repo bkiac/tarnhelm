@@ -65,7 +65,12 @@ export const FileStick: React.VFC<
 
 	return (
 		<StyledFileStick {...boxProps}>
-			<NoisyIconButton onClick={onDelete} padding="0" marginRight="2">
+			<NoisyIconButton
+				onClick={onDelete}
+				padding="0"
+				marginRight="2"
+				fontSize="4xl"
+			>
 				<DeleteIcon />
 			</NoisyIconButton>
 

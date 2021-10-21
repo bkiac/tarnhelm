@@ -9,7 +9,7 @@ import {noiseSnippet} from "../styles/animations"
 const DEFAULT_NOISE_ARGS = {
 	steps: 66,
 	fraction: 2,
-	duration: 10,
+	duration: 3,
 }
 
 type AnimationHelperProps = {
@@ -20,7 +20,10 @@ type AnimationHelperProps = {
 const AnimationHelper = styled.span`
 	position: absolute;
 	right: 0;
-	overflow: hidden;
+	/*
+	Animation with background color doesn't work after changing text-shadow to drop-shadow filter, animation helper drop-shadow filter will be applied to the background not just the icon, or text
+	background-color: ${(props) => props.theme.colors.tertiary};
+	*/
 `
 
 const AnimationHelperBefore = styled(AnimationHelper)<AnimationHelperProps>(
@@ -30,7 +33,8 @@ const AnimationHelperBefore = styled(AnimationHelper)<AnimationHelperProps>(
 			return css``
 		}
 		return css`
-			filter: drop-shadow(0.05em 0.025em 0 ${theme.colors.primary});
+			left: 1px;
+			filter: drop-shadow(0.05em 0.025em 0 ${theme.colors.secondary});
 			animation: ${k} ${p};
 		`
 	},
@@ -43,8 +47,8 @@ const AnimationHelperAfter = styled(AnimationHelper)<AnimationHelperProps>(
 			return css``
 		}
 		return css`
-			right: -1px;
-			filter: drop-shadow(0.025em 0.05em 0 ${theme.colors.secondary});
+			right: 1px;
+			filter: drop-shadow(0.025em 0.05em 0 ${theme.colors.primary});
 			animation: ${k} ${p};
 		`
 	},
