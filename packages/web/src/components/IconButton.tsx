@@ -1,22 +1,19 @@
 import React from "react"
-import styled from "@emotion/styled"
-import {iconFont} from "../styles/mixins"
-
-const StyledIconButton = styled.button`
-	/* Allow icon content codes to be used inside the button, useful for pseudo-elements */
-	${iconFont}
-
-	background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
-`
+import type {BareButtonProps} from "./BareButton"
+import {BareButton} from "./BareButton"
 
 export const IconButton: React.VFC<
-	React.ComponentProps<typeof StyledIconButton>
+	BareButtonProps & {children: React.ReactNode}
 > = ({children, ...props}) => (
-	<StyledIconButton {...props}>{children}</StyledIconButton>
+	<BareButton
+		border="none"
+		cursor="pointer"
+		outline="inherit"
+		color="foreground"
+		background="tertiary"
+		padding="0"
+		{...props}
+	>
+		{children}
+	</BareButton>
 )
