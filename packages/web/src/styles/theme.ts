@@ -16,6 +16,7 @@ const colorPalette = {
 	radicalRed: "#ff2865",
 	sangria: "#9a0006",
 	mediumPurple: "#a13be0",
+	green: "#00fe00",
 } as const
 
 const colors = {
@@ -26,6 +27,7 @@ const colors = {
 	secondary: colorPalette.cyan,
 	tertiary: colorPalette.radicalRed,
 	error: colorPalette.sangria,
+	success: colorPalette.green,
 } as const
 
 const fonts = {

@@ -63,8 +63,14 @@ export const NoisyIconButton: React.VFC<
 			padding="1.5"
 			{...props}
 			lineHeight="100%" // Must equal font-size; if line-height is larger than font-size the noise animation may not be fully visible because noise animation inset is in em
-			onMouseEnter={() => setHover(true)}
-			onMouseLeave={() => setHover(false)}
+			onMouseEnter={(e) => {
+				props.onMouseEnter?.(e)
+				setHover(true)
+			}}
+			onMouseLeave={(e) => {
+				props.onMouseLeave?.(e)
+				setHover(false)
+			}}
 		>
 			<Box
 				as="span"
