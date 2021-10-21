@@ -1,4 +1,4 @@
-import React, {useCallback} from "react"
+import React, {useCallback, useState} from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
 import {Box, Flex} from "@chakra-ui/react"
@@ -18,35 +18,41 @@ const Icon = styled(CopyIcon)`
 	vertical-align: initial;
 `
 
-const IconBeforeAfter = styled(Icon)`
+type HoverProps = {
+	hover?: boolean
+}
+
+const IconBeforeAfter = styled(Icon)<HoverProps>`
 	position: absolute;
 	top: ${(props) => props.theme.space[iconSpacing]};
 	right: ${(props) => props.theme.space[iconSpacing]};
 	overflow: hidden;
 
-	&:hover {
-		${noise(noiseArgs)};
-	}
+	${(props) => props.hover === true && noise(noiseArgs)}
 `
 
-const IconBefore = styled(IconBeforeAfter)((props) => {
+const IconBefore = styled(IconBeforeAfter)<HoverProps>((props) => {
+	const {hover = false} = props
 	const [k, p] = noiseSnippet(noiseArgs)
+	if (!hover) {
+		return css``
+	}
 	return css`
-		&:hover {
-			filter: drop-shadow(0.05em 0.025em 0 ${props.theme.colors.primary});
-			animation: ${k} ${p};
-		}
+		filter: drop-shadow(0.05em 0.025em 0 ${props.theme.colors.primary});
+		animation: ${k} ${p};
 	`
 })
 
-const IconAfter = styled(IconBeforeAfter)((props) => {
+const IconAfter = styled(IconBeforeAfter)<HoverProps>((props) => {
+	const {hover = false} = props
 	const [k, p] = noiseSnippet(noiseArgs)
+	if (!hover) {
+		return css``
+	}
 	return css`
-		&:hover {
-			right: calc(${props.theme.space[iconSpacing]} - 1px);
-			filter: drop-shadow(0.025em 0.05em 0 ${props.theme.colors.secondary});
-			animation: ${k} ${p};
-		}
+		right: calc(${props.theme.space[iconSpacing]} - 1px);
+		filter: drop-shadow(0.025em 0.05em 0 ${props.theme.colors.secondary});
+		animation: ${k} ${p};
 	`
 })
 
@@ -64,6 +70,23 @@ const StyledIconButton = styled(IconButton)`
 	position: relative;
 `
 
+const NoisyIconButton: React.VFC<
+	React.ComponentProps<typeof StyledIconButton>
+> = (props) => {
+	const [hover, setHover] = useState(false)
+	return (
+		<StyledIconButton
+			{...props}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+		>
+			<IconBefore hover={hover} />
+			<Icon hover={hover} />
+			<IconAfter hover={hover} />
+		</StyledIconButton>
+	)
+}
+
 export const CopyField: React.VFC<{value: string}> = ({value}) => {
 	const handleClick = useCallback(() => {
 		void navigator.clipboard.writeText(value)
@@ -73,11 +96,7 @@ export const CopyField: React.VFC<{value: string}> = ({value}) => {
 			<Box overflow="hidden" whiteSpace="nowrap" textOverflow="ellipsis" px="1">
 				{value}
 			</Box>
-			<StyledIconButton onClick={handleClick}>
-				<IconBefore />
-				<Icon />
-				<IconAfter />
-			</StyledIconButton>
+			<NoisyIconButton onClick={handleClick} />
 		</Flex>
 	)
 }
