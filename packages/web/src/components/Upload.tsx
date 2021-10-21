@@ -14,6 +14,7 @@ import {DangerIcon} from "./DangerIcon"
 import {Loader} from "./Loader"
 import {Select} from "./Select"
 import {Vault} from "./Vault"
+import {CopyField} from "./CopyField"
 import {
 	downloadLimitOptions,
 	expiryOptions,
@@ -153,11 +154,11 @@ export const Upload: React.FC = () => {
 	)
 
 	return (
-		<Flex direction="column" align="center">
+		<Flex direction="column" align="center" width="100%">
 			{awaitingPayment && invoice != null ? (
 				<>
 					<QRCode value={invoice} size={256} />
-					<Text style={{width: 300, wordWrap: "break-word"}}>{invoice}</Text>
+					<CopyField value={invoice} margin="4" width="288px" />
 				</>
 			) : (
 				<>
@@ -169,7 +170,11 @@ export const Upload: React.FC = () => {
 					) : (
 						<>
 							{success ? (
-								<Text>{window.location.hostname + to}</Text>
+								<CopyField
+									value={window.location.hostname + to}
+									margin="4"
+									width="288px"
+								/>
 							) : (
 								<Dropzone {...dropzone.getRootProps()}>
 									<Vault
