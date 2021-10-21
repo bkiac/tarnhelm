@@ -4,7 +4,7 @@ import type {Story} from "@storybook/react"
 import {Button} from "./Button"
 
 export default {
-	title: "Button",
+	title: "Buttons/Button",
 	component: Button,
 }
 

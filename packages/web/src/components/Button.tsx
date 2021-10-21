@@ -2,13 +2,14 @@ import React from "react"
 import styled from "@emotion/styled"
 import {css} from "@emotion/react"
 import {glitch} from "../styles/animations"
+import {BareButton} from "./BareButton"
 
 const glitchArgs = {
 	width: "0.06em",
 	duration: 0.3,
 }
 
-const StyledButton = styled.button<{
+const StyledButton = styled(BareButton)<{
 	content: string
 }>((props) => {
 	const disabled = props.disabled ?? false
@@ -96,7 +97,7 @@ type Props = {
 }
 
 export const Button: React.FC<Props> = ({children, ...rest}) => (
-	<StyledButton {...rest} content={children} type="button">
+	<StyledButton {...rest} content={children}>
 		<span>{children}</span>
 		<span />
 	</StyledButton>
