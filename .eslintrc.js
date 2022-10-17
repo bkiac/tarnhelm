@@ -1,3 +1,7 @@
+const rules = {
+	"@typescript-eslint/no-namespace": "off",
+}
+
 module.exports = {
 	root: true,
 	ignorePatterns: ["node_modules", "dist", "_static", ".next", "*rc.js"],
@@ -12,6 +16,7 @@ module.exports = {
 			},
 			files: "packages/api/**",
 			extends: ["bkiac/base"],
+			rules,
 		},
 		{
 			env: {
@@ -27,6 +32,7 @@ module.exports = {
 			files: "packages/web/**",
 			extends: ["bkiac"],
 			rules: {
+				...rules,
 				"react/require-default-props": "off",
 			},
 			overrides: [
