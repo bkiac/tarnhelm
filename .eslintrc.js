@@ -1,13 +1,6 @@
 module.exports = {
 	root: true,
-	ignorePatterns: [
-		"node_modules",
-		"dist",
-		"_static",
-		".next",
-		"*rc.js",
-		"commitlint.config.js",
-	],
+	ignorePatterns: ["node_modules", "dist", "_static", ".next", "*rc.js"],
 	overrides: [
 		{
 			env: {

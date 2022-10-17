@@ -6,7 +6,6 @@
 	"scripts": {
 		"build": "lerna run build --no-bail",
 		"checks": "run-p --continue-on-error --aggregate-output type lint format:check",
-		"commit": "cz",
 		"fix": "run-s lint:fix format",
 		"format": "yarn format:prettier --write",
 		"format:check": "yarn format:prettier --check",
@@ -18,17 +17,9 @@
 		"type": "lerna run type --no-bail",
 		"prepare": "husky install"
 	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		}
-	},
 	"devDependencies": {
-		"@commitlint/cli": "^12.1.4",
-		"@commitlint/config-conventional": "^12.1.4",
 		"@typescript-eslint/eslint-plugin": "^4.24.0",
 		"@typescript-eslint/parser": "^4.24.0",
-		"cz-conventional-changelog": "3.3.0",
 		"eslint": "^7.26.0",
 		"eslint-config-bkiac": "8.1.1",
 		"eslint-plugin-import": "^2.23.2",
