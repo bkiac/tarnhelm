@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export namespace r {
 	export type Ok<T> = {
 		data: T
@@ -27,5 +28,10 @@ export namespace r {
 			return err(e as Error)
 		}
 	}
-	export const tc = tryCatch
+
+	export const wrapTryCatch =
+		<F extends (...args: any[]) => Promise<any>>(fn: F) =>
+		async (...args: Parameters<F>): PromiseResult<Awaited<ReturnType<F>>> =>
+			tryCatch(async () => fn(...args))
+	export const wtc = wrapTryCatch
 }
