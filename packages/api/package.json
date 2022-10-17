@@ -46,6 +46,8 @@
 		"ws": "^7.4.6"
 	},
 	"devDependencies": {
-		"ts-node-dev": "^1.0.0"
+		"esbuild": "^0.15.11",
+		"ts-node-dev": "^1.0.0",
+		"tsx": "^3.10.1"
 	}
 }
