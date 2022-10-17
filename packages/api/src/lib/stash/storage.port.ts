@@ -11,9 +11,12 @@ export namespace Storage {
 
 	export type Listener = (progress: Progress) => void
 
-	export type Data = {key: string; location: string}
+	export type Data = {
+		key: Key
+		location: string
+	}
 
-	export type Storage = {
+	export type Client = {
 		set: (
 			key: Key,
 			body: stream.Readable,
