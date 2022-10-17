@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export namespace r {
 	export type Ok<T> = {
@@ -20,7 +21,25 @@ export namespace r {
 		err: error ?? new Error(),
 	})
 
-	export const tryCatch = async <T>(fn: () => Promise<T>): PromiseResult<T> => {
+	export const tryCatch = <T>(fn: () => T): Result<T> => {
+		try {
+			const data = fn()
+			return ok(data)
+		} catch (e: unknown) {
+			return err(e as Error)
+		}
+	}
+	export const tc = tryCatch
+
+	export const wrapTryCatch =
+		<F extends (...args: any[]) => any>(fn: F) =>
+		(...args: Parameters<F>): Result<ReturnType<F>> =>
+			tryCatch(() => fn(...args))
+	export const wtc = wrapTryCatch
+
+	export const tryCatchAsync = async <T>(
+		fn: () => Promise<T>,
+	): PromiseResult<T> => {
 		try {
 			const data = await fn()
 			return ok(data)
@@ -29,9 +48,9 @@ export namespace r {
 		}
 	}
 
-	export const wrapTryCatch =
+	export const wrapTryCatchAsync =
 		<F extends (...args: any[]) => Promise<any>>(fn: F) =>
 		async (...args: Parameters<F>): PromiseResult<Awaited<ReturnType<F>>> =>
-			tryCatch(async () => fn(...args))
-	export const wtc = wrapTryCatch
+			tryCatchAsync(async () => fn(...args))
+	export const wtca = wrapTryCatchAsync
 }
