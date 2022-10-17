@@ -1,7 +1,7 @@
 import type stream from "stream"
 import type {r} from "../result"
 
-export namespace Storage {
+export namespace Stash {
 	export type Key = string
 
 	export type Progress = {
