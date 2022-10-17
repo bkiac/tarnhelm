@@ -65,19 +65,19 @@ export const config = convict({
 		},
 	},
 
-	storage: {
+	stash: {
 		downloads: {
 			def: {
 				doc: "Default number of downloads.",
 				format: Number,
 				default: 1,
-				env: "STORAGE_DEFAULT_DOWNLOADS",
+				env: "DEFAULT_DOWNLOADS",
 			},
 			max: {
 				doc: "Number of max downloads.",
 				format: Number,
 				default: 200,
-				env: "STORAGE_MAX_DOWNLOADS",
+				env: "MAX_DOWNLOADS",
 			},
 		},
 
@@ -86,13 +86,13 @@ export const config = convict({
 				doc: "Default expiry in seconds.",
 				format: Number,
 				default: ONE_DAY_IN_SECONDS,
-				env: "STORAGE_DEFAULT_EXPIRY",
+				env: "DEFAULT_EXPIRY",
 			},
 			max: {
 				doc: "Max expiry in seconds.",
 				format: Number,
 				default: 14 * ONE_DAY_IN_SECONDS,
-				env: "STORAGE_MAX_EXPIRY",
+				env: "MAX_EXPIRY",
 			},
 		},
 
@@ -101,7 +101,7 @@ export const config = convict({
 				doc: "Max file size in bytes.",
 				format: Number,
 				default: 5 * 1024 * 1024 * 1024, // 5GB
-				env: "STORAGE_MAX_FILE_SIZE",
+				env: "MAX_FILE_SIZE",
 			},
 		},
 	},

@@ -1,18 +1,18 @@
 import cors from "cors"
 import cron from "cron"
 import {config} from "./config"
-import * as storage from "./lib/storage/storage"
+import * as stash from "./lib/stash"
 import {wexpress} from "./lib/wexpress"
 import {router} from "./routes"
 import {asAsyncListener, createStatsLogger, log} from "./utils"
 
 export async function start(): Promise<void> {
-	await storage.clean()
-	const storageCleaningJob = new cron.CronJob(
+	await stash.clean()
+	const stashCleaningJob = new cron.CronJob(
 		"0 0 * * *",
-		asAsyncListener(storage.clean),
+		asAsyncListener(stash.clean),
 	)
-	storageCleaningJob.start()
+	stashCleaningJob.start()
 
 	const {app, wss} = wexpress
 

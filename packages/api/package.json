@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "tsc -p .",
 		"dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-		"dev:storage": "docker-compose up",
+		"dev:stash": "docker-compose up",
 		"start": "node dist/index.js",
 		"test": "echo TODO",
 		"type": "tsc --noEmit"

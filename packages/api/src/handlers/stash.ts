@@ -10,11 +10,11 @@ import type express from "express"
 import {config} from "../config"
 import * as lnd from "../lib/lnd"
 import {getPriceQuote} from "../lib/price"
-import * as storage from "../lib/storage/storage"
+import * as stash from "../lib/stash"
 import * as webSocket from "../lib/webSocket"
 import {asAsyncListener, log} from "../utils"
 
-const storageConfig = config.get("storage")
+const stashConfig = config.get("stash")
 
 function eof(): stream.Transform {
 	return new stream.Transform({
@@ -29,7 +29,7 @@ function eof(): stream.Transform {
 	})
 }
 
-function limiter(limit = storageConfig.fileSize.max): stream.Transform {
+function limiter(limit = stashConfig.fileSize.max): stream.Transform {
 	let length = 0
 	return new stream.Transform({
 		transform(chunk: Buffer, _, callback): void {
@@ -51,22 +51,18 @@ type UploadParams = {
 const uploadParamsSchema = Joi.object<UploadParams>({
 	metadata: Joi.string().required(),
 	authb64: Joi.string().required(),
-	size: Joi.number().required().integer().max(storageConfig.fileSize.max),
+	size: Joi.number().required().integer().max(stashConfig.fileSize.max),
 	downloadLimit: Joi.number()
 		.required()
 		.integer()
 		.min(1)
-		.max(storageConfig.downloads.max),
-	expiry: Joi.number()
-		.required()
-		.integer()
-		.min(1)
-		.max(storageConfig.expiry.max),
+		.max(stashConfig.downloads.max),
+	expiry: Joi.number().required().integer().min(1).max(stashConfig.expiry.max),
 })
 
 function validateUploadParams(
 	stringifiedParams: string,
-): [UploadParams] | [undefined, string[]] {
+): [UploadParams, undefined] | [undefined, string[]] {
 	let params: unknown
 	try {
 		params = JSON.parse(stringifiedParams) as unknown
@@ -82,7 +78,7 @@ function validateUploadParams(
 	}
 
 	// Assertion is safe after validation
-	return [params as UploadParams]
+	return [params as UploadParams, undefined]
 }
 
 export const upload: expressWs.WebsocketRequestHandler = (client) => {
@@ -147,18 +143,18 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 								.pipe(eof())
 								.pipe(limiter(size))
 
-							log("Start storage upload", {id})
+							log("Start upload", {id})
 
 							try {
-								const data = await storage.set(
+								const data = await stash.set(
 									{id, stream: fileStream, metadata, size},
 									{downloadLimit, expiry, authb64},
 									(progress) => webSocket.send(client, {data: progress.loaded}),
 								)
-								log("Finish storage upload", {data})
+								log("Finish upload", {data})
 							} catch (e: unknown) {
 								const err = e as Error
-								log("Storage error", {id, error: err})
+								log("stash error", {id, error: err})
 
 								fileStream.destroy()
 
@@ -166,7 +162,7 @@ export const upload: expressWs.WebsocketRequestHandler = (client) => {
 									error: err.message === "limit" ? 413 : 500,
 								})
 
-								await storage.del(id)
+								await stash.del(id)
 								log("Temporary file deleted", {id})
 							}
 						}
@@ -186,8 +182,9 @@ export const download: express.RequestHandler<{id: string}> = async (
 			params: {id},
 		} = req
 
-		const {authb64, nonce, downloads, downloadLimit} =
-			await storage.getMetadata(id)
+		const {authb64, nonce, downloads, downloadLimit} = await stash.getMetadata(
+			id,
+		)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)
@@ -218,15 +215,15 @@ export const download: express.RequestHandler<{id: string}> = async (
 			return
 		}
 
-		const newNonce = await storage.setNonce(id)
+		const newNonce = await stash.setNonce(id)
 		res.set("WWW-Authenticate", `tarnhelm ${newNonce}`)
 
-		const fileStream = await storage.get(id)
+		const fileStream = await stash.get(id)
 
 		let cancelled = false
 		let finished = false
 
-		log("Start storage download", {id})
+		log("Start download", {id})
 		fileStream
 			.pipe(res)
 			.on(
@@ -234,12 +231,12 @@ export const download: express.RequestHandler<{id: string}> = async (
 				asAsyncListener(async () => {
 					if (!cancelled) {
 						finished = true
-						const newDownloads = await storage.bumpDownloads(id)
+						const newDownloads = await stash.bumpDownloads(id)
 						if (newDownloads >= downloadLimit) {
-							await storage.del(id)
-							log("Finish storage download and delete file", {id})
+							await stash.del(id)
+							log("Finish stash download and delete file", {id})
 						} else {
-							log("Finish storage download", {id})
+							log("Finish stash download", {id})
 						}
 					}
 				}),
@@ -247,7 +244,7 @@ export const download: express.RequestHandler<{id: string}> = async (
 			.on("close", () => {
 				if (!finished) {
 					cancelled = true
-					log("Storage download error", {id})
+					log("stash download error", {id})
 					fileStream.destroy()
 				}
 			})
@@ -262,7 +259,7 @@ export const getMetadata: express.RequestHandler<{id: string}> = async (
 ) => {
 	try {
 		const {authb64, downloads, downloadLimit, ...metadata} =
-			await storage.getMetadata(req.params.id)
+			await stash.getMetadata(req.params.id)
 
 		if (downloads >= downloadLimit) {
 			res.sendStatus(404)
