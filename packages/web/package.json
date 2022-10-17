@@ -27,7 +27,7 @@
 		"@types/react": "^17.0.6",
 		"@types/react-dom": "^17.0.0",
 		"@types/uuid": "^8.3.0",
-		"axios": "^0.21.1",
+		"axios": "^0.21.2",
 		"base64-js": "^1.5.1",
 		"bytes": "^3.1.0",
 		"date-fns": "^2.16.1",
