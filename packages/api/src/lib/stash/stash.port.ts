@@ -2,7 +2,7 @@ import type stream from "stream"
 import type {r} from "../result"
 
 export namespace Stash {
-	export type Key = string
+	export type Id = string
 
 	export type Progress = {
 		loaded: number
@@ -11,43 +11,59 @@ export namespace Stash {
 
 	export type Listener = (progress: Progress) => void
 
-	export type Blob = {
-		readonly key: Key
-		readonly location: string
+	export type Entity = {
+		readonly id: Id
 		/** base64 string */
 		readonly auth: string
 		/** Additional properties (file name, type, etc.) encrypted before upload */
 		readonly properties: string
 		readonly length: number
 		nonce: string
-		downloads: {
-			current: number
+		download: {
+			count: number
 			readonly limit: number
 		}
 	}
 
-	export type BlobUploadInput = {
-		limit: number
-		body: stream.Readable
+	export type UploadArgs = {
+		id?: Id
+		downloadLimit: number
+		stream: stream.Readable
 		length: number
 		expiry: Date
-	} & Pick<Blob, "key" | "auth" | "properties" | "nonce">
+		listener?: Listener
+	} & Pick<Entity, "auth" | "properties">
 
-	export type BlobUpdateInput = {
-		numOfDownloads?: number
+	export type IdArgs = {id: Id}
+
+	export type UpdateArgs = {
+		downloadCount?: number
 		nonce?: string
-	}
+	} & IdArgs
+
+	export type UpdateNonceArgs = {
+		nonce: string
+	} & IdArgs
+
+	export type Upload = (args: UploadArgs) => r.PromiseResult<Entity>
+	export type Download = (args: IdArgs) => r.Result<[stream.Readable, Entity]>
+	export type Update = (args: UpdateArgs) => r.PromiseResult<Entity>
+	export type Get = (args: IdArgs) => r.PromiseResult<Entity>
+	export type IncrementDownloads = (args: IdArgs) => r.PromiseResult<Entity>
+	export type UpdateNonce = (args: UpdateNonceArgs) => r.PromiseResult<Entity>
 
 	export type Client = {
-		upload: (
-			input: BlobUploadInput,
-			listener?: Listener,
-		) => r.PromiseResult<Blob>
-		download: (key: Key) => r.Result<stream.Readable>
-		get: (key: Key) => r.PromiseResult<Blob>
-		update: (input: BlobUpdateInput) => r.PromiseResult<Blob>
-		delete: (key: Key) => r.PromiseResult<Key>
-		bumpDownloads: (key: Key) => r.PromiseResult<Blob>
-		updateNonce: (key: Key, nonce: string) => r.PromiseResult<Blob>
+		upload: Upload
+		download: Download
+		get: Get
 	}
+
+	export type Repository = {
+		update: Update
+		incrementDownloads: IncrementDownloads
+		updateNonce: UpdateNonce
+	} & Client
+
+	export type MakeClient = (repo: Repository) => Client
+	export type CreateClient = () => Client
 }
