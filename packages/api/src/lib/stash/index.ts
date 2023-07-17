@@ -6,13 +6,13 @@ import {log} from "../../utils"
 import {redis} from "./redis"
 import * as s3 from "./s3"
 
-const storageConfig = config.get("storage")
+const cfg = config.get("stash")
 
 function generateNonce(): string {
 	return crypto.randomBytes(16).toString("base64")
 }
 
-type StorageMetadata = {
+type StashMetadata = {
 	downloadLimit: number
 	downloads: number
 	authb64: string
@@ -20,9 +20,9 @@ type StorageMetadata = {
 	encryptedContentMetadata: string
 }
 
-function marshalStorageMetadata(
+function marshalStashMetadata(
 	metadata: Partial<Record<string, string>>,
-): StorageMetadata | undefined {
+): StashMetadata | undefined {
 	const {downloadLimit, downloads, authb64, nonce, encryptedContentMetadata} =
 		metadata
 	if (
@@ -43,36 +43,36 @@ function marshalStorageMetadata(
 	}
 }
 
-export async function getMetadata(id: string): Promise<StorageMetadata> {
-	const res = marshalStorageMetadata(await redis.hgetall(id))
+export async function getMetadata(id: string): Promise<StashMetadata> {
+	const res = marshalStashMetadata(await redis.hgetall(id))
 	if (isNil(res)) {
 		throw new Error(`Metadata with ID "${id}" is malformed.`)
 	}
 	return res
 }
 
-export type StorageUploadArgs = {
+export type StashUploadArgs = {
 	id: string
 	stream: stream.Readable
 	metadata: string
 	size?: number
 }
 
-export type StorageUploadOptions = {
+export type StashUploadOptions = {
 	authb64: string
 	downloadLimit?: number
 	expiry?: number // in seconds
 }
 
 export async function set(
-	file: StorageUploadArgs,
-	options: StorageUploadOptions,
+	file: StashUploadArgs,
+	options: StashUploadOptions,
 	listener?: s3.S3UploadListener,
 ): ReturnType<typeof s3.set> {
 	const {id, metadata, size} = file
 	const {
-		expiry = storageConfig.expiry.def,
-		downloadLimit = storageConfig.downloads.def,
+		expiry = cfg.expiry.def,
+		downloadLimit = cfg.downloads.def,
 		authb64,
 	} = options
 	const uploadData = await s3.set(

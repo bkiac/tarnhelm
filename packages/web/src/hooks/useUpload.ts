@@ -32,7 +32,7 @@ type Options = {
 export type UseUploadState = {
 	status: UseUploadStatus
 	progress: UseUploadProgress
-	file?: File
+	file?: File | FileList
 	options?: Options
 	secret?: string
 	id?: string
@@ -75,6 +75,10 @@ const initialState: UseUploadState = {
 		percent: 0,
 		estimate: undefined,
 	},
+}
+
+function zip(file: FileList): File {
+	throw new Error("Function not implemented.")
 }
 
 const reducer: Reducer<UseUploadState, Action> = (state, action) => {
@@ -207,7 +211,8 @@ export function useUpload(): [UseUploadState & {secretb64?: string}, Upload] {
 		if (keyring && ws && file && status === UseUploadStatus.Starting) {
 			const upload = async (): Promise<void> => {
 				// Properties need to be cloned here, passing `file` to `encryptMetadata` won't work, `name` and `type` will be `undefined` on upload
-				const {name, size, type} = file
+				const uploadFile = file instanceof FileList ? zip(file) : file
+				const {name, size, type} = uploadFile
 				const encryptedContentMetadata = await keyring.encryptMetadata({
 					name,
 					size,

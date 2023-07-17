@@ -8,5 +8,5 @@
 1. Run `cp .env.development .env` to create your local `.env` file
 1. Replace `LND_SOCKET`, `LND_CERT`, `LND_MACAROON` keys in `.env` with your node's connection info
 1. Start the network
-1. Start storage services with `yarn dev:storage`
+1. Start stash services with `yarn dev:stash`
 1. Start the API service with `yarn dev`

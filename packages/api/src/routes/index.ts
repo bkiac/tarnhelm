@@ -1,7 +1,7 @@
 import express from "express"
-import {storageRouter} from "./storage"
+import {router as stashRouter} from "./stash"
 
 export const router = express
 	.Router()
 	.get("/ping", (_, res) => res.send())
-	.use("/", storageRouter)
+	.use("/", stashRouter)
