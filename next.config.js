@@ -10,7 +10,7 @@ const nextConfig = {
 			  patterns: [
 				{ 
 				  from: 'node_modules/lightning/grpc/protos', 
-				  to: './grpc/protos' 
+				  to: 'grpc/protos' 
 				},
 			  ],
 			})
