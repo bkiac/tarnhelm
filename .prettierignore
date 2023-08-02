@@ -1,6 +1,0 @@
-.vscode
-
-packages/api/dist
-
-packages/web/_static
-packages/web/.next
